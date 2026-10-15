@@ -1,0 +1,69 @@
+---
+title: "Fiche de validation du sujet"
+subtitle: "À compléter et soumettre sur MooVin avant de commencer"
+# Membres du groupe
+author:
+  - name: "Prénom Nom"
+  - name: "Prénom Nom"
+  - name: "Prénom Nom"
+  - name: "Prénom Nom"
+  - name: "Prénom Nom"
+date: today
+# Groupe
+group: "Groupe N"
+format:
+  html:
+    toc: false
+    theme: cosmo
+lang: fr
+---
+
+**{{< meta group >}}**
+
+---
+
+::: {.callout-important}
+Complétez cette fiche et soumettez-la sur MooVin. Il est conseillé d'en discuter directement avec le formateur **avant de commencer l'installation**. Le formateur valide (ou ajuste) le sujet et la difficulté estimée. Ne commencez pas avant le feu vert.
+
+Rappel des contraintes techniques : le projet doit être réalisable en **VMs Debian sous VirtualBox**.
+:::
+
+## Sujet proposé en bref
+
+| Champ | Votre réponse |
+|---|---|
+| **Sujet choisi** | ... |
+| **Élément(s) inédit(s)** | .... |
+| **Technologies principales** | ... |
+| **Difficulté estimée par le groupe** | ⭐ à ⭐⭐⭐⭐ |
+
+## Description du sujet choisi
+
+Décrivez plus en détail votre sujet.
+
+## Infrastructure prévue
+
+| Champ | Votre réponse |
+|---|---|
+| **Nombre de VMs** | ... |
+| **Taille des disques des VMs** | ... |
+| **RAM totale nécessaire côté hôte** | ... |
+| **Conteneurs Docker utilisés ?** | Oui / Non — si oui, lesquels |
+| **Configuration Réseau ?** | 192.168.56.N0 : rôle... / 192.168.56.N1 : rôle... |
+
+::: {.callout-important}
+  Si plusieurs VMs sont nécessaires pour votre projet, n'oubliez pas de réfléchir 
+  à la configuration réseau et à l'indiquer ici !
+:::
+
+## Plan de tests envisagé
+
+Listez 3 à 5 tests que vous prévoyez.
+
+
+| # | Test | Résultat attendu |
+|---|---|---|
+| 1 | ... | ... |
+| 2 | ... | ... |
+| 3 | Panne : ... | ... |
+| 4 | Sécurité : ... | ... |

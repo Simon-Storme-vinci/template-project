@@ -177,30 +177,58 @@ Snapshot conseillé : une fois la configuration réseau fonctionnelle et les tes
 :::
 
 
-## Architecture
-
-::: {.callout-important title="Consigne"}
-Présentez un schéma d'architecture de votre projet, **de préférence en Mermaid** (voir le guide `02_installation_getstarted.qmd` et l'exemple fourni). Le schéma doit inclure **les noms des VMs, leurs IPs, les ports utilisés et les flux réseau**. Un schéma sans IPs ni ports n'est pas suffisant.
-:::
+## Architecture (DEMANDER AU PROF !!!!!!)
 
 ### Schéma d'architecture
 
 ```{mermaid}
 flowchart TD
-    H([Machine hôte<br/>192.168.56.1]) -->|Protocole :port| A
-    subgraph HO[Réseau host-only 192.168.56.0/24]
-        A[vm-xxx<br/>Rôle — Debian 12<br/>192.168.56.N0<br/>ports ...]
-        B[vm-yyy<br/>Rôle — Debian 12<br/>192.168.56.N1<br/>ports ...]
-        A -->|Protocole :port| B
+    H(["Machine hôte<br/>Navigateur / curl<br/>IP : 192.168.56.1"])
+
+    subgraph VM["Machine virtuelle VirtualBox : vm-proxy"]
+        direction TB
+
+        P["Traefik - Reverse Proxy<br/>Debian 13<br/>IP Host-only : 192.168.56.10<br/>Ports : 80 (HTTP) et 443 (HTTPS)"]
+
+        subgraph DOCKER["Réseau Docker interne"]
+            direction LR
+            W1["Conteneur Nginx 1<br/>Site HTML<br/>Port : 80"]
+            W2["Conteneur Nginx 2<br/>Site HTML<br/>Port : 80"]
+            W3["Conteneur Nginx 3<br/>Site HTML<br/>Port : 80"]
+        end
+
+        P -->|"HTTP : 80"| W1
+        P -->|"HTTP : 80"| W2
+        P -->|"HTTP : 80"| W3
     end
+
+    H -->|"HTTP : 80 / HTTPS : 443"| P
+
+    NAT["Carte réseau 1 : NAT<br/>IP attribuée par DHCP<br/>Accès Internet"]
+
+    NAT -.->|"HTTPS : 443<br/>Téléchargement Docker<br/>Communication avec Let's Encrypt"| P
+
+    style P fill:#69b,stroke:#333,color:#fff
+    style W1 fill:#6a9,stroke:#333,color:#fff
+    style W2 fill:#6a9,stroke:#333,color:#fff
+    style W3 fill:#6a9,stroke:#333,color:#fff
+    style NAT fill:#ddd,stroke:#333,color:#222
 ```
 
 ### Tableau des composants
 
 | Composant | VM | IP | Port(s) | Rôle |
 |---|---|---|---|---|
-| Service A | vm-xxx | 192.168.56.N0 | XXX | Description |
-| Service B | vm-yyy | 192.168.56.N1 | YYY | Description |
+| Traefik | vm-proxy | 192.168.56.10 | 80, 443 | Reverse proxy, terminaison TLS et équilibrage de charge |
+| Nginx 1 | Conteneur Docker | IP interne Docker | 80 (interne) | Hébergement du site HTML |
+| Nginx 2 | Conteneur Docker | IP interne Docker | 80 (interne) | Hébergement du site HTML |
+| Nginx 3 | Conteneur Docker | IP interne Docker | 80 (interne) | Hébergement du site HTML |
+| Docker | vm-proxy | 192.168.56.10 | — | Exécution et gestion des conteneurs |
+
+::: {.callout-note}
+Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n'est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 80 (HTTP) et 443 (HTTPS).
+
+La VM vm-proxy dispose également d'une interface NAT pour accéder à Internet, notamment pour télécharger les images Docker et communiquer avec Let's Encrypt.
 
 
 ## Diagramme au choix
@@ -211,14 +239,17 @@ Choisissez un type de diagramme **pertinent et différent** du schéma d'archite
 
 ```{mermaid}
 sequenceDiagram
-    participant C as Client
-    participant S1 as Service A
-    participant S2 as Service B
+    participant C as Client (hôte 192.168.56.1)
+    participant T as vm-proxy (Traefik)
+    participant N as Conteneur Nginx (Docker)
 
-    C->>S1: Requête
-    S1->>S2: Transfert
-    S2-->>S1: Réponse
-    S1-->>C: Réponse
+    C->>T: HTTPS GET / (connexion TLS)
+    Note over T: Terminaison TLS<br/>Déchiffrement de la requête
+    Note over T: Sélection du service<br/>et du conteneur disponible
+    T->>N: HTTP GET /<br/>+ X-Forwarded-For<br/>+ X-Forwarded-Proto: https
+    Note over N: Recherche et envoi<br/>du fichier HTML
+    N-->>T: HTTP 200 OK (page HTML)
+    T-->>C: HTTPS 200 OK (page HTML)
 ```
 
 Expliquez le diagramme en quelques lignes : que représente-t-il, comment le lire, qu'apprend-on de plus par rapport au schéma d'architecture ?

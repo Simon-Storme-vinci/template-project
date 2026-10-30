@@ -59,25 +59,114 @@ Décrivez en quelques paragraphes l'objectif du projet, le contexte et la probl�
 :::
 
 ### Objectif
+
 Ce projet met en place un reverse proxy avec autentification automatique. Nous utiliserons "Let's Encrypt", "Traefik" et Docker.
 
-Le reverse proxy constitue le point d'entrée unique pour les clients.
-
-Traefik est le point d'entrée unique du serveur : il reçoit les connexions sur les ports 80 et 443, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let's Encrypt qu'il obtient et renouvelle lui-même, sans intervention humaine.
+Traefik est le point d'entrée unique du serveur et du client : il reçoit les connexions sur les ports 80 et 443, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let's Encrypt qu'il obtient et renouvelle lui-même, sans intervention humaine.
 
 ### Contexte et problématique
 
-Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité.
+Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité. L'automatisation de certificats permet de ne plus se soucier de l'expiration, mais une supervision reste utile comme filet de sécurité.
 
 ### Éléments inédits
-
-Décrivez précisément le(s) élément(s) **totalement inédit** de votre projet par rapport au cours. 
+(Demander au prof)!!!!
+N'a pas été vu au cours : 
+    Treafik 
+    Let's encrypt
 
 
 ## Configuration réseau VirtualBox
+| Nom de la VM | Rôle | OS | RAM allouée | Disque |
+|---|---|---|---|---|
+| vm-proxy | Reverse proxy Traefik | Debian 13 | (question prof) |  (question prof) |
 
 ::: {.callout-important title="Consigne"}
 Cette section est **obligatoire**. Elle doit permettre à quelqu'un de reproduire exactement votre environnement réseau depuis zéro. **Regardez l'exemple pour vous inspirer !**
+:::
+
+### Interfaces réseau VirtualBox
+
+Chaque VM dispose de **deux interfaces réseau** dans VirtualBox :
+
+| Interface | Type VirtualBox | Rôle |
+|---|---|---|
+| eth0 (enp0s3) | NAT | Télécharger les images Docker, installer les logiciels et contacter Let's Encrypt |
+| eth1 (enp0s8) | Host-only (`vboxnet0`) | Communication entre la VM et avec la machine hôte |
+
+::: {.callout-note}
+Pourquoi host-only et pas "réseau interne" ? Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l'hôte (192.168.56.1) : on peut ainsi ouvrir https://whoami.example.com dans le navigateur de l'hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.
+
+Réglage VirtualBox : Paramètres de chaque VM → Réseau → Carte 2 → Réseau privé hôte (host-only) → vboxnet0. Si vboxnet0 n'existe pas : Fichier → Outils → Gestionnaire de réseau → Créer.
+:::
+
+::: {.callout-note}
+Pourquoi garder la carte NAT ? Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n'est nécessaire : les enregistrements DNS pointent vers l'IP privée 192.168.56.10, accessible uniquement depuis votre machine.
+:::
+
+
+### Plan d'adressage
+
+| VM | Interface | IP | Masque | Remarque |
+|---|---|---|---|---|
+| vm-proxy | enp0s8 | 192.168.56.10 | /24 | IP fixe — point d'entrée HTTPS |
+| Machine hôte | vboxnet0 | 192.168.56.1 | /24 | Attribuée automatiquement par VirtualBox |
+
+### Configuration des IPs fixes
+
+**Sur vm-proxy**, éditer `/etc/network/interfaces` :
+
+```bash
+nano /etc/network/interfaces
+```
+### Configuration des IPs fixes
+
+**Sur vm-proxy**, éditer `/etc/network/interfaces` :
+
+```bash
+nano /etc/network/interfaces
+```
+
+```
+# Interface NAT — DHCP (laisser tel quel)
+auto enp0s3
+iface enp0s3 inet dhcp
+
+# Interface host-only — IP fixe
+auto enp0s8
+iface enp0s8 inet static
+    address 192.168.56.10
+    netmask 255.255.255.0
+```
+
+```bash
+systemctl restart networking
+
+# Vérifier l'IP
+ip a show enp0s8
+# → inet 192.168.56.10/24 ...
+```
+
+### Vérification de la connectivité
+
+Avant toute installation, vérifier que tout le monde se voit :
+
+```bash
+# Depuis la machine hôte, pinger vm-proxy
+ping -c 3 192.168.56.10
+# → 0% packet loss
+```
+
+::: {.callout-tip}
+**📷 Capture attendue :** sortie des `ping` (vm-proxy et hôte → vm-proxy), montrant 0% de perte.
+:::
+
+::: {.callout-warning}
+**Problème fréquent :** si le ping échoue, vérifier que les deux VMs sont bien attachées au **même réseau host-only** (`vboxnet0`) dans les paramètres VirtualBox (Carte 2), et que les IPs sont bien en `192.168.56.x`.
+:::
+
+
+::: {.callout-tip}
+**Snapshot conseillé :** l'environnement réseau fonctionne — prenez un snapshot "réseau OK" sur chaque VM avant de passer à l'installation.
 :::
 
 

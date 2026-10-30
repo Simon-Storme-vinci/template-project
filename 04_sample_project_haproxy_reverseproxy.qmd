@@ -90,7 +90,7 @@ Chaque VM dispose de **deux interfaces réseau** dans VirtualBox :
 
 ### Configuration des IPs fixes
 
-**Sur vm-proxy et vm-backend**, éditer `/etc/network/interfaces` :
+**Sur vm-proxy**, éditer `/etc/network/interfaces` :
 
 ```bash
 nano /etc/network/interfaces

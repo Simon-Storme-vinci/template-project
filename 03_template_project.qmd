@@ -59,12 +59,15 @@ Décrivez en quelques paragraphes l'objectif du projet, le contexte et la probl�
 :::
 
 ### Objectif
+Ce projet met en place un reverse proxy avec autentification automatique. Nous utiliserons "Let's Encrypt", "Traefik" et Docker.
 
-Décrivez ici l'objectif concret du projet : quel service voulez-vous mettre en place, pour quel usage ?
+Le reverse proxy constitue le point d'entrée unique pour les clients.
+
+Traefik est le point d'entrée unique du serveur : il reçoit les connexions sur les ports 80 et 443, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let's Encrypt qu'il obtient et renouvelle lui-même, sans intervention humaine.
 
 ### Contexte et problématique
 
-Expliquez le problème que résout votre solution. Par exemple : "Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité."
+Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité.
 
 ### Éléments inédits
 

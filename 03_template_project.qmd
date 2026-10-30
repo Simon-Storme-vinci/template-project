@@ -80,13 +80,9 @@ N'a pas été vu au cours :
 |---|---|---|---|---|
 | vm-proxy | Reverse proxy Traefik | Debian 13 | (question prof) |  (question prof) |
 
-::: {.callout-important title="Consigne"}
-Cette section est **obligatoire**. Elle doit permettre à quelqu'un de reproduire exactement votre environnement réseau depuis zéro. **Regardez l'exemple pour vous inspirer !**
-:::
-
 ### Interfaces réseau VirtualBox
 
-Chaque VM dispose de **deux interfaces réseau** dans VirtualBox :
+Chaque VM dispose de **deux interfaces réseaux** dans VirtualBox :
 
 | Interface | Type VirtualBox | Rôle |
 |---|---|---|
@@ -94,13 +90,17 @@ Chaque VM dispose de **deux interfaces réseau** dans VirtualBox :
 | eth1 (enp0s8) | Host-only (`vboxnet0`) | Communication entre la VM et avec la machine hôte |
 
 ::: {.callout-note}
-Pourquoi host-only et pas "réseau interne" ? Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l'hôte (192.168.56.1) : on peut ainsi ouvrir https://whoami.example.com dans le navigateur de l'hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.
+Pourquoi host-only et pas "réseau interne" ? 
+
+Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l'hôte (192.168.56.1) : on peut ainsi ouvrir https://whoami.example.com dans le navigateur de l'hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.
 
 Réglage VirtualBox : Paramètres de chaque VM → Réseau → Carte 2 → Réseau privé hôte (host-only) → vboxnet0. Si vboxnet0 n'existe pas : Fichier → Outils → Gestionnaire de réseau → Créer.
 :::
 
 ::: {.callout-note}
-Pourquoi garder la carte NAT ? Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n'est nécessaire : les enregistrements DNS pointent vers l'IP privée 192.168.56.10, accessible uniquement depuis votre machine.
+Pourquoi garder la carte NAT ? 
+
+Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n'est nécessaire : les enregistrements DNS pointent vers l'IP privée 192.168.56.10, accessible uniquement depuis votre machine.
 :::
 
 
@@ -118,15 +118,8 @@ Pourquoi garder la carte NAT ? Traefik doit contacter, en sortie, les serveurs d
 ```bash
 nano /etc/network/interfaces
 ```
-### Configuration des IPs fixes
 
-**Sur vm-proxy**, éditer `/etc/network/interfaces` :
-
-```bash
-nano /etc/network/interfaces
-```
-
-```
+``` bash
 # Interface NAT — DHCP (laisser tel quel)
 auto enp0s3
 iface enp0s3 inet dhcp
@@ -138,12 +131,19 @@ iface enp0s8 inet static
     netmask 255.255.255.0
 ```
 
-```bash
+Vérifier que le service networking est actif et que la configuration utilise bien ifupdown.
+
+Appliquer la configuration (de préférence depuis la console VirtualBox) :
+
+```bash 
 systemctl restart networking
 
-# Vérifier l'IP
+# Vérifier les addresses IP :
+ip a 
+
+# Vérifier spécifiquement l'interface host-only : 
 ip a show enp0s8
-# → inet 192.168.56.10/24 ...
+# Le résultat attendu est => inet 192.168.56.10/24 ...
 ```
 
 ### Vérification de la connectivité
@@ -151,22 +151,29 @@ ip a show enp0s8
 Avant toute installation, vérifier que tout le monde se voit :
 
 ```bash
-# Depuis la machine hôte, pinger vm-proxy
+# Depuis vm-proxy, tester la communication avec la machine hôte :
+ping -c 3 192.168.56.1
+# Résultat attendu : 3 paquets reçus, 0 % de perte.
+
+# Depuis la machine hôte, pinger vm-proxy.
 ping -c 3 192.168.56.10
-# → 0% packet loss
+# Le résultat attendu est => 3 paquets reçus, 0 % de perte.
+
+# Vérifier l'accès Internet depuis vm-proxy :
+ping -c 3 google.com
+# Cette vérification permet de s'assurer que l'interface NAT fonctionne correctement.
 ```
 
-::: {.callout-tip}
-**📷 Capture attendue :** sortie des `ping` (vm-proxy et hôte → vm-proxy), montrant 0% de perte.
-:::
-
 ::: {.callout-warning}
-**Problème fréquent :** si le ping échoue, vérifier que les deux VMs sont bien attachées au **même réseau host-only** (`vboxnet0`) dans les paramètres VirtualBox (Carte 2), et que les IPs sont bien en `192.168.56.x`.
+Problème fréquent : si le ping échoue, vérifier que la carte 1 de la VM est bien configurée en NAT et que la carte 2 est bien attachée au réseau Host-only (vboxnet0). Vérifier également que l'interface enp0s8 possède bien l'adresse IP 192.168.56.10/24 et que la machine hôte possède une adresse dans le même sous-réseau (192.168.56.0/24).
 :::
 
+::: {.callout-tip}
+📷 Capture attendue : sorties des commandes ping montrant la connectivité entre la VM vm-proxy (192.168.56.10) et la machine hôte (192.168.56.1), avec 0 % de perte de paquets. Ajouter également une capture du ping vers Internet.
+:::
 
 ::: {.callout-tip}
-**Snapshot conseillé :** l'environnement réseau fonctionne — prenez un snapshot "réseau OK" sur chaque VM avant de passer à l'installation.
+Snapshot conseillé : une fois la configuration réseau fonctionnelle et les tests de connectivité réussis, prendre un snapshot VirtualBox nommé « réseau OK » sur la VM vm-proxy, avant de passer à l'installation de Docker et de Traefik.
 :::
 
 

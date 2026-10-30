@@ -6,11 +6,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Prénom Nom">
-<meta name="author" content="Prénom Nom">
-<meta name="author" content="Prénom Nom">
+<meta name="author" content="Tiago LARANJEIRA">
+<meta name="author" content="Adrian KAJEWSKI">
+<meta name="author" content="Aurélien DELFOSSE">
+<meta name="author" content="Simon STORME">
 
-<title>Titre de votre projet</title>
+<title>Revers Proxy avec certificat automatique</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -74,10 +75,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="03_template_project_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="03_template_project_files/libs/quarto-html/anchor.min.js"></script>
 <link href="03_template_project_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="03_template_project_files/libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="03_template_project_files/libs/quarto-html/quarto-syntax-highlighting-dark-6453f418aeef366c23116eb9cb0b6816.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="03_template_project_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="03_template_project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="03_template_project_files/libs/bootstrap/bootstrap-7936759da4b72f2f8f332ba72da18466.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="03_template_project_files/libs/bootstrap/bootstrap-976a99f9fdc2ff04a98a8ebc7fcc9518.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <meta name="mermaid-theme" content="neutral">
 <script src="03_template_project_files/libs/quarto-diagram/mermaid.min.js"></script>
 <script src="03_template_project_files/libs/quarto-diagram/mermaid-init.js"></script>
@@ -100,7 +101,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#contexte-et-problématique" id="toc-contexte-et-problématique" class="nav-link" data-scroll-target="#contexte-et-problématique"><span class="header-section-number">1.2</span> Contexte et problématique</a></li>
   <li><a href="#éléments-inédits" id="toc-éléments-inédits" class="nav-link" data-scroll-target="#éléments-inédits"><span class="header-section-number">1.3</span> Éléments inédits</a></li>
   </ul></li>
-  <li><a href="#configuration-réseau-virtualbox" id="toc-configuration-réseau-virtualbox" class="nav-link" data-scroll-target="#configuration-réseau-virtualbox"><span class="header-section-number">2</span> Configuration réseau VirtualBox</a></li>
+  <li><a href="#configuration-réseau-virtualbox" id="toc-configuration-réseau-virtualbox" class="nav-link" data-scroll-target="#configuration-réseau-virtualbox"><span class="header-section-number">2</span> Configuration réseau VirtualBox</a>
+  <ul class="collapse">
+  <li><a href="#interfaces-réseau-virtualbox" id="toc-interfaces-réseau-virtualbox" class="nav-link" data-scroll-target="#interfaces-réseau-virtualbox"><span class="header-section-number">2.1</span> Interfaces réseau VirtualBox</a></li>
+  <li><a href="#plan-dadressage" id="toc-plan-dadressage" class="nav-link" data-scroll-target="#plan-dadressage"><span class="header-section-number">2.2</span> Plan d’adressage</a></li>
+  <li><a href="#configuration-des-ips-fixes" id="toc-configuration-des-ips-fixes" class="nav-link" data-scroll-target="#configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</a></li>
+  <li><a href="#vérification-de-la-connectivité" id="toc-vérification-de-la-connectivité" class="nav-link" data-scroll-target="#vérification-de-la-connectivité"><span class="header-section-number">2.4</span> Vérification de la connectivité</a></li>
+  </ul></li>
   <li><a href="#architecture" id="toc-architecture" class="nav-link" data-scroll-target="#architecture"><span class="header-section-number">3</span> Architecture</a>
   <ul class="collapse">
   <li><a href="#schéma-darchitecture" id="toc-schéma-darchitecture" class="nav-link" data-scroll-target="#schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</a></li>
@@ -132,8 +139,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Titre de votre projet</h1>
-<p class="subtitle lead">Sous-titre optionnel</p>
+<h1 class="title">Revers Proxy avec certificat automatique</h1>
 </div>
 
 
@@ -143,16 +149,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Auteur·rice·s</div>
     <div class="quarto-title-meta-contents">
-             <p>Prénom Nom </p>
-             <p>Prénom Nom </p>
-             <p>Prénom Nom </p>
+             <p>Tiago LARANJEIRA </p>
+             <p>Adrian KAJEWSKI </p>
+             <p>Aurélien DELFOSSE </p>
+             <p>Simon STORME </p>
           </div>
   </div>
     
     <div>
     <div class="quarto-title-meta-heading">Date de publication</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">15 octobre 2026</p>
+      <p class="date">30 octobre 2026</p>
     </div>
   </div>
   
@@ -164,7 +171,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><strong>Groupe 1</strong></p>
+<p><strong>Groupe 12</strong></p>
 <hr>
 <div class="callout callout-style-default callout-warning callout-titled" title="À lire avant de commencer — puis à supprimer">
 <div class="callout-header d-flex align-content-center">
@@ -202,32 +209,221 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="objectif" class="level3" data-number="1.1">
 <h3 data-number="1.1" class="anchored" data-anchor-id="objectif"><span class="header-section-number">1.1</span> Objectif</h3>
-<p>Décrivez ici l’objectif concret du projet : quel service voulez-vous mettre en place, pour quel usage ?</p>
+<p>Ce projet met en place un reverse proxy avec autentification automatique. Nous utiliserons “Let’s Encrypt”, “Traefik” et Docker.</p>
+<p>Traefik est le point d’entrée unique du serveur et du client : il reçoit les connexions sur les ports 80 et 443, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let’s Encrypt qu’il obtient et renouvelle lui-même, sans intervention humaine.</p>
 </section>
 <section id="contexte-et-problématique" class="level3" data-number="1.2">
 <h3 data-number="1.2" class="anchored" data-anchor-id="contexte-et-problématique"><span class="header-section-number">1.2</span> Contexte et problématique</h3>
-<p>Expliquez le problème que résout votre solution. Par exemple : “Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité.”</p>
+<p>Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité. L’automatisation de certificats permet de ne plus se soucier de l’expiration, mais une supervision reste utile comme filet de sécurité.</p>
 </section>
 <section id="éléments-inédits" class="level3" data-number="1.3">
 <h3 data-number="1.3" class="anchored" data-anchor-id="éléments-inédits"><span class="header-section-number">1.3</span> Éléments inédits</h3>
-<p>Décrivez précisément le(s) élément(s) <strong>totalement inédit</strong> de votre projet par rapport au cours.</p>
+<p>(Demander au prof)!!!! N’a pas été vu au cours : Treafik Let’s encrypt</p>
 </section>
 </section>
 <section id="configuration-réseau-virtualbox" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="configuration-réseau-virtualbox"><span class="header-section-number">2</span> Configuration réseau VirtualBox</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Nom de la VM</th>
+<th>Rôle</th>
+<th>OS</th>
+<th>RAM allouée</th>
+<th>Disque</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>vm-proxy</td>
+<td>Reverse proxy Traefik</td>
+<td>Debian 13</td>
+<td>(question prof)</td>
+<td>(question prof)</td>
+</tr>
+</tbody>
+</table>
+<section id="interfaces-réseau-virtualbox" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="interfaces-réseau-virtualbox"><span class="header-section-number">2.1</span> Interfaces réseau VirtualBox</h3>
+<p>Chaque VM dispose de <strong>deux interfaces réseaux</strong> dans VirtualBox :</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Interface</th>
+<th>Type VirtualBox</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>eth0 (enp0s3)</td>
+<td>NAT</td>
+<td>Télécharger les images Docker, installer les logiciels et contacter Let’s Encrypt</td>
+</tr>
+<tr class="even">
+<td>eth1 (enp0s8)</td>
+<td>Host-only (<code>vboxnet0</code>)</td>
+<td>Communication entre la VM et avec la machine hôte</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Consigne
+Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Cette section est <strong>obligatoire</strong>. Elle doit permettre à quelqu’un de reproduire exactement votre environnement réseau depuis zéro. <strong>Regardez l’exemple pour vous inspirer !</strong></p>
+<p>Pourquoi host-only et pas “réseau interne” ?</p>
+<p>Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l’hôte (192.168.56.1) : on peut ainsi ouvrir https://whoami.example.com dans le navigateur de l’hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.</p>
+<p>Réglage VirtualBox : Paramètres de chaque VM → Réseau → Carte 2 → Réseau privé hôte (host-only) → vboxnet0. Si vboxnet0 n’existe pas : Fichier → Outils → Gestionnaire de réseau → Créer.</p>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pourquoi garder la carte NAT ?</p>
+<p>Traefik doit contacter, en sortie, les serveurs de Let’s Encrypt et l’API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n’est nécessaire : les enregistrements DNS pointent vers l’IP privée 192.168.56.10, accessible uniquement depuis votre machine.</p>
+</div>
+</div>
+</section>
+<section id="plan-dadressage" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="plan-dadressage"><span class="header-section-number">2.2</span> Plan d’adressage</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>VM</th>
+<th>Interface</th>
+<th>IP</th>
+<th>Masque</th>
+<th>Remarque</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>vm-proxy</td>
+<td>enp0s8</td>
+<td>192.168.56.10</td>
+<td>/24</td>
+<td>IP fixe — point d’entrée HTTPS</td>
+</tr>
+<tr class="even">
+<td>Machine hôte</td>
+<td>vboxnet0</td>
+<td>192.168.56.1</td>
+<td>/24</td>
+<td>Attribuée automatiquement par VirtualBox</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="configuration-des-ips-fixes" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</h3>
+<p><strong>Sur vm-proxy</strong>, éditer <code>/etc/network/interfaces</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /etc/network/interfaces</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface NAT — DHCP (laisser tel quel)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">auto</span> enp0s3</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">iface</span> enp0s3 inet dhcp</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface host-only — IP fixe</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">auto</span> enp0s8</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">iface</span> enp0s8 inet static</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">address</span> 192.168.56.10</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">netmask</span> 255.255.255.0</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Vérifier que le service networking est actif et que la configuration utilise bien ifupdown.</p>
+<p>Appliquer la configuration (de préférence depuis la console VirtualBox) :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> restart networking</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier les addresses IP :</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier spécifiquement l'interface host-only : </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a show enp0s8</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Le résultat attendu est =&gt; inet 192.168.56.10/24 ...</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="vérification-de-la-connectivité" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="vérification-de-la-connectivité"><span class="header-section-number">2.4</span> Vérification de la connectivité</h3>
+<p>Avant toute installation, vérifier que tout le monde se voit :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis vm-proxy, tester la communication avec la machine hôte :</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.1</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Résultat attendu : 3 paquets reçus, 0 % de perte.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis la machine hôte, pinger vm-proxy.</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.10</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Le résultat attendu est =&gt; 3 paquets reçus, 0 % de perte.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier l'accès Internet depuis vm-proxy :</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 google.com</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Cette vérification permet de s'assurer que l'interface NAT fonctionne correctement.</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Avertissement
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Problème fréquent : si le ping échoue, vérifier que la carte 1 de la VM est bien configurée en NAT et que la carte 2 est bien attachée au réseau Host-only (vboxnet0). Vérifier également que l’interface enp0s8 possède bien l’adresse IP 192.168.56.10/24 et que la machine hôte possède une adresse dans le même sous-réseau (192.168.56.0/24).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Astuce
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>📷 Capture attendue : sorties des commandes ping montrant la connectivité entre la VM vm-proxy (192.168.56.10) et la machine hôte (192.168.56.1), avec 0 % de perte de paquets. Ajouter également une capture du ping vers Internet.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Astuce
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Snapshot conseillé : une fois la configuration réseau fonctionnelle et les tests de connectivité réussis, prendre un snapshot VirtualBox nommé « réseau OK » sur la VM vm-proxy, avant de passer à l’installation de Docker et de Traefik.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="architecture" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="architecture"><span class="header-section-number">3</span> Architecture</h2>
@@ -367,15 +563,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="titre-de-létape-sur-vm-xxx" class="level3" data-number="5.2">
 <h3 data-number="5.2" class="anchored" data-anchor-id="titre-de-létape-sur-vm-xxx"><span class="header-section-number">5.2</span> [Titre de l’étape] (sur vm-xxx)</h3>
 <p><strong>Pourquoi :</strong> expliquez en une phrase le rôle de cette étape dans la solution globale.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commandes à exécuter sur vm-xxx</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> update <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> upgrade <span class="at">-y</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> paquet1 paquet2</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commandes à exécuter sur vm-xxx</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> update <span class="kw">&amp;&amp;</span> <span class="ex">apt</span> upgrade <span class="at">-y</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install <span class="at">-y</span> paquet1 paquet2</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="titre-de-létape-sur-vm-yyy" class="level3" data-number="5.3">
 <h3 data-number="5.3" class="anchored" data-anchor-id="titre-de-létape-sur-vm-yyy"><span class="header-section-number">5.3</span> [Titre de l’étape] (sur vm-yyy)</h3>
 <p><strong>Pourquoi :</strong> …</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commandes à exécuter sur vm-yyy</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commandes à exécuter sur vm-yyy</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="titre-de-létape" class="level3" data-number="5.4">
 <h3 data-number="5.4" class="anchored" data-anchor-id="titre-de-létape"><span class="header-section-number">5.4</span> [Titre de l’étape]</h3>
@@ -458,9 +654,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="test-1-titre" class="level3" data-number="6.2">
 <h3 data-number="6.2" class="anchored" data-anchor-id="test-1-titre"><span class="header-section-number">6.2</span> Test 1 — [Titre]</h3>
 <p>Description du test et de ce qu’il valide.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commande de test</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">commande</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → Sortie obtenue (copier-coller la vraie sortie ici)</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commande de test</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">commande</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → Sortie obtenue (copier-coller la vraie sortie ici)</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

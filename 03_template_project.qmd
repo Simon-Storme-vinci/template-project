@@ -229,6 +229,7 @@ flowchart TD
 Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n'est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 80 (HTTP) et 443 (HTTPS).
 
 La VM vm-proxy dispose également d'une interface NAT pour accéder à Internet, notamment pour télécharger les images Docker et communiquer avec Let's Encrypt.
+:::
 
 
 ## Diagramme au choix
@@ -255,10 +256,21 @@ sequenceDiagram
 Expliquez le diagramme en quelques lignes : que représente-t-il, comment le lire, qu'apprend-on de plus par rapport au schéma d'architecture ?
 
 
+Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante: lire de haut en bas en suivant le chemin que montre les flèches.
+Il permet de comprendre les différente étapes dans un ordre précis, ce que ne fait pas le schéma d'architecture et met en évidence trois éléments importants :
+
+La terminaison TLS est assurée par Traefik : la connexion entre le navigateur et Traefik est chiffrée en HTTPS. Traefik déchiffre la requête avant de la transmettre au conteneur Nginx en HTTP sur le réseau Docker interne.
+
+L'équilibrage de charge est assuré par Traefik : lorsqu'une requête arrive, Traefik la dirige vers l'un des trois conteneurs Nginx disponibles. Cela permet de répartir les requêtes entre plusieurs serveurs web.
+
+Les informations du client sont transmises aux servers NGINX : Traefik ajoute notamment les en-têtes X-Forwarded-For et X-Forwarded-Proto, qui permettent aux serveurs web de connaître l'adresse IP du client et le protocole utilisé à l'origine.
+
+Ainsi, ce diagramme illustre le fonctionnement du reverse proxy, la terminaison TLS et la répartition de charge entre les trois conteneurs web
+
 ## Installation et déploiement
 
 ::: {.callout-important title="Consigne"}
-Décrivez la procédure **complète et reproductible**, étape par étape, sur Debian 12. Pour chaque étape :
+Décrivez la procédure **complète et reproductible**, étape par étape, sur Debian 13. Pour chaque étape :
 
 - indiquez sur **quelle VM** les commandes s'exécutent ;
 - expliquez en une phrase **pourquoi cette étape est nécessaire** (ligne "Pourquoi") — c'est ce qui distingue une documentation comprise d'un copier-coller ;
@@ -269,21 +281,136 @@ Les commandes doivent avoir été testées et fonctionner telles quelles.
 
 ### Prérequis
 
-- [ ] VMs créées et configurées selon la section "Configuration réseau VirtualBox"
-- [ ] Connectivité vérifiée (ping VM↔VM et hôte→VM)
-- [ ] Snapshot VirtualBox "état initial" pris sur chaque VM
-- [ ] Accès root ou sudo sur toutes les VMs
-- [ ] Mises à jour système effectuées (`apt update && apt upgrade -y`)
+- [ ] VM vm-proxy créée et configurée selon la section « Configuration réseau VirtualBox ».
+- [ ] Deux interfaces réseau configurées :
+- [ ] Carte 1 : NAT pour l'accès à Internet.
+- [ ] Carte 2 : Host-only (vboxnet0) avec l'adresse IP 192.168.56.10.
+- [ ] Ping fonctionnel entre la VM vm-proxy et la machine hôte (192.168.56.1).
+- [ ] Accès à Internet fonctionnel depuis la VM.
+- [ ] Snapshot VirtualBox « réseau OK » pris sur la VM vm-proxy.
+- [ ] Accès administrateur (root ou utilisateur avec sudo) sur la VM.
+- [ ] Système Debian 13 mis à jour (`sudo apt update && sudo apt upgrade -y`)
+- [ ] Docker installé et fonctionnel. (QUESTION PROF !!!!)
+- [ ] Docker Compose disponible.(QUESTION PROF !!!!)
+- [ ] Les ports 80 et 443 disponibles pour Traefik (on acces à internet depuis la VM).
 
-### [Titre de l'étape] (sur vm-xxx)
+### Installation et configuration des serveurs web Nginx (sur vm-proxy)
 
-**Pourquoi :** expliquez en une phrase le rôle de cette étape dans la solution globale.
+**Pourquoi :** Les serveurs web Nginx permettent d'héberger notre site HTML et de rendre son contenu accessible aux utilisateurs. Dans notre projet, nous allons déployer trois conteneurs Docker indépendants utilisant l'image officielle Nginx. Chaque conteneur hébergera une copie du même site web.
+
+Traefik jouera le rôle de reverse proxy et répartira les requêtes entre ces trois serveurs web afin de mettre en évidence le fonctionnement de l'équilibrage de charge.
+
+#### Installation Docker
+
+**Pourquoi :** Installe Docker pour son utilisation avec la suppression d'ancienne version potentielle.
+
+##### Supprimer éventuellement une ancienne version de docker :
 
 ```bash
-# Commandes à exécuter sur vm-xxx
-apt update && apt upgrade -y
-apt install -y paquet1 paquet2
+for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove $pkg; done
 ```
+
+Ajouter le dépôt Docker :
+
+##### Add Docker's official GPG key:
+
+```bash
+apt-get update
+apt-get install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+```
+
+##### Add the repository to Apt sources:
+```bash
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+```
+
+##### Installer Docker et ses outils :
+
+```bash
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+Vérification de l’installation :
+```bash
+docker run hello-world
+```
+
+#### Préparer les fichiers du site web
+
+Nous allons récupérer le code source d'un site HTML existant et placer ses fichiers dans un répertoire sur la VM.
+
+Exemple d'organisation :
+```text
+projet-proxy/
+└── site/
+    ├── index.html
+    ├── css/
+    ├── js/
+    └── images/
+```
+
+Créer le réseau Docker interne, ce réseau permettra à Traefik de communiquer avec les trois conteneurs Nginx.
+```bash
+docker network create proxy
+```
+
+Télécharger l'image officielle Nginx
+```bash
+docker pull nginx:alpine
+```
+
+#### Démarrer les trois conteneurs Nginx
+
+Chaque conteneur utilise le même dossier contenant les fichiers du site HTML.
+
+```bash
+docker run -d \
+  --name nginx1 \
+  --network proxy \
+  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
+  nginx:alpine
+
+docker run -d \
+  --name nginx2 \
+  --network proxy \
+  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
+  nginx:alpine
+
+docker run -d \
+  --name nginx3 \
+  --network proxy \
+  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
+  nginx:alpine
+```
+
+#### Vérifier le fonctionnement des conteneurs
+**Pourquoi :** Permet de vérifier que les conteneurs on bien été créés et fonctionnent.
+
+Vérifier que les trois conteneurs sont bien démarrés :
+
+```bash
+docker ps
+```
+
+Tester ensuite l'accès au site depuis chaque conteneur :
+
+```bash
+docker exec nginx1 wget -qO- http://localhost/
+docker exec nginx2 wget -qO- http://localhost/
+docker exec nginx3 wget -qO- http://localhost/
+```
+
+Chaque commande doit retourner le contenu HTML du site.
+
+::: {.callout-note}
+Les trois conteneurs Nginx écoutent sur le port 80 de leur réseau Docker interne. Aucun port web n'est directement publié sur la VM : les requêtes provenant de la machine hôte passent obligatoirement par Traefik.
+:::
 
 ### [Titre de l'étape] (sur vm-yyy)
 

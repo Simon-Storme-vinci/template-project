@@ -69,7 +69,6 @@ Traefik est le point d'entrée unique du serveur et du client : il reçoit les c
 Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité. L'automatisation de certificats permet de ne plus se soucier de l'expiration, mais une supervision reste utile comme filet de sécurité.
 
 ### Éléments inédits
-(Demander au prof)!!!!
 N'a pas été vu au cours : 
     Treafik 
     Let's encrypt
@@ -78,7 +77,7 @@ N'a pas été vu au cours :
 ## Configuration réseau VirtualBox
 | Nom de la VM | Rôle | OS | RAM allouée | Disque |
 |---|---|---|---|---|
-| vm-proxy | Reverse proxy Traefik | Debian 13 | (question prof) |  (question prof) |
+| vm-proxy | Reverse proxy Traefik | Debian 13 | 2G | 120G auto |
 
 ### Interfaces réseau VirtualBox
 
@@ -193,8 +192,8 @@ flowchart TD
         subgraph DOCKER["Réseau Docker interne"]
             direction LR
             W1["Conteneur Nginx 1<br/>Site HTML<br/>Port : 80"]
-            W2["Conteneur Nginx 2<br/>Site HTML<br/>Port : 80"]
-            W3["Conteneur Nginx 3<br/>Site HTML<br/>Port : 80"]
+            W2["Conteneur Nginx 2<br/>Site HTML<br/>Port : 81"]
+            W3["Conteneur Nginx 3<br/>Site HTML<br/>Port : 82"]
         end
 
         P -->|"HTTP : 80"| W1
@@ -290,8 +289,8 @@ Les commandes doivent avoir été testées et fonctionner telles quelles.
 - [ ] Snapshot VirtualBox « réseau OK » pris sur la VM vm-proxy.
 - [ ] Accès administrateur (root ou utilisateur avec sudo) sur la VM.
 - [ ] Système Debian 13 mis à jour (`sudo apt update && sudo apt upgrade -y`)
-- [ ] Docker installé et fonctionnel. (QUESTION PROF !!!!)
-- [ ] Docker Compose disponible.(QUESTION PROF !!!!)
+- [ ] Docker installé et fonctionnel. (QUESTION PROF ==> on peut supposer que la personne qui lit sais comment installer docker car c'est le prof qui lira notre projet. Donc pas utile de dire comment installer Docker et Docker compose)
+- [ ] Docker Compose disponible. (IDEM)
 - [ ] Les ports 80 et 443 disponibles pour Traefik (on acces à internet depuis la VM).
 
 ### Installation et configuration des serveurs web Nginx (sur vm-proxy)

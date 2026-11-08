@@ -241,15 +241,21 @@ Choisissez un type de diagramme **pertinent et différent** du schéma d'archite
 sequenceDiagram
     participant C as Client (hôte 192.168.56.1)
     participant T as vm-proxy (Traefik)
+    participant LE as Let's Encrypt (ACME)
     participant N as Conteneur Nginx (Docker)
 
-    C->>T: HTTPS GET / (connexion TLS)
+    Note over T,LE: Étape 1 : Génération automatique du certificat (Initialisation / Renouvellement)
+    T->>LE: Demande de certificat (Requête ACME / Défi)
+    LE-->>T: Validation et délivrance du certificat SSL/TLS
+
+    Note over C,T: Étape 2 : Requête client et terminaison TLS
+    C->>T: HTTPS GET / (Établissement TLS avec le certificat Let's Encrypt)
     Note over T: Terminaison TLS<br/>Déchiffrement de la requête
-    Note over T: Sélection du service<br/>et du conteneur disponible
+    Note over T: Sélection du service<br/>et routage vers le conteneur
     T->>N: HTTP GET /<br/>+ X-Forwarded-For<br/>+ X-Forwarded-Proto: https
-    Note over N: Recherche et envoi<br/>du fichier HTML
+    Note over N: Traitement et envoi<br/>du fichier HTML
     N-->>T: HTTP 200 OK (page HTML)
-    T-->>C: HTTPS 200 OK (page HTML)
+    T-->>C: HTTPS 200 OK (page HTML chiffrée)
 ```
 
 Expliquez le diagramme en quelques lignes : que représente-t-il, comment le lire, qu'apprend-on de plus par rapport au schéma d'architecture ?
@@ -289,8 +295,8 @@ Les commandes doivent avoir été testées et fonctionner telles quelles.
 - [ ] Snapshot VirtualBox « réseau OK » pris sur la VM vm-proxy.
 - [ ] Accès administrateur (root ou utilisateur avec sudo) sur la VM.
 - [ ] Système Debian 13 mis à jour (`sudo apt update && sudo apt upgrade -y`)
-- [ ] Docker installé et fonctionnel. (QUESTION PROF ==> on peut supposer que la personne qui lit sais comment installer docker car c'est le prof qui lira notre projet. Donc pas utile de dire comment installer Docker et Docker compose)
-- [ ] Docker Compose disponible. (IDEM)
+- [ ] Docker installé et fonctionnel.
+- [ ] Docker Compose disponible.
 - [ ] Les ports 80 et 443 disponibles pour Traefik (on acces à internet depuis la VM).
 
 ### Installation et configuration des serveurs web Nginx (sur vm-proxy)
@@ -298,47 +304,6 @@ Les commandes doivent avoir été testées et fonctionner telles quelles.
 **Pourquoi :** Les serveurs web Nginx permettent d'héberger notre site HTML et de rendre son contenu accessible aux utilisateurs. Dans notre projet, nous allons déployer trois conteneurs Docker indépendants utilisant l'image officielle Nginx. Chaque conteneur hébergera une copie du même site web.
 
 Traefik jouera le rôle de reverse proxy et répartira les requêtes entre ces trois serveurs web afin de mettre en évidence le fonctionnement de l'équilibrage de charge.
-
-#### Installation Docker
-
-**Pourquoi :** Installe Docker pour son utilisation avec la suppression d'ancienne version potentielle.
-
-##### Supprimer éventuellement une ancienne version de docker :
-
-```bash
-for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove $pkg; done
-```
-
-Ajouter le dépôt Docker :
-
-##### Add Docker's official GPG key:
-
-```bash
-apt-get update
-apt-get install ca-certificates curl
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-```
-
-##### Add the repository to Apt sources:
-```bash
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt-get update
-```
-
-##### Installer Docker et ses outils :
-
-```bash
-apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-Vérification de l’installation :
-```bash
-docker run hello-world
-```
 
 #### Préparer les fichiers du site web
 

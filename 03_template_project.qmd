@@ -111,6 +111,14 @@ Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de vot
 | Machine hôte | vboxnet0 | 192.168.56.1 | /24 | Attribuée automatiquement par VirtualBox |
 
 ### Configuration des IPs fixes
+Avant de lancer la débiane: 
+  1. Click droit sur la debian
+  2. Sélectionner "Configuration"
+  3. Aller dans "Réseau"
+  4. Aller dans "Adaptater 2", puis cochez la case "Activer l'interface réseau" tout en haut.
+  5. Dans le menu déroulant "Attached to" (Rattaché à), sélectionnez "Host-only Adapter" (Réseau privé hôte).
+  6. Dans le champ "Name" qui va alors s'éclairer et devenir cliquable, sélectionnez vboxnet0.
+  7. Cliquez sur OK en bas pour valider.
 
 **Sur vm-proxy**, éditer `/etc/network/interfaces` :
 
@@ -139,6 +147,8 @@ systemctl restart networking
 
 # Vérifier les addresses IP :
 ip a 
+
+======> on est ici
 
 # Vérifier spécifiquement l'interface host-only : 
 ip a show enp0s8
@@ -376,14 +386,145 @@ Chaque commande doit retourner le contenu HTML du site.
 Les trois conteneurs Nginx écoutent sur le port 80 de leur réseau Docker interne. Aucun port web n'est directement publié sur la VM : les requêtes provenant de la machine hôte passent obligatoirement par Traefik.
 :::
 
-### [Titre de l'étape] (sur vm-yyy)
+#### Génération du certificat TLS (sur vm-proxy)
+**Pourquoi :** Cette étape permet de sécuriser les communications entre les utilisateurs et les serveurs web grâce au protocole HTTPS. Traefik utilise Let's Encrypt pour obtenir automatiquement un certificat TLS valide et le renouveler avant expiration, sans intervention manuelle.
 
-**Pourquoi :** ...
-
+Préparer le stockage des certificats
+Créer un répertoire dédié à Traefik et au stockage des certificats :
 ```bash
-# Commandes à exécuter sur vm-yyy
-...
+mkdir -p ~/projet-proxy/traefik
+touch ~/projet-proxy/traefik/acme.json
+chmod 600 ~/projet-proxy/traefik/acme.json
 ```
+
+Vérification :
+```bash
+ls -l ~/projet-proxy/traefik/acme.json
+```
+
+Résultat attendu :
+```text
+-rw------- 1 user user 0 ... acme.json
+```
+
+Démarrer Traefik avec la gestion automatique des certificats
+Créer le fichier docker-compose.yml :
+```bash
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+
+      - --certificatesresolvers.le.acme.email=votre-email@example.com
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/acme.json:/letsencrypt/acme.json
+
+    networks:
+      - proxy
+
+
+networks:
+  proxy:
+    external: true
+```
+
+Démarrer Traefik :
+```bash
+docker compose up -d
+```
+
+Vérification :
+```bash
+docker ps
+```
+
+Résultat attendu :
+```text
+CONTAINER ID   IMAGE          NAMES
+xxxxxxxxxxxx   traefik:v3.0   traefik
+```
+
+### Associer les conteneurs Nginx à Traefik
+Chaque conteneur doit être déclaré auprès de Traefik à l'aide de labels Docker.
+
+Exemple pour un conteneur :
+```bash
+docker run -d \
+  --name nginx1 \
+  --network proxy \
+  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
+  -l traefik.enable=true \
+  -l traefik.http.routers.site.rule="Host(`site.example.com`)" \
+  -l traefik.http.routers.site.entrypoints=websecure \
+  -l traefik.http.routers.site.tls.certresolver=le \
+  nginx:alpine
+```
+
+Pourquoi :
+Les labels Docker permettent à Traefik de détecter automatiquement le conteneur et de demander un certificat Let's Encrypt pour le nom de domaine associé.
+
+### Vérifier l'obtention du certificat
+Afficher les journaux de Traefik :
+```bash
+docker logs traefik
+```
+
+Résultat attendu :
+```text
+Obtaining ACME certificate for site.example.com
+Server responded with a certificate
+```
+
+Vérifier également que le certificat a bien été stocké :
+```bash
+cat ~/projet-proxy/traefik/acme.json
+```
+
+Résultat attendu :
+```json
+{
+  "letsencrypt": {
+    ...
+  }
+}
+```
+
+### Tester l'accès HTTPS
+Depuis la machine hôte :
+```bash
+curl -I https://site.example.com
+```
+
+Résultat attendu :
+```text
+HTTP/2 200
+server: nginx
+```
+
+Le site doit également être accessible depuis un navigateur à l'adresse :
+
+<https://site.example.com>
+
+Le cadenas HTTPS doit apparaître dans la barre d'adresse, indiquant que le certificat Let's Encrypt est valide.
+
+::: {.callout-note} Lors du premier démarrage, Traefik contacte automatiquement les serveurs Let's Encrypt via l'interface NAT de la machine virtuelle. Une fois le certificat obtenu, celui-ci est enregistré dans le fichier acme.json. Son renouvellement sera ensuite réalisé automatiquement par Traefik avant expiration. :::
 
 ### [Titre de l'étape]
 

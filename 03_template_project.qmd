@@ -1,5 +1,5 @@
 ---
-title: "Revers Proxy avec certificat automatique"
+title: "Reverse Proxy avec certificat automatique"
 author:
   - name: "Tiago LARANJEIRA"
   - name: "Adrian KAJEWSKI"
@@ -161,10 +161,10 @@ Avant toute installation, vérifier que tout le monde se voit :
 
 ```bash
 # Depuis vm-proxy, tester la communication avec la machine hôte :
-ping -c 3 192.168.56.1
+ping -c 3 192.168.56.1 => ne fonctionne pas DEMANDER PROF !!!!!
 # Résultat attendu : 3 paquets reçus, 0 % de perte.
 
-# Depuis la machine hôte, pinger vm-proxy.
+# Depuis la machine hôte(terminal du pc), pinger vm-proxy.
 ping -c 3 192.168.56.10
 # Le résultat attendu est => 3 paquets reçus, 0 % de perte.
 
@@ -186,7 +186,7 @@ Snapshot conseillé : une fois la configuration réseau fonctionnelle et les tes
 :::
 
 
-## Architecture (DEMANDER AU PROF !!!!!!)
+## Architecture
 
 ### Schéma d'architecture
 
@@ -296,83 +296,323 @@ Les commandes doivent avoir été testées et fonctionner telles quelles.
 
 ### Prérequis
 
-- [ ] VM vm-proxy créée et configurée selon la section « Configuration réseau VirtualBox ».
-- [ ] Deux interfaces réseau configurées :
+Avant de commencer, vérifier que les éléments suivants sont opérationnels :
+
+- [ ] VM `vm-proxy` créée et configurée selon la section « Configuration réseau VirtualBox ».
 - [ ] Carte 1 : NAT pour l'accès à Internet.
-- [ ] Carte 2 : Host-only (vboxnet0) avec l'adresse IP 192.168.56.10.
-- [ ] Ping fonctionnel entre la VM vm-proxy et la machine hôte (192.168.56.1).
-- [ ] Accès à Internet fonctionnel depuis la VM.
-- [ ] Snapshot VirtualBox « réseau OK » pris sur la VM vm-proxy.
-- [ ] Accès administrateur (root ou utilisateur avec sudo) sur la VM.
-- [ ] Système Debian 13 mis à jour (`sudo apt update && sudo apt upgrade -y`)
+- [ ] Carte 2 : Host-only (`vboxnet0`) avec l'adresse IP `192.168.56.10`.
+- [ ] Ping fonctionnel entre la VM et la machine hôte.
+- [ ] Accès Internet fonctionnel depuis la VM.
+- [ ] Snapshot VirtualBox « réseau OK » effectué.
+- [ ] Accès administrateur sur la VM.
+- [ ] Debian 13 mis à jour.
 - [ ] Docker installé et fonctionnel.
 - [ ] Docker Compose disponible.
-- [ ] Les ports 80 et 443 disponibles pour Traefik (on acces à internet depuis la VM).
 
-### Installation et configuration des serveurs web Nginx (sur vm-proxy)
+Vérifier que Docker et Docker Compose fonctionnent :
 
-**Pourquoi :** Les serveurs web Nginx permettent d'héberger notre site HTML et de rendre son contenu accessible aux utilisateurs. Dans notre projet, nous allons déployer trois conteneurs Docker indépendants utilisant l'image officielle Nginx. Chaque conteneur hébergera une copie du même site web.
+```bash
+docker --version
+docker compose version
+```
 
-Traefik jouera le rôle de reverse proxy et répartira les requêtes entre ces trois serveurs web afin de mettre en évidence le fonctionnement de l'équilibrage de charge.
+Les deux commandes doivent afficher leurs versions respectives.
 
-#### Préparer les fichiers du site web
+### Préparation de l'environnement Docker (sur vm-proxy)
 
-Nous allons récupérer le code source d'un site HTML existant et placer ses fichiers dans un répertoire sur la VM.
+**Pourquoi :** nous allons utiliser Docker Compose pour déployer et gérer les différents services du projet depuis un seul fichier de configuration. Cela permet de centraliser la configuration de Traefik et des trois serveurs Nginx et de faciliter leur démarrage et leur arrêt.
 
-Exemple d'organisation :
+Créer le répertoire du projet :
+
+```bash
+mkdir -p ~/projet-proxy
+cd ~/projet-proxy
+```
+
+Créer les répertoires nécessaires :
+
+```bash
+mkdir -p site/nginx1
+mkdir -p site/nginx2
+mkdir -p site/nginx3
+
+mkdir -p traefik/dynamic
+mkdir -p letsencrypt
+```
+
+L'organisation du projet sera la suivante :
+
 ```text
 projet-proxy/
-└── site/
-    ├── index.html
-    ├── css/
-    ├── js/
-    └── images/
+├── docker-compose.yml
+├── .env
+├── site/
+│   ├── nginx1/
+│   │   └── index.html
+│   ├── nginx2/
+│   │   └── index.html
+│   └── nginx3/
+│       └── index.html
+├── traefik/
+│   └── dynamic/
+│       └── dynamic.yml
+└── letsencrypt/
+    └── acme.json
 ```
 
-Créer le réseau Docker interne, ce réseau permettra à Traefik de communiquer avec les trois conteneurs Nginx.
+### Installation et préparation des serveurs web Nginx (sur vm-proxy)
+
+**Pourquoi :** les serveurs web Nginx permettent d'héberger notre site HTML. Nous allons créer trois conteneurs indépendants afin de démontrer l'équilibrage de charge réalisé par Traefik. Chaque conteneur hébergera une version du site permettant de l'identifier pendant les tests.
+
+Pour commencer, créer une page HTML dans chaque répertoire.
+
+**Sur vm-proxy :**
+
 ```bash
-docker network create proxy
+cat > site/nginx1/index.html << 'EOF'
+<h1>Bienvenue sur le serveur Nginx 1</h1>
+EOF
+
+cat > site/nginx2/index.html << 'EOF'
+<h1>Bienvenue sur le serveur Nginx 2</h1>
+EOF
+
+cat > site/nginx3/index.html << 'EOF'
+<h1>Bienvenue sur le serveur Nginx 3</h1>
+EOF
 ```
 
-Télécharger l'image officielle Nginx
+Ces pages sont volontairement différentes afin de pouvoir identifier le serveur ayant répondu à chaque requête.
+
+Télécharger l'image officielle Nginx :
+
 ```bash
 docker pull nginx:alpine
 ```
 
-#### Démarrer les trois conteneurs Nginx
-
-Chaque conteneur utilise le même dossier contenant les fichiers du site HTML.
+**Vérification :**
 
 ```bash
-docker run -d \
-  --name nginx1 \
-  --network proxy \
-  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
-  nginx:alpine
-
-docker run -d \
-  --name nginx2 \
-  --network proxy \
-  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
-  nginx:alpine
-
-docker run -d \
-  --name nginx3 \
-  --network proxy \
-  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
-  nginx:alpine
+docker images
 ```
 
-#### Vérifier le fonctionnement des conteneurs
-**Pourquoi :** Permet de vérifier que les conteneurs on bien été créés et fonctionnent.
+L'image `nginx:alpine` doit apparaître dans la liste.
 
-Vérifier que les trois conteneurs sont bien démarrés :
+### Configuration de Traefik et de Let's Encrypt (sur vm-proxy)
+
+**Pourquoi :** Traefik constitue le cœur de notre projet. Il reçoit les connexions HTTP et HTTPS, sélectionne le serveur web correspondant au nom de domaine demandé et assure la terminaison TLS. Il communique également avec Let's Encrypt pour obtenir et renouveler automatiquement les certificats.
+
+Dans notre projet, nous utilisons le challenge DNS-01 de Let's Encrypt. Celui-ci permet de valider notre nom de domaine grâce à un enregistrement DNS TXT, sans devoir exposer directement notre VM sur Internet.
+
+<!-- A supprimer!!!!!!! 
+#### Préparer les identifiants Cloudflare
+
+Créer un jeton API Cloudflare disposant des autorisations suivantes :
+
+- Zone : DNS : Edit.
+- Zone : Zone : Read.
+
+Créer ensuite le fichier `.env` à la racine du projet :
+
+```bash
+nano .env
+```
+
+Y ajouter les informations suivantes en remplaçant les valeurs d'exemple :
+
+```env
+ACME_EMAIL=adresse@example.com
+CF_DNS_API_TOKEN=VOTRE_TOKEN_CLOUDFLARE
+```
+
+Ce fichier contient des informations sensibles. Il ne doit pas être partagé publiquement ni ajouté à un dépôt Git.
+
+Protéger le fichier :
+
+```bash
+chmod 600 .env
+``` -->
+
+#### Préparer le stockage des certificats
+
+Créer le fichier qui permettra à Traefik de conserver les certificats obtenus auprès de Let's Encrypt :
+
+```bash
+touch letsencrypt/acme.json
+chmod 600 letsencrypt/acme.json
+```
+
+Ce fichier permet à Traefik de conserver les certificats et les informations ACME nécessaires à leur renouvellement automatique.
+
+#### Configurer les serveurs web dans Traefik
+
+Créer le fichier de configuration dynamique :
+
+```bash
+nano traefik/dynamic/dynamic.yml
+```
+
+Ajouter le contenu suivant en remplaçant `site.votre-domaine.be` par votre véritable nom de domaine :
+
+```yaml
+http:
+  routers:
+    site:
+      rule: "Host(`site.votre-domaine.be`)"
+      entryPoints:
+        - websecure
+      service: nginx-servers
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    nginx-servers:
+      loadBalancer:
+        servers:
+          - url: "http://nginx1:80"
+          - url: "http://nginx2:80"
+          - url: "http://nginx3:80"
+```
+
+Cette configuration indique à Traefik que les requêtes HTTPS destinées au domaine choisi doivent être transmises aux trois serveurs Nginx.
+
+Traefik utilise automatiquement un équilibrage de charge de type round-robin : les requêtes sont réparties entre les serveurs disponibles.
+
+#### Configurer Traefik dans Docker Compose
+
+Créer le fichier principal de déploiement :
+
+```bash
+nano docker-compose.yml
+```
+
+Ajouter la configuration suivante en remplaçant `votre.mail@outlook.com` par un mail que vous possédez et  `site.votre-domaine.be` par votre véritable nom de domaine :
+
+```yaml
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: unless-stopped
+    environment:
+      - DOCKER_API_VERSION=1.40
+    ports:
+      - "8080:80"
+      - "8443:443"
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.email=test.mail@outlook.com
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt/acme.json:/letsencrypt/acme.json
+    networks:
+      - proxy
+
+
+  nginx1:
+    image: nginx:alpine
+    container_name: nginx1
+    restart: unless-stopped
+    volumes:
+      - ./site/nginx1:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.site.rule=Host(`site.votre-domaine.be`)"
+      - "traefik.http.routers.site.entrypoints=websecure"
+      - "traefik.http.routers.site.tls.certresolver=le"
+
+  nginx2:
+    image: nginx:alpine
+    container_name: nginx2
+    restart: unless-stopped
+    volumes:
+      - ./site/nginx2:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+
+  nginx3:
+    image: nginx:alpine
+    container_name: nginx3
+    restart: unless-stopped
+    volumes:
+      - ./site/nginx3:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
+  ```
+
+Dans cette configuration :
+
+- Traefik écoute sur les ports 80 et 443.
+- Le port 80 redirige automatiquement les visiteurs vers HTTPS.
+- Les trois conteneurs Nginx ne publient aucun port directement sur la VM.
+- Les conteneurs communiquent grâce au réseau Docker `proxy`.
+- Traefik utilise le fournisseur de fichiers pour découvrir les trois serveurs web.
+- Le résolveur ACME utilise le challenge DNS-01 de Cloudflare pour obtenir les certificats Let's Encrypt.
+
+**Vérification de la configuration :**
+
+```bash
+docker compose config -q
+```
+
+Si aucune erreur n'est affichée, le fichier Docker Compose est syntaxiquement valide.
+
+### Déploiement des conteneurs (sur vm-proxy)
+
+**Pourquoi :** cette étape permet de démarrer simultanément Traefik et les trois serveurs Nginx. Docker Compose crée automatiquement le réseau Docker et connecte les différents conteneurs.
+
+Depuis le répertoire `projet-proxy`, exécuter :
+
+```bash
+docker compose up -d
+```
+
+Si ne fonctionne pas peut aussi venir de la command suivante non fait juste avant : 
+```bash
+
+```
+
+Cette commande télécharge les images nécessaires si elles ne sont pas présentes et démarre les quatre conteneurs.
+
+**Vérification :**
 
 ```bash
 docker ps
 ```
 
-Tester ensuite l'accès au site depuis chaque conteneur :
+Résultat attendu : quatre conteneurs doivent apparaître avec le statut `Up` :
+
+- traefik
+- nginx1
+- nginx2
+- nginx3
+
+Vérifier également le réseau Docker :
+
+```bash
+docker network inspect proxy
+```
+
+Les quatre conteneurs doivent être connectés au réseau `proxy`.
+
+### Vérification du fonctionnement des serveurs Nginx (sur vm-proxy)
+
+**Pourquoi :** avant de tester Traefik, il est important de vérifier que les trois serveurs web fonctionnent indépendamment. Cela permet de distinguer un problème provenant de Nginx d'un problème provenant du reverse proxy.
+
+Exécuter les commandes suivantes :
 
 ```bash
 docker exec nginx1 wget -qO- http://localhost/
@@ -380,156 +620,113 @@ docker exec nginx2 wget -qO- http://localhost/
 docker exec nginx3 wget -qO- http://localhost/
 ```
 
-Chaque commande doit retourner le contenu HTML du site.
+**Résultats attendus :**
 
-::: {.callout-note}
-Les trois conteneurs Nginx écoutent sur le port 80 de leur réseau Docker interne. Aucun port web n'est directement publié sur la VM : les requêtes provenant de la machine hôte passent obligatoirement par Traefik.
-:::
-
-#### Génération du certificat TLS (sur vm-proxy)
-**Pourquoi :** Cette étape permet de sécuriser les communications entre les utilisateurs et les serveurs web grâce au protocole HTTPS. Traefik utilise Let's Encrypt pour obtenir automatiquement un certificat TLS valide et le renouveler avant expiration, sans intervention manuelle.
-
-Préparer le stockage des certificats
-Créer un répertoire dédié à Traefik et au stockage des certificats :
-```bash
-mkdir -p ~/projet-proxy/traefik
-touch ~/projet-proxy/traefik/acme.json
-chmod 600 ~/projet-proxy/traefik/acme.json
-```
-
-Vérification :
-```bash
-ls -l ~/projet-proxy/traefik/acme.json
-```
-
-Résultat attendu :
 ```text
--rw------- 1 user user 0 ... acme.json
+<h1>Bienvenue sur le serveur Nginx 1</h1>
+<h1>Bienvenue sur le serveur Nginx 2</h1>
+<h1>Bienvenue sur le serveur Nginx 3</h1>
 ```
 
-Démarrer Traefik avec la gestion automatique des certificats
-Créer le fichier docker-compose.yml :
+Les trois commandes doivent retourner le contenu HTML correspondant.
+
+### Configuration de la résolution DNS locale (sur la machine hôte)
+
+**Pourquoi :** notre VM utilise une adresse privée Host-only. Pour accéder au site depuis le navigateur de la machine hôte, nous devons faire correspondre notre nom de domaine à l'adresse IP privée de la VM.
+
+Sur la machine hôte, ajouter la ligne suivante au fichier hosts :
+
+```text
+192.168.56.10 site.votre-domaine.be
+```
+
+Emplacement du fichier selon le système :
+
+- Linux/macOS : `/etc/hosts`
+- Windows : `C:\Windows\System32\drivers\etc\hosts`
+
+Remplacer le nom de domaine par celui configuré dans `dynamic.yml`.
+
+Cette résolution locale permet au navigateur de joindre Traefik sur `192.168.56.10`, tout en utilisant le véritable nom de domaine pour la négociation HTTPS.
+
+Il n'est pas nécessaire de publier l'adresse privée de la VM dans un enregistrement DNS public A pour utiliser le challenge DNS-01.
+
+### Vérification de l'obtention du certificat Let's Encrypt (sur vm-proxy)
+
+**Pourquoi :** cette étape permet de vérifier que Traefik communique correctement avec Let's Encrypt, que le challenge DNS-01 fonctionne et qu'un certificat valide est obtenu automatiquement.
+
+Consulter les journaux de Traefik :
+
 ```bash
-services:
-  traefik:
-    image: traefik:v3.0
-    container_name: traefik
-    restart: unless-stopped
-
-    ports:
-      - "80:80"
-      - "443:443"
-
-    command:
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-
-      - --certificatesresolvers.le.acme.email=votre-email@example.com
-      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
-      - --certificatesresolvers.le.acme.httpchallenge=true
-      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
-
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/acme.json:/letsencrypt/acme.json
-
-    networks:
-      - proxy
-
-
-networks:
-  proxy:
-    external: true
+docker logs traefik 
 ```
+=> EXPLIQUER MODIF DANS FICHIER DOCKER_COMPOSE ET DYNAMIC
 
-Démarrer Traefik :
+TCO
+
+Traefik doit réussir la validation DNS et obtenir un certificat pour le domaine configuré.
+
+Vérifier ensuite le contenu du fichier ACME :
+
 ```bash
-docker compose up -d
+cat letsencrypt/acme.json
 ```
 
-Vérification :
+Le fichier doit contenir les informations du certificat obtenu.
+
+
+Pour vérifier le certificat depuis la machine hôte dans un terminal bash :
+
+```bash
+openssl s_client \
+  -connect 192.168.56.10:443 \
+  -servername site.votre-domaine.be \
+  </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+```
+
+Le résultat doit afficher :
+
+- Le nom de domaine correspondant au certificat.
+- Let's Encrypt comme autorité de certification.
+- Les dates de début et de fin de validité du certificat.
+
+Le certificat doit être reconnu comme valide par un navigateur utilisant son magasin de certificats habituel.
+
+**Attention :** Let's Encrypt peut limiter le nombre de certificats émis lors des tests répétés. Il est conseillé d'utiliser son environnement de test (staging) pendant les essais de configuration, puis de revenir à l'environnement de production pour obtenir le certificat final.
+
+### Vérification du démarrage automatique (sur vm-proxy)
+
+**Pourquoi :** nous voulons que les services redémarrent automatiquement après un redémarrage de la VM, sans devoir relancer manuellement les conteneurs.
+
+Vérifier que les services disposent de la politique `restart: unless-stopped` dans le fichier Docker Compose.
+
+Tester le redémarrage :
+
+```bash
+sudo reboot
+```
+
+Après le redémarrage, vérifier :
+
 ```bash
 docker ps
 ```
 
-Résultat attendu :
-```text
-CONTAINER ID   IMAGE          NAMES
-xxxxxxxxxxxx   traefik:v3.0   traefik
-```
+Les quatre conteneurs doivent être de nouveau actifs.
 
-### Associer les conteneurs Nginx à Traefik
-Chaque conteneur doit être déclaré auprès de Traefik à l'aide de labels Docker.
+### Bilan de l'installation
 
-Exemple pour un conteneur :
-```bash
-docker run -d \
-  --name nginx1 \
-  --network proxy \
-  -v ~/projet-proxy/site:/usr/share/nginx/html:ro \
-  -l traefik.enable=true \
-  -l traefik.http.routers.site.rule="Host(`site.example.com`)" \
-  -l traefik.http.routers.site.entrypoints=websecure \
-  -l traefik.http.routers.site.tls.certresolver=le \
-  nginx:alpine
-```
+À la fin de cette procédure, notre infrastructure doit disposer des éléments suivants :
 
-Pourquoi :
-Les labels Docker permettent à Traefik de détecter automatiquement le conteneur et de demander un certificat Let's Encrypt pour le nom de domaine associé.
+- Un reverse proxy Traefik fonctionnel.
+- Trois serveurs web Nginx indépendants.
+- Un réseau Docker interne permettant la communication entre les conteneurs.
+- Une redirection automatique du HTTP vers HTTPS.
+- Un certificat TLS valide délivré par Let's Encrypt.
+- Un renouvellement automatique des certificats assuré par Traefik.
+- Un équilibrage de charge entre les trois serveurs Nginx.
 
-### Vérifier l'obtention du certificat
-Afficher les journaux de Traefik :
-```bash
-docker logs traefik
-```
-
-Résultat attendu :
-```text
-Obtaining ACME certificate for site.example.com
-Server responded with a certificate
-```
-
-Vérifier également que le certificat a bien été stocké :
-```bash
-cat ~/projet-proxy/traefik/acme.json
-```
-
-Résultat attendu :
-```json
-{
-  "letsencrypt": {
-    ...
-  }
-}
-```
-
-### Tester l'accès HTTPS
-Depuis la machine hôte :
-```bash
-curl -I https://site.example.com
-```
-
-Résultat attendu :
-```text
-HTTP/2 200
-server: nginx
-```
-
-Le site doit également être accessible depuis un navigateur à l'adresse :
-
-<https://site.example.com>
-
-Le cadenas HTTPS doit apparaître dans la barre d'adresse, indiquant que le certificat Let's Encrypt est valide.
-
-::: {.callout-note} Lors du premier démarrage, Traefik contacte automatiquement les serveurs Let's Encrypt via l'interface NAT de la machine virtuelle. Une fois le certificat obtenu, celui-ci est enregistré dans le fichier acme.json. Son renouvellement sera ensuite réalisé automatiquement par Traefik avant expiration. :::
-
-### [Titre de l'étape]
-
-...
-
+Les tests détaillés de l'accès HTTPS, de la redirection HTTP vers HTTPS, de l'équilibrage de charge et du renouvellement des certificats seront présentés dans la section « Vérification et tests ».
 
 ## Vérification et tests
 

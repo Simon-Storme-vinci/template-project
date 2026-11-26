@@ -127,10 +127,6 @@ nano /etc/network/interfaces
 ```
 
 ``` bash
-# Interface NAT — DHCP (laisser tel quel)
-auto enp0s3
-iface enp0s3 inet dhcp
-
 # Interface host-only — IP fixe
 auto enp0s8
 iface enp0s8 inet static
@@ -148,8 +144,6 @@ systemctl restart networking
 # Vérifier les addresses IP :
 ip a 
 
-======> on est ici
-
 # Vérifier spécifiquement l'interface host-only : 
 ip a show enp0s8
 # Le résultat attendu est => inet 192.168.56.10/24 ...
@@ -161,7 +155,7 @@ Avant toute installation, vérifier que tout le monde se voit :
 
 ```bash
 # Depuis vm-proxy, tester la communication avec la machine hôte :
-ping -c 3 192.168.56.1 => ne fonctionne pas DEMANDER PROF !!!!!
+ping -c 3 192.168.56.1
 # Résultat attendu : 3 paquets reçus, 0 % de perte.
 
 # Depuis la machine hôte(terminal du pc), pinger vm-proxy.
@@ -637,8 +631,13 @@ Sur la machine hôte, ajouter la ligne suivante au fichier hosts :
 
 Emplacement du fichier selon le système :
 
-- Linux/macOS : `/etc/hosts`
-- Windows : `C:\Windows\System32\drivers\etc\hosts`
+- Linux/macOS : ```bash
+nano /etc/hosts
+```
+- Windows : ```bash
+notepad C:\Windows\System32\drivers\etc\hosts
+```
+N'oublié pas de sauvgarder les modifications du fichier (CTRL + S ou autre)
 
 Remplacer le nom de domaine par celui configuré dans les labels de `docker-compose.yml`.
 
@@ -655,9 +654,6 @@ Consulter les journaux de Traefik :
 ```bash
 docker logs traefik 
 ```
-=> EXPLIQUER MODIF DANS FICHIER DOCKER_COMPOSE ET DYNAMIC
-
-TCO
 
 Traefik doit réussir la validation DNS et obtenir un certificat pour le domaine configuré.
 
@@ -752,7 +748,6 @@ Ce test vérifie que Traefik et les trois serveurs Nginx sont démarrés et que 
 
 ```bash
 docker ps
-# → coller ici la vraie sortie
 ```
 
 Résultat attendu : `traefik`, `nginx1`, `nginx2` et `nginx3` avec le statut `Up`.
@@ -769,7 +764,6 @@ Ce test prouve que le certificat servi par Traefik a bien été émis par Let's 
 openssl s_client -connect 192.168.56.10:8443 \
   -servername projetinfra.duckdns.org </dev/null 2>/dev/null \
   | openssl x509 -noout -subject -issuer -dates
-# → coller ici la vraie sortie
 ```
 
 Résultat attendu : un sujet correspondant à `projetinfra.duckdns.org`, un émetteur Let's Encrypt (et non `TRAEFIK DEFAULT CERT`), ainsi que les dates de début et de fin de validité.
@@ -784,7 +778,6 @@ Ce test vérifie que le certificat est reconnu comme valide : `curl` n'utilise p
 
 ```bash
 curl https://projetinfra.duckdns.org:8443
-# → coller ici la vraie sortie
 ```
 
 Résultat attendu : `<h1>Bienvenue sur le serveur Nginx X</h1>`, sans message d'erreur de certificat.
@@ -795,7 +788,6 @@ Ce test montre que Traefik répartit les requêtes entre les trois conteneurs Ng
 
 ```bash
 for i in $(seq 1 9); do curl -s https://projetinfra.duckdns.org:8443; done
-# → coller ici la vraie sortie
 ```
 
 Résultat attendu : les pages Nginx 1, 2 et 3 reviennent tour à tour (répartition de type round-robin). L'ordre de départ peut varier.
@@ -812,7 +804,6 @@ Ce test vérifie le comportement lorsqu'un serveur tombe en panne.
 docker stop nginx2
 for i in $(seq 1 6); do curl -s https://projetinfra.duckdns.org:8443; done
 docker start nginx2
-# → coller ici la vraie sortie
 ```
 
 Résultat attendu : seuls Nginx 1 et Nginx 3 répondent. Une erreur brève juste après l'arrêt du conteneur est possible, car aucune vérification d'état (health check) n'est configurée ; si elle se produit, la noter ici.
@@ -835,7 +826,6 @@ Ce test vérifie que les services redémarrent seuls grâce à la politique `res
 sudo reboot
 # après le redémarrage et la reconnexion :
 docker ps
-# → coller ici la vraie sortie
 ```
 
 Résultat attendu : les quatre conteneurs sont de nouveau `Up`, sans intervention manuelle.

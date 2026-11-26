@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">Architecture du reverse proxy Traefik avec certificats Let's Encrypt</title>
+  <desc id="description">La machine hôte accède à Traefik sur la machine virtuelle Debian via le réseau Host-only. Traefik distribue les requêtes aux trois conteneurs Nginx et communique en sortie avec Let's Encrypt et DuckDNS via l'interface NAT.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#44546a"/>
+    </marker>
+    <marker id="arrow-dashed" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a6d3b"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #202a35; }
+      .title { font-size: 23px; font-weight: 700; }
+      .heading { font-size: 18px; font-weight: 700; }
+      .label { font-size: 15px; }
+      .small { font-size: 13px; }
+      .vm { fill: #f7f9fc; stroke: #53657d; stroke-width: 2; stroke-dasharray: 10 6; }
+      .docker { fill: #eef4fa; stroke: #6482a5; stroke-width: 1.5; stroke-dasharray: 7 5; }
+      .client { fill: #e8edf3; stroke: #64748b; stroke-width: 2; }
+      .network { fill: #e8edf3; stroke: #64748b; stroke-width: 2; }
+      .proxy { fill: #6699bb; stroke: #334455; stroke-width: 2; }
+      .web { fill: #66aa99; stroke: #334455; stroke-width: 2; }
+      .internet { fill: #fff0d6; stroke: #b98a42; stroke-width: 2; }
+      .line { fill: none; stroke: #44546a; stroke-width: 2.5; marker-end: url(#arrow); }
+      .outbound { fill: none; stroke: #8a6d3b; stroke-width: 2.5; stroke-dasharray: 8 6; marker-end: url(#arrow-dashed); }
+      .white { fill: #fff; }
+      .light { fill: #f5f8fb; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="900" fill="#ffffff"/>
+
+  <!-- Client machine -->
+  <rect class="client" x="35" y="175" width="250" height="160" rx="14"/>
+  <text class="heading" x="160" y="210" text-anchor="middle">Machine hôte</text>
+  <text class="label" x="160" y="244" text-anchor="middle">Navigateur / curl</text>
+  <text class="label" x="160" y="272" text-anchor="middle">IP : 192.168.56.1</text>
+  <text class="small" x="160" y="301" text-anchor="middle">hosts : projetinfra.duckdns.org</text>
+  <text class="small" x="160" y="321" text-anchor="middle">vers 192.168.56.10</text>
+
+  <!-- Virtual machine -->
+  <rect class="vm" x="325" y="55" width="900" height="790" rx="20"/>
+  <text class="title" x="775" y="91" text-anchor="middle">Machine virtuelle VirtualBox : vm-proxy (Debian 13)</text>
+
+  <!-- VM network interfaces -->
+  <rect class="network" x="370" y="130" width="285" height="145" rx="12"/>
+  <text class="heading" x="512" y="164" text-anchor="middle">Carte réseau 2 : Host-only</text>
+  <text class="label" x="512" y="198" text-anchor="middle">enp0s8</text>
+  <text class="label" x="512" y="226" text-anchor="middle">IP fixe : 192.168.56.10</text>
+
+  <rect class="network" x="895" y="130" width="285" height="145" rx="12"/>
+  <text class="heading" x="1037" y="164" text-anchor="middle">Carte réseau 1 : NAT</text>
+  <text class="label" x="1037" y="198" text-anchor="middle">enp0s3</text>
+  <text class="label" x="1037" y="226" text-anchor="middle">IP attribuée par DHCP</text>
+
+  <!-- Internal Docker network -->
+  <rect class="docker" x="365" y="350" width="820" height="445" rx="16"/>
+  <text class="heading" x="390" y="382">Réseau Docker interne : proxy</text>
+
+  <rect class="proxy" x="580" y="420" width="390" height="145" rx="14"/>
+  <text class="heading white" x="775" y="454" text-anchor="middle">Traefik - Reverse Proxy</text>
+  <text class="label white" x="775" y="484" text-anchor="middle">Terminaison TLS et équilibrage de charge</text>
+  <text class="small white" x="775" y="514" text-anchor="middle">VM : 8080 (HTTP) et 8443 (HTTPS)</text>
+  <text class="small white" x="775" y="539" text-anchor="middle">Conteneur : 80 et 443</text>
+
+  <rect class="web" x="405" y="660" width="220" height="100" rx="12"/>
+  <text class="heading white" x="515" y="696" text-anchor="middle">Conteneur Nginx 1</text>
+  <text class="label white" x="515" y="725" text-anchor="middle">Site HTML · port 80</text>
+
+  <rect class="web" x="665" y="660" width="220" height="100" rx="12"/>
+  <text class="heading white" x="775" y="696" text-anchor="middle">Conteneur Nginx 2</text>
+  <text class="label white" x="775" y="725" text-anchor="middle">Site HTML · port 80</text>
+
+  <rect class="web" x="925" y="660" width="220" height="100" rx="12"/>
+  <text class="heading white" x="1035" y="696" text-anchor="middle">Conteneur Nginx 3</text>
+  <text class="label white" x="1035" y="725" text-anchor="middle">Site HTML · port 80</text>
+
+  <!-- Internet services -->
+  <rect class="internet" x="1300" y="190" width="265" height="475" rx="18"/>
+  <text class="title" x="1432" y="230" text-anchor="middle">Internet</text>
+
+  <rect class="internet" x="1330" y="285" width="205" height="125" rx="12"/>
+  <text class="heading" x="1432" y="325" text-anchor="middle">Let's Encrypt</text>
+  <text class="label" x="1432" y="356" text-anchor="middle">Serveur ACME</text>
+  <text class="small" x="1432" y="382" text-anchor="middle">Défi DNS-01 et certificat</text>
+
+  <rect class="internet" x="1330" y="465" width="205" height="145" rx="12"/>
+  <text class="heading" x="1432" y="505" text-anchor="middle">DuckDNS</text>
+  <text class="label" x="1432" y="536" text-anchor="middle">API DNS</text>
+  <text class="small" x="1432" y="562" text-anchor="middle">Enregistrement TXT</text>
+  <text class="small" x="1432" y="584" text-anchor="middle">_acme-challenge</text>
+
+  <!-- Client traffic to the Host-only interface -->
+  <path class="line" d="M285 255 H370"/>
+  <text class="small" x="327" y="235" text-anchor="middle">HTTPS : 8443</text>
+  <text class="small" x="327" y="280" text-anchor="middle">HTTP : 8080</text>
+
+  <!-- Host-only interface to Traefik -->
+  <path class="line" d="M512 275 V320 H675 V420"/>
+  <text class="small" x="555" y="310" text-anchor="middle">Entrée vers Traefik</text>
+
+  <!-- Traefik load balancing to Nginx -->
+  <path class="line" d="M665 565 V610 H515 V660"/>
+  <path class="line" d="M775 565 V660"/>
+  <path class="line" d="M885 565 V610 H1035 V660"/>
+  <text class="small" x="515" y="637" text-anchor="middle">HTTP : 80 · round-robin</text>
+  <text class="small" x="775" y="637" text-anchor="middle">HTTP : 80 · round-robin</text>
+  <text class="small" x="1035" y="637" text-anchor="middle">HTTP : 80 · round-robin</text>
+
+  <!-- Traefik to NAT, then outbound requests to Internet -->
+  <path class="outbound" d="M970 462 H1055 V275"/>
+  <text class="small" x="1067" y="400" transform="rotate(-90 1067 400)" text-anchor="middle">Accès Internet sortant</text>
+  <path class="outbound" d="M1180 190 H1260 V347 H1330"/>
+  <text class="small" x="1250" y="325" text-anchor="end">HTTPS : 443 sortant</text>
+  <path class="outbound" d="M1180 220 H1275 V537 H1330"/>
+  <text class="small" x="1288" y="505" text-anchor="start">HTTPS : 443 sortant</text>
+</svg>

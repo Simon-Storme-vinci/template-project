@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="1080" viewBox="0 0 1300 1080" role="img" aria-labelledby="title description">
+  <title id="title">Diagramme de séquence du reverse proxy Traefik</title>
+  <desc id="description">Le diagramme montre d'abord la demande et la délivrance automatique d'un certificat par Let's Encrypt, puis une requête HTTPS du client traitée par Traefik et transmise au conteneur Nginx en HTTP.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-open" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L9,5 L1,9" fill="none" stroke="#334155" stroke-width="1.5"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #202a35; }
+      .participant { fill: #e8edf3; stroke: #64748b; stroke-width: 2; }
+      .service { fill: #fff0d6; stroke: #b98a42; stroke-width: 2; }
+      .heading { font-size: 17px; font-weight: 700; }
+      .label { font-size: 15px; }
+      .small { font-size: 13px; }
+      .lifeline { stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 6 6; }
+      .message { stroke: #334155; stroke-width: 2; marker-end: url(#arrow); }
+      .response { stroke: #334155; stroke-width: 2; stroke-dasharray: 8 5; marker-end: url(#arrow-open); }
+      .note { fill: #fff8db; stroke: #c9a84d; stroke-width: 1.5; }
+      .activation { fill: #d7e4f2; stroke: #64748b; stroke-width: 1.2; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1300" height="1080" fill="#ffffff"/>
+
+  <!-- Participants -->
+  <rect class="participant" x="55" y="40" width="250" height="90" rx="12"/>
+  <text class="heading" x="180" y="76" text-anchor="middle">Client</text>
+  <text class="label" x="180" y="105" text-anchor="middle">Hôte · 192.168.56.1</text>
+
+  <rect class="participant" x="370" y="40" width="250" height="90" rx="12"/>
+  <text class="heading" x="495" y="76" text-anchor="middle">vm-proxy</text>
+  <text class="label" x="495" y="105" text-anchor="middle">Traefik</text>
+
+  <rect class="service" x="685" y="40" width="250" height="90" rx="12"/>
+  <text class="heading" x="810" y="76" text-anchor="middle">Let's Encrypt</text>
+  <text class="label" x="810" y="105" text-anchor="middle">ACME</text>
+
+  <rect class="participant" x="1000" y="40" width="250" height="90" rx="12"/>
+  <text class="heading" x="1125" y="76" text-anchor="middle">Conteneur Nginx</text>
+  <text class="label" x="1125" y="105" text-anchor="middle">Docker</text>
+
+  <!-- Lifelines -->
+  <path class="lifeline" d="M180 130 V1035"/>
+  <path class="lifeline" d="M495 130 V1035"/>
+  <path class="lifeline" d="M810 130 V1035"/>
+  <path class="lifeline" d="M1125 130 V1035"/>
+
+  <!-- Step 1: certificate issuance -->
+  <rect class="note" x="430" y="160" width="445" height="75" rx="10"/>
+  <text class="heading" x="652" y="190" text-anchor="middle">Étape 1 : génération automatique du certificat</text>
+  <text class="label" x="652" y="216" text-anchor="middle">Initialisation ou renouvellement</text>
+
+  <line class="message" x1="495" y1="285" x2="810" y2="285"/>
+  <text class="label" x="652" y="270" text-anchor="middle">Demande de certificat (requête ACME / défi)</text>
+
+  <line class="response" x1="810" y1="355" x2="495" y2="355"/>
+  <text class="label" x="652" y="340" text-anchor="middle">Validation et délivrance du certificat SSL/TLS</text>
+
+  <!-- Step 2: client request -->
+  <rect class="note" x="155" y="410" width="365" height="70" rx="10"/>
+  <text class="heading" x="337" y="440" text-anchor="middle">Étape 2 : requête client</text>
+  <text class="label" x="337" y="464" text-anchor="middle">Terminaison TLS par Traefik</text>
+
+  <rect class="activation" x="487" y="515" width="16" height="425" rx="4"/>
+  <line class="message" x1="180" y1="535" x2="495" y2="535"/>
+  <text class="label" x="337" y="520" text-anchor="middle">HTTPS GET / · établissement TLS</text>
+  <text class="small" x="337" y="555" text-anchor="middle">Certificat Let's Encrypt</text>
+
+  <rect class="note" x="365" y="595" width="260" height="75" rx="10"/>
+  <text class="heading" x="495" y="625" text-anchor="middle">Terminaison TLS</text>
+  <text class="label" x="495" y="651" text-anchor="middle">Déchiffrement de la requête</text>
+
+  <rect class="note" x="365" y="690" width="260" height="75" rx="10"/>
+  <text class="heading" x="495" y="720" text-anchor="middle">Sélection du service</text>
+  <text class="label" x="495" y="746" text-anchor="middle">Routage vers le conteneur</text>
+
+  <rect class="activation" x="1117" y="790" width="16" height="150" rx="4"/>
+  <line class="message" x1="495" y1="805" x2="1125" y2="805"/>
+  <text class="label" x="810" y="786" text-anchor="middle">HTTP GET /</text>
+  <text class="small" x="810" y="829" text-anchor="middle">X-Forwarded-For · X-Forwarded-Proto: https</text>
+
+  <rect class="note" x="985" y="850" width="280" height="65" rx="10"/>
+  <text class="heading" x="1125" y="878" text-anchor="middle">Traitement de la requête</text>
+  <text class="label" x="1125" y="900" text-anchor="middle">Envoi du fichier HTML</text>
+
+  <line class="response" x1="1125" y1="955" x2="495" y2="955"/>
+  <text class="label" x="810" y="941" text-anchor="middle">HTTP 200 OK · page HTML</text>
+
+  <line class="response" x1="495" y1="1015" x2="180" y2="1015"/>
+  <text class="label" x="337" y="1001" text-anchor="middle">HTTPS 200 OK · page HTML chiffrée</text>
+</svg>

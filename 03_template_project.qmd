@@ -52,7 +52,7 @@ Traefik est le point d'entrée unique du serveur et du client : il reçoit les c
 Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité. L'automatisation de certificats permet de ne plus se soucier de l'expiration, mais une supervision reste utile comme filet de sécurité.
 
 ### Éléments inédits
-N'a pas été vu au cours : 
+Non vus au cours : 
     Traefik 
     Let's Encrypt
     DuckDns
@@ -135,7 +135,7 @@ ip a show enp0s8
 
 ### Vérification de la connectivité
 
-Avant toute installation, vérifier que tout le monde se voit :
+Avant toute installation, vérifier que toutes les machines peuvent communiquer entre elles :
 
 ```bash
 # Depuis vm-proxy, tester la communication avec la machine hôte :
@@ -436,7 +436,7 @@ Créer le fichier principal de déploiement :
 nano docker-compose.yml
 ```
 
-Ajouter la configuration suivante en remplaçant `votre.mail@outlook.com` par un mail que vous possédez et  `projetinfra.duckdns.org` par votre véritable nom de domaine :
+Ajouter la configuration suivante en remplaçant `votre.mail@outlook.com` par un mail que vous possédez et remplacer `projetinfra.duckdns.org` par votre véritable nom de domaine. À partir de ce point, chaque fois que ce nom apparaît, remplacez-le par votre_nom_de_domaine.duckdns.org :
 
 ```yaml
 services:
@@ -635,7 +635,7 @@ grep -o '"main": "[^"]*"' letsencrypt/acme.json
 
 La commande doit montrer "main": "projetinfra.duckdns.org"
 
-Pour vérifier le certificat depuis la machine hôte dans un terminal bash (remplacez `projetinfra.duckdns.org` par votre_nom_de_domaine.duckdns.org):
+Pour vérifier le certificat depuis la machine hôte dans un terminal bash :
 
 ```bash
 openssl s_client \
@@ -665,7 +665,7 @@ Tester le redémarrage (ne pas mettre sudo si vous êtes déjà en root):
 ```bash
 sudo reboot
 ```
-fermer et redémarer putty aprés le reboot.
+Fermer PuTTY et se reconnecter après le redémarrage.
 
 Après le redémarrage, vérifier :
 
@@ -709,7 +709,7 @@ Les tests ont été réalisés avec le domaine `projetinfra.duckdns.org`. Traefi
 <h1>Bienvenue sur le serveur Nginx 1</h1>
  | ✅ |
 | 6 | Redémarrage automatique | `sudo reboot` puis `docker ps` | 4 conteneurs `Up` | les 4 conteneurs sont visibles et up | ✅ |
-| 7 | Sécurité négative | `curl -k https://192.168.56.10:8443` et `curl -m 5 http://192.168.56.10:80` | 404 de Traefik sans nom de domaine ; connexion refusée sur le port 80 | 404 page not found pour la première commande et connexion refusé pour la deuxième commande | ✅ |
+| 7 | Sécurité négative | `curl -k https://192.168.56.10:8443` et `curl -m 5 http://192.168.56.10:80` | 404 de Traefik sans nom de domaine ; connexion refusée sur le port 80 | 404 page not found pour la première commande et connexion refusée pour la deuxième commande | ✅ |
 
 ### Test 1 — Conteneurs actifs
 
@@ -868,7 +868,7 @@ Nous avons tous tourné parmi tous les rôles.
 
 ## Conclusion
 
-Nous avons mis en place un reverse-proxy avec certificat Let's Encrypt automatique en utilisant Traefik, DuckDNS, Docker avec trois conteneurs docker afin de répartir la charge sur les trois via un load balancer. Nous avons appris à utiliser DuckDNS pour créer un domaine.
+Nous avons mis en place un reverse-proxy avec certificat Let's Encrypt automatique en utilisant Traefik, DuckDNS, Docker avec trois conteneurs Docker afin de répartir la charge sur les trois via un load balancer. Nous avons appris à utiliser DuckDNS pour créer un domaine.
 Nous avons également appris à faire en sorte que tout fonctionne ensemble, l'utilisation de Traefik, à activer la deuxième carte réseau, ainsi l'utilisation de fichiers ".qmd".
 
 Ce qui a été difficile : 
@@ -878,11 +878,3 @@ Ce qui a été difficile :
 
 Ce qu'on ferait différemment :
 - Regarder plus en détail les technologies avant de commencer le guide, pour éviter des complications qu'on peut facilement éviter.
-
-
-## Checklist avant remise
-
-::: {.callout-important title="À vérifier — puis supprimer cette section"}
-- [ ] Tableau de tests entièrement complété avec les résultats réels
-- [ ] Archive remise : `.qmd` + dossier `images/`
-:::

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.19">
+<meta name="generator" content="quarto-1.10.20">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -75,7 +75,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="03_template_project_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="03_template_project_files/libs/quarto-html/anchor.min.js"></script>
 <link href="03_template_project_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="03_template_project_files/libs/quarto-html/quarto-syntax-highlighting-dark-6453f418aeef366c23116eb9cb0b6816.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="03_template_project_files/libs/quarto-html/quarto-syntax-highlighting-dark-86fc916b84669629367aabb2a24c5117.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="03_template_project_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="03_template_project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="03_template_project_files/libs/bootstrap/bootstrap-976a99f9fdc2ff04a98a8ebc7fcc9518.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
@@ -108,30 +108,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#configuration-des-ips-fixes" id="toc-configuration-des-ips-fixes" class="nav-link" data-scroll-target="#configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</a></li>
   <li><a href="#vérification-de-la-connectivité" id="toc-vérification-de-la-connectivité" class="nav-link" data-scroll-target="#vérification-de-la-connectivité"><span class="header-section-number">2.4</span> Vérification de la connectivité</a></li>
   </ul></li>
-  <li><a href="#architecture" id="toc-architecture" class="nav-link" data-scroll-target="#architecture"><span class="header-section-number">3</span> Architecture</a>
+  <li><a href="#architecture-demander-au-prof" id="toc-architecture-demander-au-prof" class="nav-link" data-scroll-target="#architecture-demander-au-prof"><span class="header-section-number">3</span> Architecture (DEMANDER AU PROF !!!!!!)</a>
   <ul class="collapse">
   <li><a href="#schéma-darchitecture" id="toc-schéma-darchitecture" class="nav-link" data-scroll-target="#schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</a></li>
   <li><a href="#tableau-des-composants" id="toc-tableau-des-composants" class="nav-link" data-scroll-target="#tableau-des-composants"><span class="header-section-number">3.2</span> Tableau des composants</a></li>
   </ul></li>
-  <li><a href="#diagramme-au-choix" id="toc-diagramme-au-choix" class="nav-link" data-scroll-target="#diagramme-au-choix"><span class="header-section-number">4</span> Diagramme au choix</a></li>
-  <li><a href="#installation-et-déploiement" id="toc-installation-et-déploiement" class="nav-link" data-scroll-target="#installation-et-déploiement"><span class="header-section-number">5</span> Installation et déploiement</a>
-  <ul class="collapse">
-  <li><a href="#prérequis" id="toc-prérequis" class="nav-link" data-scroll-target="#prérequis"><span class="header-section-number">5.1</span> Prérequis</a></li>
-  <li><a href="#titre-de-létape-sur-vm-xxx" id="toc-titre-de-létape-sur-vm-xxx" class="nav-link" data-scroll-target="#titre-de-létape-sur-vm-xxx"><span class="header-section-number">5.2</span> [Titre de l’étape] (sur vm-xxx)</a></li>
-  <li><a href="#titre-de-létape-sur-vm-yyy" id="toc-titre-de-létape-sur-vm-yyy" class="nav-link" data-scroll-target="#titre-de-létape-sur-vm-yyy"><span class="header-section-number">5.3</span> [Titre de l’étape] (sur vm-yyy)</a></li>
-  <li><a href="#titre-de-létape" id="toc-titre-de-létape" class="nav-link" data-scroll-target="#titre-de-létape"><span class="header-section-number">5.4</span> [Titre de l’étape]</a></li>
-  </ul></li>
-  <li><a href="#vérification-et-tests" id="toc-vérification-et-tests" class="nav-link" data-scroll-target="#vérification-et-tests"><span class="header-section-number">6</span> Vérification et tests</a>
-  <ul class="collapse">
-  <li><a href="#tableau-récapitulatif-des-tests" id="toc-tableau-récapitulatif-des-tests" class="nav-link" data-scroll-target="#tableau-récapitulatif-des-tests"><span class="header-section-number">6.1</span> Tableau récapitulatif des tests</a></li>
-  <li><a href="#test-1-titre" id="toc-test-1-titre" class="nav-link" data-scroll-target="#test-1-titre"><span class="header-section-number">6.2</span> Test 1 — [Titre]</a></li>
-  <li><a href="#test-2-titre" id="toc-test-2-titre" class="nav-link" data-scroll-target="#test-2-titre"><span class="header-section-number">6.3</span> Test 2 — [Titre]</a></li>
-  </ul></li>
-  <li><a href="#problèmes-rencontrés" id="toc-problèmes-rencontrés" class="nav-link" data-scroll-target="#problèmes-rencontrés"><span class="header-section-number">7</span> Problèmes rencontrés</a></li>
-  <li><a href="#distribution-des-tâches" id="toc-distribution-des-tâches" class="nav-link" data-scroll-target="#distribution-des-tâches"><span class="header-section-number">8</span> Distribution des tâches</a></li>
-  <li><a href="#améliorations-possibles" id="toc-améliorations-possibles" class="nav-link" data-scroll-target="#améliorations-possibles"><span class="header-section-number">9</span> Améliorations possibles</a></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">10</span> Conclusion</a></li>
-  <li><a href="#checklist-avant-remise" id="toc-checklist-avant-remise" class="nav-link" data-scroll-target="#checklist-avant-remise"><span class="header-section-number">11</span> Checklist avant remise</a></li>
   </ul>
 </nav>
 </div>
@@ -159,7 +140,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Date de publication</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">30 octobre 2026</p>
+      <p class="date">31 octobre 2026</p>
     </div>
   </div>
   
@@ -425,21 +406,8 @@ Astuce
 </div>
 </section>
 </section>
-<section id="architecture" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="architecture"><span class="header-section-number">3</span> Architecture</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Consigne
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Présentez un schéma d’architecture de votre projet, <strong>de préférence en Mermaid</strong> (voir le guide <code>02_installation_getstarted.qmd</code> et l’exemple fourni). Le schéma doit inclure <strong>les noms des VMs, leurs IPs, les ports utilisés et les flux réseau</strong>. Un schéma sans IPs ni ports n’est pas suffisant.</p>
-</div>
-</div>
+<section id="architecture-demander-au-prof" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="architecture-demander-au-prof"><span class="header-section-number">3</span> Architecture (DEMANDER AU PROF !!!!!!)</h2>
 <section id="schéma-darchitecture" class="level3" data-number="3.1">
 <h3 data-number="3.1" class="anchored" data-anchor-id="schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</h3>
 <div class="cell" data-layout-align="default">
@@ -448,12 +416,36 @@ Astuce
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">flowchart TD
-    H([Machine hôte&lt;br/&gt;192.168.56.1]) --&gt;|Protocole :port| A
-    subgraph HO[Réseau host-only 192.168.56.0/24]
-        A[vm-xxx&lt;br/&gt;Rôle — Debian 12&lt;br/&gt;192.168.56.N0&lt;br/&gt;ports ...]
-        B[vm-yyy&lt;br/&gt;Rôle — Debian 12&lt;br/&gt;192.168.56.N1&lt;br/&gt;ports ...]
-        A --&gt;|Protocole :port| B
+    H(["Machine hôte&lt;br/&gt;Navigateur / curl&lt;br/&gt;IP : 192.168.56.1"])
+
+    subgraph VM["Machine virtuelle VirtualBox : vm-proxy"]
+        direction TB
+
+        P["Traefik - Reverse Proxy&lt;br/&gt;Debian 13&lt;br/&gt;IP Host-only : 192.168.56.10&lt;br/&gt;Ports : 80 (HTTP) et 443 (HTTPS)"]
+
+        subgraph DOCKER["Réseau Docker interne"]
+            direction LR
+            W1["Conteneur Nginx 1&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
+            W2["Conteneur Nginx 2&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
+            W3["Conteneur Nginx 3&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
+        end
+
+        P --&gt;|"HTTP : 80"| W1
+        P --&gt;|"HTTP : 80"| W2
+        P --&gt;|"HTTP : 80"| W3
     end
+
+    H --&gt;|"HTTP : 80 / HTTPS : 443"| P
+
+    NAT["Carte réseau 1 : NAT&lt;br/&gt;IP attribuée par DHCP&lt;br/&gt;Accès Internet"]
+
+    NAT -.-&gt;|"HTTPS : 443&lt;br/&gt;Téléchargement Docker&lt;br/&gt;Communication avec Let's Encrypt"| P
+
+    style P fill:#69b,stroke:#333,color:#fff
+    style W1 fill:#6a9,stroke:#333,color:#fff
+    style W2 fill:#6a9,stroke:#333,color:#fff
+    style W3 fill:#6a9,stroke:#333,color:#fff
+    style NAT fill:#ddd,stroke:#333,color:#222
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -462,8 +454,15 @@ Astuce
 </div>
 </section>
 <section id="tableau-des-composants" class="level3" data-number="3.2">
-<h3 data-number="3.2" class="anchored" data-anchor-id="tableau-des-composants"><span class="header-section-number">3.2</span> Tableau des composants</h3>
+<h3 data-number="3.2" class="anchored"><span class="header-section-number">3.2</span> Tableau des composants</h3>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Composant</th>
@@ -475,23 +474,54 @@ Astuce
 </thead>
 <tbody>
 <tr class="odd">
-<td>Service A</td>
-<td>vm-xxx</td>
-<td>192.168.56.N0</td>
-<td>XXX</td>
-<td>Description</td>
+<td>Traefik</td>
+<td>vm-proxy</td>
+<td>192.168.56.10</td>
+<td>80, 443</td>
+<td>Reverse proxy, terminaison TLS et équilibrage de charge</td>
 </tr>
 <tr class="even">
-<td>Service B</td>
-<td>vm-yyy</td>
-<td>192.168.56.N1</td>
-<td>YYY</td>
-<td>Description</td>
+<td>Nginx 1</td>
+<td>Conteneur Docker</td>
+<td>IP interne Docker</td>
+<td>80 (interne)</td>
+<td>Hébergement du site HTML</td>
+</tr>
+<tr class="odd">
+<td>Nginx 2</td>
+<td>Conteneur Docker</td>
+<td>IP interne Docker</td>
+<td>80 (interne)</td>
+<td>Hébergement du site HTML</td>
+</tr>
+<tr class="even">
+<td>Nginx 3</td>
+<td>Conteneur Docker</td>
+<td>IP interne Docker</td>
+<td>80 (interne)</td>
+<td>Hébergement du site HTML</td>
+</tr>
+<tr class="odd">
+<td>Docker</td>
+<td>vm-proxy</td>
+<td>192.168.56.10</td>
+<td>—</td>
+<td>Exécution et gestion des conteneurs</td>
 </tr>
 </tbody>
 </table>
-</section>
-</section>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n’est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 80 (HTTP) et 443 (HTTPS).</p>
+<p>La VM vm-proxy dispose également d’une interface NAT pour accéder à Internet, notamment pour télécharger les images Docker et communiquer avec Let’s Encrypt.</p>
 <section id="diagramme-au-choix" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="diagramme-au-choix"><span class="header-section-number">4</span> Diagramme au choix</h2>
 <div class="callout callout-style-default callout-important callout-titled" title="Consigne">
@@ -513,14 +543,17 @@ Astuce
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">sequenceDiagram
-    participant C as Client
-    participant S1 as Service A
-    participant S2 as Service B
+    participant C as Client (hôte 192.168.56.1)
+    participant T as vm-proxy (Traefik)
+    participant N as Conteneur Nginx (Docker)
 
-    C-&gt;&gt;S1: Requête
-    S1-&gt;&gt;S2: Transfert
-    S2--&gt;&gt;S1: Réponse
-    S1--&gt;&gt;C: Réponse
+    C-&gt;&gt;T: HTTPS GET / (connexion TLS)
+    Note over T: Terminaison TLS&lt;br/&gt;Déchiffrement de la requête
+    Note over T: Sélection du service&lt;br/&gt;et du conteneur disponible
+    T-&gt;&gt;N: HTTP GET /&lt;br/&gt;+ X-Forwarded-For&lt;br/&gt;+ X-Forwarded-Proto: https
+    Note over N: Recherche et envoi&lt;br/&gt;du fichier HTML
+    N--&gt;&gt;T: HTTP 200 OK (page HTML)
+    T--&gt;&gt;C: HTTPS 200 OK (page HTML)
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -797,6 +830,10 @@ Astuce
 </ul>
 </div>
 </div>
+</section>
+</div>
+</div>
+</section>
 </section>
 
 </main>

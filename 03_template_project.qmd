@@ -666,7 +666,7 @@ grep -o '"main": "[^"]*"' letsencrypt/acme.json
 
 La commande doit montrer "main": "projetinfra.duckdns.org"
 
-Pour vérifier le certificat depuis la machine hôte dans un terminal bash :
+Pour vérifier le certificat depuis la machine hôte dans un terminal bash (remplacez `projetinfra.duckdns.org` par votre_nom_de_domaine.duckdns.org):
 
 ```bash
 openssl s_client \
@@ -691,11 +691,12 @@ Le certificat doit être reconnu comme valide par un navigateur utilisant son ma
 
 Vérifier que les services disposent de la politique `restart: unless-stopped` dans le fichier Docker Compose.
 
-Tester le redémarrage :
+Tester le redémarrage (ne pas mettre sudo si vous êtes déjà en root):
 
 ```bash
 sudo reboot
 ```
+fermer et redémarer putty aprés le reboot.
 
 Après le redémarrage, vérifier :
 
@@ -734,14 +735,20 @@ Les tests ont été réalisés avec le domaine `projetinfra.duckdns.org`. Traefi
 
 | # | Test | Commande / Action | Résultat attendu | Résultat obtenu | ✅/❌ |
 |---|---|---|---|---|---|
-| 1 | Conteneurs actifs | `docker ps` | 4 conteneurs `Up`, ports `8080->80` et `8443->443` sur Traefik | [à compléter] | ⬜ |
+| 1 | Conteneurs actifs | `docker ps` | 4 conteneurs `Up`, ports `8080->80` et `8443->443` sur Traefik | 4 conteneurs `Up`, ports `8080->80` et `8443->443` sur Traefik | ✅ |
 | 2 | Certificat Let's Encrypt | `openssl s_client ... \| openssl x509 -noout -issuer -dates` | Émetteur Let's Encrypt (pas `TRAEFIK DEFAULT CERT`, pas `STAGING`) | Émetteur Let's Encrypt | ✅ |
-| 3 | HTTPS de confiance | `curl https://projetinfra.duckdns.org:8443` | Page Nginx, sans erreur de certificat (sans `-k`) | [à compléter] | ⬜ |
+| 3 | HTTPS de confiance | `curl https://projetinfra.duckdns.org:8443` | Page Nginx, sans erreur de certificat (sans `-k`) | <h1>Bienvenue sur le serveur Nginx 3</h1>
+ | ✅ |
 | 4 | Équilibrage de charge | boucle de 9 `curl` | Les pages Nginx 1, 2 et 3 alternent | Les trois serveurs répondent tour à tour | ✅ |
-| 5 | Panne simulée | `docker stop nginx2` puis boucle de 6 `curl` | Seuls Nginx 1 et 3 répondent | [à compléter] | ⬜ |
-| 6 | Navigateur | ouvrir `https://projetinfra.duckdns.org:8443` | Cadenas, certificat valide | [à compléter] | ⬜ |
-| 7 | Redémarrage automatique | `sudo reboot` puis `docker ps` | 4 conteneurs `Up` | [à compléter] | ⬜ |
-| 8 | Sécurité négative | `curl -k https://192.168.56.10:8443` et `curl http://192.168.56.10:80` | 404 de Traefik sans nom de domaine ; connexion refusée sur le port 80 | [à compléter] | ⬜ |
+| 5 | Panne simulée | `docker stop nginx2` puis boucle de 6 `curl` | Seuls Nginx 1 et 3 répondent | <h1>Bienvenue sur le serveur Nginx 3</h1>
+<h1>Bienvenue sur le serveur Nginx 1</h1>
+<h1>Bienvenue sur le serveur Nginx 3</h1>
+<h1>Bienvenue sur le serveur Nginx 1</h1>
+<h1>Bienvenue sur le serveur Nginx 3</h1>
+<h1>Bienvenue sur le serveur Nginx 1</h1>
+ | ✅ |
+| 6 | Redémarrage automatique | `sudo reboot` puis `docker ps` | 4 conteneurs `Up` | les 4 conteneurs sont visibles et up | ✅ |
+| 7 | Sécurité négative | `curl -k https://192.168.56.10:8443` et `curl -m 5 http://192.168.56.10:80` | 404 de Traefik sans nom de domaine ; connexion refusée sur le port 80 | 404 page not found pour la première commande et connexion refusé pour la deuxième commande | ✅ |
 
 ### Test 1 — Conteneurs actifs
 
@@ -809,17 +816,7 @@ docker start nginx2
 
 Résultat attendu : seuls Nginx 1 et Nginx 3 répondent. Une erreur brève juste après l'arrêt du conteneur est possible, car aucune vérification d'état (health check) n'est configurée ; si elle se produit, la noter ici.
 
-### Test 6 — Accès depuis le navigateur
-
-Ouvrir `https://projetinfra.duckdns.org:8443` dans le navigateur de la machine hôte (le fichier hosts doit contenir `192.168.56.10 projetinfra.duckdns.org`).
-
-Résultat attendu : la page Nginx s'affiche et le navigateur montre un cadenas, sans avertissement de sécurité.
-
-::: {.callout-tip}
-**📷 Capture :** navigateur avec le cadenas et le détail du certificat Let's Encrypt.
-:::
-
-### Test 7 — Redémarrage automatique
+### Test 6 — Redémarrage automatique
 
 Ce test vérifie que les services redémarrent seuls grâce à la politique `restart: unless-stopped`.
 
@@ -831,7 +828,7 @@ docker ps
 
 Résultat attendu : les quatre conteneurs sont de nouveau `Up`, sans intervention manuelle.
 
-### Test 8 — Sécurité négative
+### Test 7 — Sécurité négative
 
 Ce test vérifie que l'on ne peut atteindre les services que par Traefik et avec le bon nom de domaine.
 
@@ -840,7 +837,6 @@ Ce test vérifie que l'on ne peut atteindre les services que par Traefik et avec
 curl -k https://192.168.56.10:8443
 # Accès direct au port 80 de la VM (les conteneurs Nginx ne publient aucun port) :
 curl -m 5 http://192.168.56.10:80
-# → coller ici les vraies sorties
 ```
 
 Résultat attendu : `404 page not found` renvoyé par Traefik pour le premier test (aucune règle ne correspond à l'adresse IP), et un refus de connexion ou un délai dépassé pour le second.
@@ -850,10 +846,6 @@ Résultat attendu : `404 page not found` renvoyé par Traefik pour le premier te
 :::
 
 ## Problèmes rencontrés
-
-::: {.callout-important title="Consigne"}
-Décrivez les 2 à 4 problèmes qui vous ont le plus bloqués, avec la structure **Symptôme / Cause / Solution**. Cette section montre votre compréhension réelle du projet — elle doit refléter ce qui s'est *réellement* passé dans vos VMs.
-:::
 
 **1. Perte de la connexion PuTTY après le redémarrage du réseau**
 
@@ -908,20 +900,12 @@ Nous avons tous tourné parmi tous les rôles.
 
 ## Améliorations possibles
 
-::: {.callout-important title="Consigne"}
-Proposez des améliorations concrètes et réalistes. Évitez les généralités ("on pourrait améliorer la sécurité") — soyez précis ("on pourrait remplacer le certificat auto-signé par Let's Encrypt via certbot, ce qui nécessiterait un nom de domaine public").
-:::
-
 - **Redirection automatique de HTTP vers HTTPS :** ajouter à la commande de Traefik `--entrypoints.web.http.redirections.entrypoint.to=websecure` et `--entrypoints.web.http.redirections.entrypoint.scheme=https`. Aujourd'hui, une requête HTTP sur le port 8080 ne reçoit pas de redirection ; cela garantirait que tout le trafic passe par le HTTPS.
 - **Protection du token DuckDNS :** remplacer le fichier `.env` par des secrets Docker (`secrets:` dans le fichier Compose), afin que le token ne soit pas visible dans les variables d'environnement du conteneur (`docker exec traefik env`).
 - **Ports standard 80 et 443 :** publier `80:80` et `443:443` au lieu de 8080 et 8443, afin que l'URL n'ait plus besoin d'un numéro de port. Cela nécessite de libérer ces ports sur la VM.
 
 
 ## Conclusion
-
-::: {.callout-important title="Consigne"}
-Résumez ce qui a été mis en place et ce que le projet vous a appris. Donnez votre ressenti de groupe : qu'est-ce qui a été difficile, qu'est-ce qui vous a surpris, qu'est-ce que vous referiez différemment ?
-:::
 
 Nous avons mis en place un reverse-proxy avec certificat Let's Encrypt automatique en utilisant Traefik, DuckDNS, Docker avec trois conteneurs docker afin de répartir la charge sur les trois via un load balancer. Nous avons appris à utiliser DuckDNS pour créer un domaine.
 Nous avons également appris à faire en sorte que tout fonctionne ensemble, l'utilisation de Traefik, à activer la deuxième carte réseau, ainsi l'utilisation de fichiers ".qmd".

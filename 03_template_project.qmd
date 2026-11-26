@@ -39,24 +39,7 @@ lang: fr
 
 **{{< meta group >}}**
 
----
-
-::: {.callout-warning title="À lire avant de commencer — puis à supprimer"}
-Les blocs de consigne (comme celui-ci) vous guident section par section.
-**Supprimez tous les blocs de consigne avant la remise**.
-
-Rappels importants :
-
-- **Configuration réseau** : n'oubliez pas surtout si vous avez plusieurs VMs 
-- **Snapshots VirtualBox** : prenez un snapshot avant chaque étape majeure. En cas d'erreur, vous revenez en arrière en quelques secondes.
-- La **checklist avant remise** se trouve en fin de document.
-:::
-
 ## Introduction
-
-::: {.callout-important title="Consigne"}
-Décrivez en quelques paragraphes l'objectif du projet, le contexte et la problématique à laquelle vous répondez. Expliquez **ce que vous avez mis en place**, **pourquoi** vous avez choisi ces technologies.
-:::
 
 ### Objectif
 
@@ -249,10 +232,6 @@ La VM vm-proxy dispose également d'une interface NAT pour accéder à Internet,
 
 ## Diagramme au choix
 
-::: {.callout-important title="Consigne"}
-Choisissez un type de diagramme **pertinent et différent** du schéma d'architecture. Exemples : diagramme de séquence (flux d'une requête), diagramme d'états (cycle de vie d'un composant), diagramme de flux de données. Expliquez pourquoi vous avez choisi ce type de diagramme et ce qu'il apprend de plus que le schéma d'architecture.
-:::
-
 ```{mermaid}
 sequenceDiagram
     participant C as Client (hôte 192.168.56.1)
@@ -289,16 +268,6 @@ Les informations du client sont transmises aux serveurs NGINX : Traefik ajoute n
 Ainsi, ce diagramme illustre le fonctionnement du reverse proxy, la terminaison TLS et la répartition de charge entre les trois conteneurs web
 
 ## Installation et déploiement
-
-::: {.callout-important title="Consigne"}
-Décrivez la procédure **complète et reproductible**, étape par étape, sur Debian 13. Pour chaque étape :
-
-- indiquez sur **quelle VM** les commandes s'exécutent ;
-- expliquez en une phrase **pourquoi cette étape est nécessaire** (ligne "Pourquoi") — c'est ce qui distingue une documentation comprise d'un copier-coller ;
-- terminez par une **vérification immédiate** avec la sortie attendue.
-
-Les commandes doivent avoir été testées et fonctionner telles quelles.
-:::
 
 ### Prérequis
 
@@ -721,14 +690,6 @@ Les tests détaillés de l'accès HTTPS, de l'équilibrage de charge seront pré
 
 ## Vérification et tests
 
-::: {.callout-important title="Consigne"}
-Cette section doit **prouver** que votre solution fonctionne. Chaque test doit indiquer la commande utilisée, la sortie obtenue (copiée-collée ou en capture) et le résultat.
-
-Deux tests sont **obligatoires** quel que soit le sujet.
-Un test sans preuve n'est pas un test.
-
-:::
-
 ### Tableau récapitulatif des tests
 
 Les tests ont été réalisés avec le domaine `projetinfra.duckdns.org`. Traefik est publié sur les ports 8080 (HTTP) et 8443 (HTTPS) de la VM.
@@ -922,14 +883,6 @@ Ce qu'on ferait différemment :
 ## Checklist avant remise
 
 ::: {.callout-important title="À vérifier — puis supprimer cette section"}
-- [ ] `quarto render` fonctionne sans erreur ni warning
-- [ ] Noms des membres et numéro de groupe remplis (en-tête YAML)
-- [ ] Tous les blocs de consigne supprimés (y compris celui-ci et cette checklist)
-- [ ] Configuration réseau présente
-- [ ] Schéma d'architecture avec IPs et ports
 - [ ] Tableau de tests entièrement complété avec les résultats réels
-- [ ] Toutes les captures d'écran présentes dans `images/` et affichées dans le rendu
-- [ ] Section "Problèmes rencontrés" avec structure Symptôme/Cause/Solution
-- [ ] Orthographe relue (activez le correcteur dans VS Code)
 - [ ] Archive remise : `.qmd` + dossier `images/`
 :::

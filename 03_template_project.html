@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.20">
+<meta name="generator" content="quarto-1.11.9">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -71,14 +71,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="03_template_project_files/libs/clipboard/clipboard.min.js"></script>
 <script src="03_template_project_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="03_template_project_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="03_template_project_files/libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
 <script src="03_template_project_files/libs/quarto-html/popper.min.js"></script>
 <script src="03_template_project_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="03_template_project_files/libs/quarto-html/anchor.min.js"></script>
 <link href="03_template_project_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="03_template_project_files/libs/quarto-html/quarto-syntax-highlighting-dark-86fc916b84669629367aabb2a24c5117.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="03_template_project_files/libs/quarto-html/quarto-syntax-highlighting-dark-3218d7d29a29f08bc4fdf3802c3e3ca5.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="03_template_project_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="03_template_project_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="03_template_project_files/libs/bootstrap/bootstrap-976a99f9fdc2ff04a98a8ebc7fcc9518.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="03_template_project_files/libs/bootstrap/bootstrap-495770362026a879dc16e66e1deda1c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <meta name="mermaid-theme" content="neutral">
 <script src="03_template_project_files/libs/quarto-diagram/mermaid.min.js"></script>
 <script src="03_template_project_files/libs/quarto-diagram/mermaid-init.js"></script>
@@ -87,11 +88,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="quarto-light">
+<body class="quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Aller au contenu principal</a>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-  <nav id="TOC" role="doc-toc" class="toc-active">
+  <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
     <h2 id="toc-title">Sommaire</h2>
    
   <ul>
@@ -108,7 +109,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#configuration-des-ips-fixes" id="toc-configuration-des-ips-fixes" class="nav-link" data-scroll-target="#configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</a></li>
   <li><a href="#vérification-de-la-connectivité" id="toc-vérification-de-la-connectivité" class="nav-link" data-scroll-target="#vérification-de-la-connectivité"><span class="header-section-number">2.4</span> Vérification de la connectivité</a></li>
   </ul></li>
-  <li><a href="#architecture-demander-au-prof" id="toc-architecture-demander-au-prof" class="nav-link" data-scroll-target="#architecture-demander-au-prof"><span class="header-section-number">3</span> Architecture (DEMANDER AU PROF !!!!!!)</a>
+  <li><a href="#architecture" id="toc-architecture" class="nav-link" data-scroll-target="#architecture"><span class="header-section-number">3</span> Architecture</a>
   <ul class="collapse">
   <li><a href="#schéma-darchitecture" id="toc-schéma-darchitecture" class="nav-link" data-scroll-target="#schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</a></li>
   <li><a href="#tableau-des-composants" id="toc-tableau-des-composants" class="nav-link" data-scroll-target="#tableau-des-composants"><span class="header-section-number">3.2</span> Tableau des composants</a></li>
@@ -147,7 +148,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul>
 </nav>
 </div>
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content" tabindex="-1">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -184,41 +185,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><strong>Groupe 12</strong></p>
-<hr>
-<div class="callout callout-style-default callout-warning callout-titled" title="À lire avant de commencer — puis à supprimer">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Avertissement</span>À lire avant de commencer — puis à supprimer
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Les blocs de consigne (comme celui-ci) vous guident section par section. <strong>Supprimez tous les blocs de consigne avant la remise</strong>.</p>
-<p>Rappels importants :</p>
-<ul>
-<li><strong>Configuration réseau</strong> : n’oubliez pas surtout si vous avez plusieurs VMs</li>
-<li><strong>Snapshots VirtualBox</strong> : prenez un snapshot avant chaque étape majeure. En cas d’erreur, vous revenez en arrière en quelques secondes.</li>
-<li>La <strong>checklist avant remise</strong> se trouve en fin de document.</li>
-</ul>
-</div>
-</div>
 <section id="introduction" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Consigne
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Décrivez en quelques paragraphes l’objectif du projet, le contexte et la problématique à laquelle vous répondez. Expliquez <strong>ce que vous avez mis en place</strong>, <strong>pourquoi</strong> vous avez choisi ces technologies.</p>
-</div>
-</div>
 <section id="objectif" class="level3" data-number="1.1">
 <h3 data-number="1.1" class="anchored" data-anchor-id="objectif"><span class="header-section-number">1.1</span> Objectif</h3>
 <p>Ce projet met en place un reverse proxy avec gestion automatique des certificats. Nous utiliserons “Let’s Encrypt”, “Traefik” et Docker.</p>
@@ -230,7 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="éléments-inédits" class="level3" data-number="1.3">
 <h3 data-number="1.3" class="anchored" data-anchor-id="éléments-inédits"><span class="header-section-number">1.3</span> Éléments inédits</h3>
-<p>N’a pas été vu au cours : Treafik Let’s encrypt</p>
+<p>N’a pas été vu au cours : Traefik Let’s Encrypt DuckDns</p>
 </section>
 </section>
 <section id="configuration-réseau-virtualbox" class="level2" data-number="2">
@@ -257,7 +225,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="interfaces-réseau-virtualbox" class="level3" data-number="2.1">
 <h3 data-number="2.1" class="anchored" data-anchor-id="interfaces-réseau-virtualbox"><span class="header-section-number">2.1</span> Interfaces réseau VirtualBox</h3>
-<p>Chaque VM dispose de <strong>deux interfaces réseaux</strong> dans VirtualBox :</p>
+<p>Chaque VM dispose de <strong>deux interfaces réseau</strong> dans VirtualBox :</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -353,23 +321,19 @@ Note
 </section>
 <section id="configuration-des-ips-fixes" class="level3" data-number="2.3">
 <h3 data-number="2.3" class="anchored" data-anchor-id="configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</h3>
-<p>Avant de lancer la débiane: 1. Click droit sur la debian 2. Sélectionner “Configuration” 3. Aller dans “Réseau” 4. Aller dans “Adaptater 2”, puis cochez la case “Activer l’interface réseau” tout en haut. 5. Dans le menu déroulant “Attached to” (Rattaché à), sélectionnez “Host-only Adapter” (Réseau privé hôte). 6. Dans le champ “Name” qui va alors s’éclairer et devenir cliquable, sélectionnez vboxnet0. 7. Cliquez sur OK en bas pour valider.</p>
+<p>Avant de lancer Debian : 1. Clic droit sur Debian 2. Sélectionner “Configuration” 3. Aller dans “Réseau” 4. Aller dans “Adaptateur 2”, puis cochez la case “Activer l’interface réseau” tout en haut. 5. Dans le menu déroulant “Attached to” (Rattaché à), sélectionnez “Host-only Adapter” (Réseau privé hôte). 6. Dans le champ “Name” qui va alors s’éclairer et devenir cliquable, sélectionnez vboxnet0. 7. Cliquez sur OK en bas pour valider.</p>
 <p><strong>Sur vm-proxy</strong>, éditer <code>/etc/network/interfaces</code> :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /etc/network/interfaces</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface NAT — DHCP (laisser tel quel)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">auto</span> enp0s3</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">iface</span> enp0s3 inet dhcp</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface host-only — IP fixe</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">auto</span> enp0s8</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">iface</span> enp0s8 inet static</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">address</span> 192.168.56.10</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">netmask</span> 255.255.255.0</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface host-only — IP fixe</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">auto</span> enp0s8</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">iface</span> enp0s8 inet static</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">address</span> 192.168.56.10</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">netmask</span> 255.255.255.0</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Vérifier que le service networking est actif et que la configuration utilise bien ifupdown.</p>
 <p>Appliquer la configuration (de préférence depuis la console VirtualBox) :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> restart networking</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier les addresses IP :</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier les adresses IP :</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier spécifiquement l'interface host-only : </span></span>
@@ -383,7 +347,7 @@ Note
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.1</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Résultat attendu : 3 paquets reçus, 0 % de perte.</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis la machine hôte(terminal du pc), pinger vm-proxy.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis la machine hôte (terminal du PC), pinger vm-proxy.</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.10</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Le résultat attendu est =&gt; 3 paquets reçus, 0 % de perte.</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -440,6 +404,7 @@ Astuce
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
+
 <pre class="mermaid mermaid-js">flowchart TD
     H(["Machine hôte&lt;br/&gt;Navigateur / curl&lt;br/&gt;IP : 192.168.56.1&lt;br/&gt;hosts : projetinfra.duckdns.org vers 192.168.56.10"])
 
@@ -490,7 +455,7 @@ Astuce
 </div>
 </section>
 <section id="tableau-des-composants" class="level3" data-number="3.2">
-<h3 data-number="3.2" class="anchored"><span class="header-section-number">3.2</span> Tableau des composants</h3>
+<h3 data-number="3.2" class="anchored" data-anchor-id="tableau-des-composants"><span class="header-section-number">3.2</span> Tableau des composants</h3>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 20%">
@@ -564,7 +529,7 @@ Note
 </section>
 <section id="diagramme-au-choix" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="diagramme-au-choix"><span class="header-section-number">4</span> Diagramme au choix</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -582,6 +547,7 @@ Note
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
+
 <pre class="mermaid mermaid-js">sequenceDiagram
     participant C as Client (hôte 192.168.56.1)
     participant T as vm-proxy (Traefik)
@@ -607,15 +573,15 @@ Note
 </div>
 </div>
 <p>Expliquez le diagramme en quelques lignes : que représente-t-il, comment le lire, qu’apprend-on de plus par rapport au schéma d’architecture ?</p>
-<p>Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante: lire de haut en bas en suivant le chemin que montre les flèches. Il permet de comprendre les différentes étapes dans un ordre précis, ce que ne fait pas le schéma d’architecture et met en évidence trois éléments importants :</p>
+<p>Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante : lire de haut en bas en suivant le chemin que montrent les flèches. Il permet de comprendre les différentes étapes dans un ordre précis, ce que ne fait pas le schéma d’architecture et met en évidence trois éléments importants :</p>
 <p>La terminaison TLS est assurée par Traefik : la connexion entre le navigateur et Traefik est chiffrée en HTTPS. Traefik déchiffre la requête avant de la transmettre au conteneur Nginx en HTTP sur le réseau Docker interne.</p>
 <p>L’équilibrage de charge est assuré par Traefik : lorsqu’une requête arrive, Traefik la dirige vers l’un des trois conteneurs Nginx disponibles. Cela permet de répartir les requêtes entre plusieurs serveurs web.</p>
-<p>Les informations du client sont transmises aux servers NGINX : Traefik ajoute notamment les en-têtes X-Forwarded-For et X-Forwarded-Proto, qui permettent aux serveurs web de connaître l’adresse IP du client et le protocole utilisé à l’origine.</p>
+<p>Les informations du client sont transmises aux serveurs NGINX : Traefik ajoute notamment les en-têtes X-Forwarded-For et X-Forwarded-Proto, qui permettent aux serveurs web de connaître l’adresse IP du client et le protocole utilisé à l’origine.</p>
 <p>Ainsi, ce diagramme illustre le fonctionnement du reverse proxy, la terminaison TLS et la répartition de charge entre les trois conteneurs web</p>
 </section>
 <section id="installation-et-déploiement" class="level2" data-number="5">
 <h2 data-number="5" class="anchored" data-anchor-id="installation-et-déploiement"><span class="header-section-number">5</span> Installation et déploiement</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -822,7 +788,7 @@ Note
 <li>Traefik écoute sur les ports 80 et 443.</li>
 <li>Les trois conteneurs Nginx ne publient aucun port directement sur la VM.</li>
 <li>Les conteneurs communiquent grâce au réseau Docker <code>proxy</code>.</li>
-<li>Traefik utilise le fournisseur Docker(labels) pour découvrir les trois serveurs web.</li>
+<li>Traefik utilise le fournisseur Docker (labels) pour découvrir les trois serveurs web.</li>
 <li>Le résolveur ACME utilise le challenge DNS-01 de DuckDNS pour obtenir les certificats Let’s Encrypt.</li>
 </ul>
 <p><strong>Vérification de la configuration :</strong></p>
@@ -869,9 +835,11 @@ Note
 <pre class="text"><code>192.168.56.10 projetinfra.duckdns.org</code></pre>
 <p>Emplacement du fichier selon le système :</p>
 <ul>
-<li>Linux/macOS : <code>/etc/hosts</code></li>
-<li>Windows : <code>C:\Windows\System32\drivers\etc\hosts</code></li>
+<li>Linux/macOS : ```bash nano /etc/hosts</li>
 </ul>
+<pre><code>- Windows : ```bash
+notepad C:\Windows\System32\drivers\etc\hosts</code></pre>
+<p>N’oubliez pas de sauvegarder les modifications du fichier (CTRL + S ou autre)</p>
 <p>Remplacer le nom de domaine par celui configuré dans les labels de <code>docker-compose.yml</code>.</p>
 <p>Cette résolution locale permet au navigateur de joindre Traefik sur <code>192.168.56.10</code>, tout en utilisant le véritable nom de domaine pour la négociation HTTPS.</p>
 <p>Il n’est pas nécessaire de publier l’adresse privée de la VM dans un enregistrement DNS public A pour utiliser le challenge DNS-01.</p>
@@ -880,16 +848,16 @@ Note
 <h3 data-number="5.8" class="anchored" data-anchor-id="vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.8</span> Vérification de l’obtention du certificat Let’s Encrypt (sur vm-proxy)</h3>
 <p><strong>Pourquoi :</strong> cette étape permet de vérifier que Traefik communique correctement avec Let’s Encrypt, que le challenge DNS-01 fonctionne et qu’un certificat valide est obtenu automatiquement.</p>
 <p>Consulter les journaux de Traefik :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> logs traefik </span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> logs traefik </span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Traefik doit réussir la validation DNS et obtenir un certificat pour le domaine configuré.</p>
 <p>Vérifier ensuite le contenu du fichier ACME :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="st">'"main": "[^"]*"'</span> letsencrypt/acme.json</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Le commande doit montrer “main”: “projetinfra.duckdns.org”</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="st">'"main": "[^"]*"'</span> letsencrypt/acme.json</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La commande doit montrer “main”: “projetinfra.duckdns.org”</p>
 <p>Pour vérifier le certificat depuis la machine hôte dans un terminal bash :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> s_client <span class="dt">\</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-connect</span> 192.168.56.10:8443 <span class="dt">\</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-servername</span> projetinfra.duckdns.org <span class="dt">\</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="ex">openssl</span> x509 <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span> <span class="at">-dates</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> s_client <span class="dt">\</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-connect</span> 192.168.56.10:8443 <span class="dt">\</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-servername</span> projetinfra.duckdns.org <span class="dt">\</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="ex">openssl</span> x509 <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span> <span class="at">-dates</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Le résultat doit afficher :</p>
 <ul>
 <li>Le nom de domaine correspondant au certificat.</li>
@@ -904,9 +872,9 @@ Note
 <p><strong>Pourquoi :</strong> nous voulons que les services redémarrent automatiquement après un redémarrage de la VM, sans devoir relancer manuellement les conteneurs.</p>
 <p>Vérifier que les services disposent de la politique <code>restart: unless-stopped</code> dans le fichier Docker Compose.</p>
 <p>Tester le redémarrage :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Après le redémarrage, vérifier :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Les quatre conteneurs doivent être de nouveau actifs.</p>
 </section>
 <section id="bilan-de-linstallation" class="level3" data-number="5.10">
@@ -925,7 +893,7 @@ Note
 </section>
 <section id="vérification-et-tests" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="vérification-et-tests"><span class="header-section-number">6</span> Vérification et tests</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1032,7 +1000,7 @@ Note
 <section id="test-1-conteneurs-actifs" class="level3" data-number="6.2">
 <h3 data-number="6.2" class="anchored" data-anchor-id="test-1-conteneurs-actifs"><span class="header-section-number">6.2</span> Test 1 — Conteneurs actifs</h3>
 <p>Ce test vérifie que Traefik et les trois serveurs Nginx sont démarrés et que Traefik publie bien les ports 8080 et 8443.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Résultat attendu : <code>traefik</code>, <code>nginx1</code>, <code>nginx2</code> et <code>nginx3</code> avec le statut <code>Up</code>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1051,9 +1019,9 @@ Astuce
 <section id="test-2-certificat-lets-encrypt" class="level3" data-number="6.3">
 <h3 data-number="6.3" class="anchored" data-anchor-id="test-2-certificat-lets-encrypt"><span class="header-section-number">6.3</span> Test 2 — Certificat Let’s Encrypt</h3>
 <p>Ce test prouve que le certificat servi par Traefik a bien été émis par Let’s Encrypt grâce au défi DNS-01, et non par le certificat de secours de Traefik.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> s_client <span class="at">-connect</span> 192.168.56.10:8443 <span class="dt">\</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-servername</span> projetinfra.duckdns.org <span class="op">&lt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="dt">\</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="ex">openssl</span> x509 <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span> <span class="at">-dates</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> s_client <span class="at">-connect</span> 192.168.56.10:8443 <span class="dt">\</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-servername</span> projetinfra.duckdns.org <span class="op">&lt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="dt">\</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="ex">openssl</span> x509 <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span> <span class="at">-dates</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Résultat attendu : un sujet correspondant à <code>projetinfra.duckdns.org</code>, un émetteur Let’s Encrypt (et non <code>TRAEFIK DEFAULT CERT</code>), ainsi que les dates de début et de fin de validité.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1072,13 +1040,13 @@ Astuce
 <section id="test-3-https-de-confiance" class="level3" data-number="6.4">
 <h3 data-number="6.4" class="anchored" data-anchor-id="test-3-https-de-confiance"><span class="header-section-number">6.4</span> Test 3 — HTTPS de confiance</h3>
 <p>Ce test vérifie que le certificat est reconnu comme valide : <code>curl</code> n’utilise pas l’option <code>-k</code>, donc il refuserait un certificat non fiable (par exemple celui de l’environnement de test staging).</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> https://projetinfra.duckdns.org:8443</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> https://projetinfra.duckdns.org:8443</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Résultat attendu : <code>&lt;h1&gt;Bienvenue sur le serveur Nginx X&lt;/h1&gt;</code>, sans message d’erreur de certificat.</p>
 </section>
 <section id="test-4-équilibrage-de-charge" class="level3" data-number="6.5">
 <h3 data-number="6.5" class="anchored" data-anchor-id="test-4-équilibrage-de-charge"><span class="header-section-number">6.5</span> Test 4 — Équilibrage de charge</h3>
 <p>Ce test montre que Traefik répartit les requêtes entre les trois conteneurs Nginx.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="va">$(</span><span class="fu">seq</span> 1 9<span class="va">)</span><span class="kw">;</span> <span class="cf">do</span> <span class="ex">curl</span> <span class="at">-s</span> https://projetinfra.duckdns.org:8443<span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="va">$(</span><span class="fu">seq</span> 1 9<span class="va">)</span><span class="kw">;</span> <span class="cf">do</span> <span class="ex">curl</span> <span class="at">-s</span> https://projetinfra.duckdns.org:8443<span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Résultat attendu : les pages Nginx 1, 2 et 3 reviennent tour à tour (répartition de type round-robin). L’ordre de départ peut varier.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1097,9 +1065,9 @@ Astuce
 <section id="test-5-panne-simulée" class="level3" data-number="6.6">
 <h3 data-number="6.6" class="anchored" data-anchor-id="test-5-panne-simulée"><span class="header-section-number">6.6</span> Test 5 — Panne simulée</h3>
 <p>Ce test vérifie le comportement lorsqu’un serveur tombe en panne.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stop nginx2</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="va">$(</span><span class="fu">seq</span> 1 6<span class="va">)</span><span class="kw">;</span> <span class="cf">do</span> <span class="ex">curl</span> <span class="at">-s</span> https://projetinfra.duckdns.org:8443<span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> start nginx2</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stop nginx2</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="va">$(</span><span class="fu">seq</span> 1 6<span class="va">)</span><span class="kw">;</span> <span class="cf">do</span> <span class="ex">curl</span> <span class="at">-s</span> https://projetinfra.duckdns.org:8443<span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> start nginx2</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Résultat attendu : seuls Nginx 1 et Nginx 3 répondent. Une erreur brève juste après l’arrêt du conteneur est possible, car aucune vérification d’état (health check) n’est configurée ; si elle se produit, la noter ici.</p>
 </section>
 <section id="test-6-accès-depuis-le-navigateur" class="level3" data-number="6.7">
@@ -1123,19 +1091,19 @@ Astuce
 <section id="test-7-redémarrage-automatique" class="level3" data-number="6.8">
 <h3 data-number="6.8" class="anchored" data-anchor-id="test-7-redémarrage-automatique"><span class="header-section-number">6.8</span> Test 7 — Redémarrage automatique</h3>
 <p>Ce test vérifie que les services redémarrent seuls grâce à la politique <code>restart: unless-stopped</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># après le redémarrage et la reconnexion :</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co"># après le redémarrage et la reconnexion :</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Résultat attendu : les quatre conteneurs sont de nouveau <code>Up</code>, sans intervention manuelle.</p>
 </section>
 <section id="test-8-sécurité-négative" class="level3" data-number="6.9">
 <h3 data-number="6.9" class="anchored" data-anchor-id="test-8-sécurité-négative"><span class="header-section-number">6.9</span> Test 8 — Sécurité négative</h3>
 <p>Ce test vérifie que l’on ne peut atteindre les services que par Traefik et avec le bon nom de domaine.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Accès par l'adresse IP au lieu du nom de domaine :</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-k</span> https://192.168.56.10:8443</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Accès direct au port 80 de la VM (les conteneurs Nginx ne publient aucun port) :</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-m</span> 5 http://192.168.56.10:80</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># → coller ici les vraies sorties</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Accès par l'adresse IP au lieu du nom de domaine :</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-k</span> https://192.168.56.10:8443</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Accès direct au port 80 de la VM (les conteneurs Nginx ne publient aucun port) :</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-m</span> 5 http://192.168.56.10:80</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="co"># → coller ici les vraies sorties</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Résultat attendu : <code>404 page not found</code> renvoyé par Traefik pour le premier test (aucune règle ne correspond à l’adresse IP), et un refus de connexion ou un délai dépassé pour le second.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1154,7 +1122,7 @@ Astuce
 </section>
 <section id="problèmes-rencontrés" class="level2" data-number="7">
 <h2 data-number="7" class="anchored" data-anchor-id="problèmes-rencontrés"><span class="header-section-number">7</span> Problèmes rencontrés</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1189,36 +1157,13 @@ Astuce
 </section>
 <section id="distribution-des-tâches" class="level2" data-number="8">
 <h2 data-number="8" class="anchored" data-anchor-id="distribution-des-tâches"><span class="header-section-number">8</span> Distribution des tâches</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Membre</th>
-<th>Tâches réalisées</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Prénom Nom 1</td>
-<td>…</td>
-</tr>
-<tr class="even">
-<td>Prénom Nom 2</td>
-<td>…</td>
-</tr>
-<tr class="odd">
-<td>Prénom Nom 3</td>
-<td>…</td>
-</tr>
-<tr class="even">
-<td>Prénom Nom 4</td>
-<td>…</td>
-</tr>
-</tbody>
-</table>
+<p>Nous avons fait des appels et, par conséquent, nous avons tous travaillé à parts égales.</p>
+<p>Notre organisation a été la suivante : - Deux personnes chargées de la recherche d’information, de commande, etc. - Une autre qui rédige - Et la dernière qui testait ce qui a été fait</p>
+<p>Nous avons tous tourné parmi tous les rôles.</p>
 </section>
 <section id="améliorations-possibles" class="level2" data-number="9">
 <h2 data-number="9" class="anchored" data-anchor-id="améliorations-possibles"><span class="header-section-number">9</span> Améliorations possibles</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1239,7 +1184,7 @@ Astuce
 </section>
 <section id="conclusion" class="level2" data-number="10">
 <h2 data-number="10" class="anchored" data-anchor-id="conclusion"><span class="header-section-number">10</span> Conclusion</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1252,11 +1197,13 @@ Astuce
 <p>Résumez ce qui a été mis en place et ce que le projet vous a appris. Donnez votre ressenti de groupe : qu’est-ce qui a été difficile, qu’est-ce qui vous a surpris, qu’est-ce que vous referiez différemment ?</p>
 </div>
 </div>
-<p>…</p>
+<p>Nous avons mis en place un reverse-proxy avec certificat Let’s Encrypt automatique en utilisant Traefik, DuckDNS, Docker avec trois conteneurs docker afin de répartir la charge sur les trois via un load balancer. Nous avons appris à utiliser DuckDNS pour créer un domaine. Nous avons également appris à faire en sorte que tout fonctionne ensemble, l’utilisation de Traefik, à activer la deuxième carte réseau, ainsi l’utilisation de fichiers “.qmd”.</p>
+<p>Ce qui a été difficile : - Régler les problèmes réseau - L’utilisation de Let’s Encrypt si on n’a pas de domaine. - Régler les erreurs venant de Traefik.</p>
+<p>Ce qu’on ferait différemment : - Regarder plus en détail les technologies avant de commencer le guide, pour éviter des complications qu’on peut facilement éviter.</p>
 </section>
 <section id="checklist-avant-remise" class="level2" data-number="11">
 <h2 data-number="11" class="anchored" data-anchor-id="checklist-avant-remise"><span class="header-section-number">11</span> Checklist avant remise</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="À vérifier — puis supprimer cette section">
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1280,10 +1227,6 @@ Astuce
 </ul>
 </div>
 </div>
-</section>
-</div>
-</div>
-</section>
 </section>
 
 </main>
@@ -1366,7 +1309,8 @@ Astuce
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
       // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
       for (var i=0; i<links.length; i++) {
         const link = links[i];
         if (!isInternal(link.href)) {
@@ -1375,8 +1319,69 @@ Astuce
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+          if (!link.classList.contains('no-external-icon')) {
+          }
         }
       }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
       const config = {
         allowHTML: true,
@@ -1390,6 +1395,7 @@ Astuce
         interactiveBorder: 10,
         theme: 'quarto',
         placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
       };
       if (contentFn) {
         config.content = contentFn;
@@ -1552,44 +1558,54 @@ Astuce
           const lineIds = lines.map((line) => {
             return targetCell + "-" + line;
           })
-          let top = null;
-          let height = null;
-          let parent = null;
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
           if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
             }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
             }
+            placeBand(gutterDiv, el, lastEl);
             selectedAnnoteEl = annoteEl;
           }
         };
@@ -1687,6 +1703,9 @@ Astuce
       }
     }
   });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Code défilable","output":"Sortie défilable"};
   </script>
 </div> <!-- /content -->
 

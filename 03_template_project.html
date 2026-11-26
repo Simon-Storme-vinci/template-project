@@ -117,15 +117,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installation-et-déploiement" id="toc-installation-et-déploiement" class="nav-link" data-scroll-target="#installation-et-déploiement"><span class="header-section-number">5</span> Installation et déploiement</a>
   <ul class="collapse">
   <li><a href="#prérequis" id="toc-prérequis" class="nav-link" data-scroll-target="#prérequis"><span class="header-section-number">5.1</span> Prérequis</a></li>
-  <li><a href="#titre-de-létape-sur-vm-xxx" id="toc-titre-de-létape-sur-vm-xxx" class="nav-link" data-scroll-target="#titre-de-létape-sur-vm-xxx"><span class="header-section-number">5.2</span> [Titre de l’étape] (sur vm-xxx)</a></li>
-  <li><a href="#titre-de-létape-sur-vm-yyy" id="toc-titre-de-létape-sur-vm-yyy" class="nav-link" data-scroll-target="#titre-de-létape-sur-vm-yyy"><span class="header-section-number">5.3</span> [Titre de l’étape] (sur vm-yyy)</a></li>
-  <li><a href="#titre-de-létape" id="toc-titre-de-létape" class="nav-link" data-scroll-target="#titre-de-létape"><span class="header-section-number">5.4</span> [Titre de l’étape]</a></li>
+  <li><a href="#préparation-de-lenvironnement-docker-sur-vm-proxy" id="toc-préparation-de-lenvironnement-docker-sur-vm-proxy" class="nav-link" data-scroll-target="#préparation-de-lenvironnement-docker-sur-vm-proxy"><span class="header-section-number">5.2</span> Préparation de l’environnement Docker (sur vm-proxy)</a></li>
+  <li><a href="#installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" id="toc-installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.3</span> Installation et préparation des serveurs web Nginx (sur vm-proxy)</a></li>
+  <li><a href="#configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" id="toc-configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" class="nav-link" data-scroll-target="#configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.4</span> Configuration de Traefik et de Let’s Encrypt (sur vm-proxy)</a></li>
+  <li><a href="#déploiement-des-conteneurs-sur-vm-proxy" id="toc-déploiement-des-conteneurs-sur-vm-proxy" class="nav-link" data-scroll-target="#déploiement-des-conteneurs-sur-vm-proxy"><span class="header-section-number">5.5</span> Déploiement des conteneurs (sur vm-proxy)</a></li>
+  <li><a href="#vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" id="toc-vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy"><span class="header-section-number">5.6</span> Vérification du fonctionnement des serveurs Nginx (sur vm-proxy)</a></li>
+  <li><a href="#configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" id="toc-configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" class="nav-link" data-scroll-target="#configuration-de-la-résolution-dns-locale-sur-la-machine-hôte"><span class="header-section-number">5.7</span> Configuration de la résolution DNS locale (sur la machine hôte)</a></li>
+  <li><a href="#vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" id="toc-vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.8</span> Vérification de l’obtention du certificat Let’s Encrypt (sur vm-proxy)</a></li>
+  <li><a href="#vérification-du-démarrage-automatique-sur-vm-proxy" id="toc-vérification-du-démarrage-automatique-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-du-démarrage-automatique-sur-vm-proxy"><span class="header-section-number">5.9</span> Vérification du démarrage automatique (sur vm-proxy)</a></li>
+  <li><a href="#bilan-de-linstallation" id="toc-bilan-de-linstallation" class="nav-link" data-scroll-target="#bilan-de-linstallation"><span class="header-section-number">5.10</span> Bilan de l’installation</a></li>
   </ul></li>
   <li><a href="#vérification-et-tests" id="toc-vérification-et-tests" class="nav-link" data-scroll-target="#vérification-et-tests"><span class="header-section-number">6</span> Vérification et tests</a>
   <ul class="collapse">
   <li><a href="#tableau-récapitulatif-des-tests" id="toc-tableau-récapitulatif-des-tests" class="nav-link" data-scroll-target="#tableau-récapitulatif-des-tests"><span class="header-section-number">6.1</span> Tableau récapitulatif des tests</a></li>
-  <li><a href="#test-1-titre" id="toc-test-1-titre" class="nav-link" data-scroll-target="#test-1-titre"><span class="header-section-number">6.2</span> Test 1 — [Titre]</a></li>
-  <li><a href="#test-2-titre" id="toc-test-2-titre" class="nav-link" data-scroll-target="#test-2-titre"><span class="header-section-number">6.3</span> Test 2 — [Titre]</a></li>
+  <li><a href="#test-1-conteneurs-actifs" id="toc-test-1-conteneurs-actifs" class="nav-link" data-scroll-target="#test-1-conteneurs-actifs"><span class="header-section-number">6.2</span> Test 1 — Conteneurs actifs</a></li>
+  <li><a href="#test-2-certificat-lets-encrypt" id="toc-test-2-certificat-lets-encrypt" class="nav-link" data-scroll-target="#test-2-certificat-lets-encrypt"><span class="header-section-number">6.3</span> Test 2 — Certificat Let’s Encrypt</a></li>
+  <li><a href="#test-3-https-de-confiance" id="toc-test-3-https-de-confiance" class="nav-link" data-scroll-target="#test-3-https-de-confiance"><span class="header-section-number">6.4</span> Test 3 — HTTPS de confiance</a></li>
+  <li><a href="#test-4-équilibrage-de-charge" id="toc-test-4-équilibrage-de-charge" class="nav-link" data-scroll-target="#test-4-équilibrage-de-charge"><span class="header-section-number">6.5</span> Test 4 — Équilibrage de charge</a></li>
+  <li><a href="#test-5-panne-simulée" id="toc-test-5-panne-simulée" class="nav-link" data-scroll-target="#test-5-panne-simulée"><span class="header-section-number">6.6</span> Test 5 — Panne simulée</a></li>
+  <li><a href="#test-6-accès-depuis-le-navigateur" id="toc-test-6-accès-depuis-le-navigateur" class="nav-link" data-scroll-target="#test-6-accès-depuis-le-navigateur"><span class="header-section-number">6.7</span> Test 6 — Accès depuis le navigateur</a></li>
+  <li><a href="#test-7-redémarrage-automatique" id="toc-test-7-redémarrage-automatique" class="nav-link" data-scroll-target="#test-7-redémarrage-automatique"><span class="header-section-number">6.8</span> Test 7 — Redémarrage automatique</a></li>
+  <li><a href="#test-8-sécurité-négative" id="toc-test-8-sécurité-négative" class="nav-link" data-scroll-target="#test-8-sécurité-négative"><span class="header-section-number">6.9</span> Test 8 — Sécurité négative</a></li>
   </ul></li>
   <li><a href="#problèmes-rencontrés" id="toc-problèmes-rencontrés" class="nav-link" data-scroll-target="#problèmes-rencontrés"><span class="header-section-number">7</span> Problèmes rencontrés</a></li>
   <li><a href="#distribution-des-tâches" id="toc-distribution-des-tâches" class="nav-link" data-scroll-target="#distribution-des-tâches"><span class="header-section-number">8</span> Distribution des tâches</a></li>
@@ -159,7 +171,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Date de publication</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">30 octobre 2026</p>
+      <p class="date">26 novembre 2026</p>
     </div>
   </div>
   
@@ -421,19 +433,6 @@ Astuce
 </section>
 <section id="architecture" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="architecture"><span class="header-section-number">3</span> Architecture</h2>
-<div class="callout callout-style-default callout-important callout-titled" title="Consigne">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Consigne
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Présentez un schéma d’architecture de votre projet, <strong>de préférence en Mermaid</strong> (voir le guide <code>02_installation_getstarted.qmd</code> et l’exemple fourni). Le schéma doit inclure <strong>les noms des VMs, leurs IPs, les ports utilisés et les flux réseau</strong>. Un schéma sans IPs ni ports n’est pas suffisant.</p>
-</div>
-</div>
 <section id="schéma-darchitecture" class="level3" data-number="3.1">
 <h3 data-number="3.1" class="anchored" data-anchor-id="schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</h3>
 <div class="cell" data-layout-align="default">
@@ -442,12 +441,47 @@ Astuce
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">flowchart TD
-    H([Machine hôte&lt;br/&gt;192.168.56.1]) --&gt;|Protocole :port| A
-    subgraph HO[Réseau host-only 192.168.56.0/24]
-        A[vm-xxx&lt;br/&gt;Rôle — Debian 12&lt;br/&gt;192.168.56.N0&lt;br/&gt;ports ...]
-        B[vm-yyy&lt;br/&gt;Rôle — Debian 12&lt;br/&gt;192.168.56.N1&lt;br/&gt;ports ...]
-        A --&gt;|Protocole :port| B
+    H(["Machine hôte&lt;br/&gt;Navigateur / curl&lt;br/&gt;IP : 192.168.56.1&lt;br/&gt;hosts : projetinfra.duckdns.org vers 192.168.56.10"])
+
+    subgraph VM["Machine virtuelle VirtualBox : vm-proxy (Debian 13)"]
+        direction TB
+
+        HO["Carte réseau 2 : Host-only&lt;br/&gt;enp0s8&lt;br/&gt;IP fixe : 192.168.56.10"]
+        NAT["Carte réseau 1 : NAT&lt;br/&gt;enp0s3&lt;br/&gt;IP attribuée par DHCP"]
+
+        subgraph DOCKER["Réseau Docker interne : proxy"]
+            direction TB
+            P["Traefik - Reverse Proxy&lt;br/&gt;Terminaison TLS et équilibrage de charge&lt;br/&gt;Ports publiés sur la VM : 8080 (HTTP) et 8443 (HTTPS)&lt;br/&gt;Ports dans le conteneur : 80 et 443"]
+            W1["Conteneur Nginx 1&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80 (interne)"]
+            W2["Conteneur Nginx 2&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80 (interne)"]
+            W3["Conteneur Nginx 3&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80 (interne)"]
+        end
+
+        HO --&gt; P
+        P --&gt;|"HTTP : 80&lt;br/&gt;round-robin"| W1
+        P --&gt;|"HTTP : 80&lt;br/&gt;round-robin"| W2
+        P --&gt;|"HTTP : 80&lt;br/&gt;round-robin"| W3
+        P -.-&gt; NAT
     end
+
+    subgraph NET["Internet"]
+        LE["Let's Encrypt&lt;br/&gt;(serveur ACME)"]
+        DD["DuckDNS&lt;br/&gt;(API DNS : enregistrement TXT)"]
+    end
+
+    H --&gt;|"HTTPS : 8443&lt;br/&gt;HTTP : 8080"| HO
+
+    NAT -.-&gt;|"HTTPS : 443 (sortant)&lt;br/&gt;Défi DNS-01 et certificat"| LE
+    NAT -.-&gt;|"HTTPS : 443 (sortant)&lt;br/&gt;Création du TXT _acme-challenge"| DD
+
+    style P fill:#69b,stroke:#333,color:#fff
+    style W1 fill:#6a9,stroke:#333,color:#fff
+    style W2 fill:#6a9,stroke:#333,color:#fff
+    style W3 fill:#6a9,stroke:#333,color:#fff
+    style HO fill:#ddd,stroke:#333,color:#222
+    style NAT fill:#ddd,stroke:#333,color:#222
+    style LE fill:#fc9,stroke:#333,color:#222
+    style DD fill:#fc9,stroke:#333,color:#222
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -476,11 +510,11 @@ Astuce
 </thead>
 <tbody>
 <tr class="odd">
-<td>Service A</td>
-<td>vm-xxx</td>
-<td>192.168.56.N0</td>
-<td>XXX</td>
-<td>Description</td>
+<td>Traefik</td>
+<td>vm-proxy</td>
+<td>192.168.56.10</td>
+<td>8080, 8443</td>
+<td>Reverse proxy, terminaison TLS et équilibrage de charge</td>
 </tr>
 <tr class="even">
 <td>Nginx 1</td>
@@ -512,6 +546,20 @@ Astuce
 </tr>
 </tbody>
 </table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n’est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 8080 (HTTP) et 8443 (HTTPS).</p>
+<p>La VM vm-proxy dispose également d’une interface NAT pour accéder à Internet, notamment pour télécharger les images Docker et communiquer avec Let’s Encrypt.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="diagramme-au-choix" class="level2" data-number="4">
@@ -535,14 +583,23 @@ Astuce
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">sequenceDiagram
-    participant C as Client
-    participant S1 as Service A
-    participant S2 as Service B
+    participant C as Client (hôte 192.168.56.1)
+    participant T as vm-proxy (Traefik)
+    participant LE as Let's Encrypt (ACME)
+    participant N as Conteneur Nginx (Docker)
 
-    C-&gt;&gt;S1: Requête
-    S1-&gt;&gt;S2: Transfert
-    S2--&gt;&gt;S1: Réponse
-    S1--&gt;&gt;C: Réponse
+    Note over T,LE: Étape 1 : Génération automatique du certificat (Initialisation / Renouvellement)
+    T-&gt;&gt;LE: Demande de certificat (Requête ACME / Défi)
+    LE--&gt;&gt;T: Validation et délivrance du certificat SSL/TLS
+
+    Note over C,T: Étape 2 : Requête client et terminaison TLS
+    C-&gt;&gt;T: HTTPS GET / (Établissement TLS avec le certificat Let's Encrypt)
+    Note over T: Terminaison TLS&lt;br/&gt;Déchiffrement de la requête
+    Note over T: Sélection du service&lt;br/&gt;et routage vers le conteneur
+    T-&gt;&gt;N: HTTP GET /&lt;br/&gt;+ X-Forwarded-For&lt;br/&gt;+ X-Forwarded-Proto: https
+    Note over N: Traitement et envoi&lt;br/&gt;du fichier HTML
+    N--&gt;&gt;T: HTTP 200 OK (page HTML)
+    T--&gt;&gt;C: HTTPS 200 OK (page HTML chiffrée)
 </pre>
 </div>
 <p></p></figure><p></p>

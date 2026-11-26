@@ -70,8 +70,9 @@ Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, 
 
 ### Éléments inédits
 N'a pas été vu au cours : 
-    Treafik 
-    Let's encrypt
+    Traefik 
+    Let's Encrypt
+    DuckDns
 
 
 ## Configuration réseau VirtualBox
@@ -81,7 +82,7 @@ N'a pas été vu au cours :
 
 ### Interfaces réseau VirtualBox
 
-Chaque VM dispose de **deux interfaces réseaux** dans VirtualBox :
+Chaque VM dispose de **deux interfaces réseau** dans VirtualBox :
 
 | Interface | Type VirtualBox | Rôle |
 |---|---|---|
@@ -111,11 +112,11 @@ Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de vot
 | Machine hôte | vboxnet0 | 192.168.56.1 | /24 | Attribuée automatiquement par VirtualBox |
 
 ### Configuration des IPs fixes
-Avant de lancer la débiane: 
-  1. Click droit sur la debian
+Avant de lancer Debian : 
+  1. Clic droit sur Debian
   2. Sélectionner "Configuration"
   3. Aller dans "Réseau"
-  4. Aller dans "Adaptater 2", puis cochez la case "Activer l'interface réseau" tout en haut.
+  4. Aller dans "Adaptateur 2", puis cochez la case "Activer l'interface réseau" tout en haut.
   5. Dans le menu déroulant "Attached to" (Rattaché à), sélectionnez "Host-only Adapter" (Réseau privé hôte).
   6. Dans le champ "Name" qui va alors s'éclairer et devenir cliquable, sélectionnez vboxnet0.
   7. Cliquez sur OK en bas pour valider.
@@ -141,7 +142,7 @@ Appliquer la configuration (de préférence depuis la console VirtualBox) :
 ```bash 
 systemctl restart networking
 
-# Vérifier les addresses IP :
+# Vérifier les adresses IP :
 ip a 
 
 # Vérifier spécifiquement l'interface host-only : 
@@ -158,7 +159,7 @@ Avant toute installation, vérifier que tout le monde se voit :
 ping -c 3 192.168.56.1
 # Résultat attendu : 3 paquets reçus, 0 % de perte.
 
-# Depuis la machine hôte(terminal du pc), pinger vm-proxy.
+# Depuis la machine hôte (terminal du PC), pinger vm-proxy.
 ping -c 3 192.168.56.10
 # Le résultat attendu est => 3 paquets reçus, 0 % de perte.
 
@@ -276,14 +277,14 @@ sequenceDiagram
 Expliquez le diagramme en quelques lignes : que représente-t-il, comment le lire, qu'apprend-on de plus par rapport au schéma d'architecture ?
 
 
-Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante: lire de haut en bas en suivant le chemin que montre les flèches.
+Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante : lire de haut en bas en suivant le chemin que montrent les flèches.
 Il permet de comprendre les différentes étapes dans un ordre précis, ce que ne fait pas le schéma d'architecture et met en évidence trois éléments importants :
 
 La terminaison TLS est assurée par Traefik : la connexion entre le navigateur et Traefik est chiffrée en HTTPS. Traefik déchiffre la requête avant de la transmettre au conteneur Nginx en HTTP sur le réseau Docker interne.
 
 L'équilibrage de charge est assuré par Traefik : lorsqu'une requête arrive, Traefik la dirige vers l'un des trois conteneurs Nginx disponibles. Cela permet de répartir les requêtes entre plusieurs serveurs web.
 
-Les informations du client sont transmises aux servers NGINX : Traefik ajoute notamment les en-têtes X-Forwarded-For et X-Forwarded-Proto, qui permettent aux serveurs web de connaître l'adresse IP du client et le protocole utilisé à l'origine.
+Les informations du client sont transmises aux serveurs NGINX : Traefik ajoute notamment les en-têtes X-Forwarded-For et X-Forwarded-Proto, qui permettent aux serveurs web de connaître l'adresse IP du client et le protocole utilisé à l'origine.
 
 Ainsi, ce diagramme illustre le fonctionnement du reverse proxy, la terminaison TLS et la répartition de charge entre les trois conteneurs web
 
@@ -554,7 +555,7 @@ Dans cette configuration :
 - Traefik écoute sur les ports 80 et 443.
 - Les trois conteneurs Nginx ne publient aucun port directement sur la VM.
 - Les conteneurs communiquent grâce au réseau Docker `proxy`.
-- Traefik utilise le fournisseur Docker(labels) pour découvrir les trois serveurs web.
+- Traefik utilise le fournisseur Docker (labels) pour découvrir les trois serveurs web.
 - Le résolveur ACME utilise le challenge DNS-01 de DuckDNS pour obtenir les certificats Let's Encrypt.
 
 **Vérification de la configuration :**
@@ -637,7 +638,7 @@ nano /etc/hosts
 - Windows : ```bash
 notepad C:\Windows\System32\drivers\etc\hosts
 ```
-N'oublié pas de sauvgarder les modifications du fichier (CTRL + S ou autre)
+N'oubliez pas de sauvegarder les modifications du fichier (CTRL + S ou autre)
 
 Remplacer le nom de domaine par celui configuré dans les labels de `docker-compose.yml`.
 
@@ -663,7 +664,7 @@ Vérifier ensuite le contenu du fichier ACME :
 grep -o '"main": "[^"]*"' letsencrypt/acme.json
 ```
 
-Le commande doit montrer "main": "projetinfra.duckdns.org"
+La commande doit montrer "main": "projetinfra.duckdns.org"
 
 Pour vérifier le certificat depuis la machine hôte dans un terminal bash :
 
@@ -895,12 +896,14 @@ Décrivez les 2 à 4 problèmes qui vous ont le plus bloqués, avec la structure
 
 ## Distribution des tâches
 
-| Membre | Tâches réalisées |
-|---|---|
-| Prénom Nom 1 | ... |
-| Prénom Nom 2 | ... |
-| Prénom Nom 3 | ... |
-| Prénom Nom 4 | ... |
+Nous avons fait des appels et, par conséquent, nous avons tous travaillé à parts égales.
+
+Notre organisation a été la suivante : 
+  - Deux personnes chargées de la recherche d'information, de commande, etc.
+  - Une autre qui rédige 
+  - Et la dernière qui testait ce qui a été fait
+
+Nous avons tous tourné parmi tous les rôles.
 
 
 ## Améliorations possibles
@@ -920,7 +923,16 @@ Proposez des améliorations concrètes et réalistes. Évitez les généralités
 Résumez ce qui a été mis en place et ce que le projet vous a appris. Donnez votre ressenti de groupe : qu'est-ce qui a été difficile, qu'est-ce qui vous a surpris, qu'est-ce que vous referiez différemment ?
 :::
 
-...
+Nous avons mis en place un reverse-proxy avec certificat Let's Encrypt automatique en utilisant Traefik, DuckDNS, Docker avec trois conteneurs docker afin de répartir la charge sur les trois via un load balancer. Nous avons appris à utiliser DuckDNS pour créer un domaine.
+Nous avons également appris à faire en sorte que tout fonctionne ensemble, l'utilisation de Traefik, à activer la deuxième carte réseau, ainsi l'utilisation de fichiers ".qmd".
+
+Ce qui a été difficile : 
+- Régler les problèmes réseau
+- L'utilisation de Let's Encrypt si on n'a pas de domaine.
+- Régler les erreurs venant de Traefik.
+
+Ce qu'on ferait différemment :
+- Regarder plus en détail les technologies avant de commencer le guide, pour éviter des complications qu'on peut facilement éviter.
 
 
 ## Checklist avant remise

@@ -1,5 +1,5 @@
 ---
-title: "Revers Proxy avec certificat automatique"
+title: "Reverse Proxy avec certificat automatique"
 author:
   - name: "Tiago LARANJEIRA"
   - name: "Adrian KAJEWSKI"
@@ -17,7 +17,7 @@ group: "Groupe 12"
 # ─────────────────────────────────────────────
 # THÈME — décommenter UNE seule ligne
 # Thèmes clairs  : cosmo | flatly | lux | minty | journal | sandstone | yeti
-Thèmes sombres : darkly | slate | superhero | cyborg
+# Thèmes sombres : darkly | slate | superhero | cyborg
 # ─────────────────────────────────────────────
 format:
   html:
@@ -27,7 +27,7 @@ format:
     toc-title: "Sommaire"
     number-sections: true
     highlight-style: github
-    theme: darkly        # ← changer ici
+    theme: darkly
     # theme: flatly
     # theme: lux
     # theme: minty
@@ -60,29 +60,29 @@ Décrivez en quelques paragraphes l'objectif du projet, le contexte et la probl�
 
 ### Objectif
 
-Ce projet met en place un reverse proxy avec autentification automatique. Nous utiliserons "Let's Encrypt", "Traefik" et Docker.
+Ce projet met en place un reverse proxy avec gestion automatique des certificats. Nous utiliserons "Let's Encrypt", "Traefik" et Docker.
 
-Traefik est le point d'entrée unique du serveur et du client : il reçoit les connexions sur les ports 80 et 443, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let's Encrypt qu'il obtient et renouvelle lui-même, sans intervention humaine.
+Traefik est le point d'entrée unique du serveur et du client : il reçoit les connexions sur les ports 8080 et 8443 redirigés vers 80 et 443 dans le conteneur, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let's Encrypt qu'il obtient et renouvelle lui-même, sans intervention humaine.
 
 ### Contexte et problématique
 
 Sans reverse proxy, le serveur applicatif est exposé directement sur Internet, ce qui pose des problèmes de sécurité et de flexibilité. L'automatisation de certificats permet de ne plus se soucier de l'expiration, mais une supervision reste utile comme filet de sécurité.
 
 ### Éléments inédits
-(Demander au prof)!!!!
 N'a pas été vu au cours : 
-    Treafik 
-    Let's encrypt
+    Traefik 
+    Let's Encrypt
+    DuckDns
 
 
 ## Configuration réseau VirtualBox
 | Nom de la VM | Rôle | OS | RAM allouée | Disque |
 |---|---|---|---|---|
-| vm-proxy | Reverse proxy Traefik | Debian 13 | (question prof) |  (question prof) |
+| vm-proxy | Reverse proxy Traefik | Debian 13 | 2G | 120G auto |
 
 ### Interfaces réseau VirtualBox
 
-Chaque VM dispose de **deux interfaces réseaux** dans VirtualBox :
+Chaque VM dispose de **deux interfaces réseau** dans VirtualBox :
 
 | Interface | Type VirtualBox | Rôle |
 |---|---|---|
@@ -92,7 +92,7 @@ Chaque VM dispose de **deux interfaces réseaux** dans VirtualBox :
 ::: {.callout-note}
 Pourquoi host-only et pas "réseau interne" ? 
 
-Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l'hôte (192.168.56.1) : on peut ainsi ouvrir https://whoami.example.com dans le navigateur de l'hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.
+Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l'hôte (192.168.56.1) : on peut ainsi ouvrir https://projetinfra.duckdns.org:8443 dans le navigateur de l'hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.
 
 Réglage VirtualBox : Paramètres de chaque VM → Réseau → Carte 2 → Réseau privé hôte (host-only) → vboxnet0. Si vboxnet0 n'existe pas : Fichier → Outils → Gestionnaire de réseau → Créer.
 :::
@@ -100,7 +100,7 @@ Réglage VirtualBox : Paramètres de chaque VM → Réseau → Carte 2 → Rése
 ::: {.callout-note}
 Pourquoi garder la carte NAT ? 
 
-Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n'est nécessaire : les enregistrements DNS pointent vers l'IP privée 192.168.56.10, accessible uniquement depuis votre machine.
+Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n'est nécessaire : le fichier hosts de la machine hôte associe le nom à 192.168.56.10, et DuckDNS sert uniquement à créer l'enregistrement TXT du défi DNS-01.
 :::
 
 
@@ -112,6 +112,14 @@ Traefik doit contacter, en sortie, les serveurs de Let's Encrypt et l'API de vot
 | Machine hôte | vboxnet0 | 192.168.56.1 | /24 | Attribuée automatiquement par VirtualBox |
 
 ### Configuration des IPs fixes
+Avant de lancer Debian : 
+  1. Clic droit sur Debian
+  2. Sélectionner "Configuration"
+  3. Aller dans "Réseau"
+  4. Aller dans "Adaptateur 2", puis cochez la case "Activer l'interface réseau" tout en haut.
+  5. Dans le menu déroulant "Attached to" (Rattaché à), sélectionnez "Host-only Adapter" (Réseau privé hôte).
+  6. Dans le champ "Name" qui va alors s'éclairer et devenir cliquable, sélectionnez vboxnet0.
+  7. Cliquez sur OK en bas pour valider.
 
 **Sur vm-proxy**, éditer `/etc/network/interfaces` :
 
@@ -120,10 +128,6 @@ nano /etc/network/interfaces
 ```
 
 ``` bash
-# Interface NAT — DHCP (laisser tel quel)
-auto enp0s3
-iface enp0s3 inet dhcp
-
 # Interface host-only — IP fixe
 auto enp0s8
 iface enp0s8 inet static
@@ -138,7 +142,7 @@ Appliquer la configuration (de préférence depuis la console VirtualBox) :
 ```bash 
 systemctl restart networking
 
-# Vérifier les addresses IP :
+# Vérifier les adresses IP :
 ip a 
 
 # Vérifier spécifiquement l'interface host-only : 
@@ -155,7 +159,7 @@ Avant toute installation, vérifier que tout le monde se voit :
 ping -c 3 192.168.56.1
 # Résultat attendu : 3 paquets reçus, 0 % de perte.
 
-# Depuis la machine hôte, pinger vm-proxy.
+# Depuis la machine hôte (terminal du PC), pinger vm-proxy.
 ping -c 3 192.168.56.10
 # Le résultat attendu est => 3 paquets reçus, 0 % de perte.
 
@@ -177,58 +181,70 @@ Snapshot conseillé : une fois la configuration réseau fonctionnelle et les tes
 :::
 
 
-## Architecture (DEMANDER AU PROF !!!!!!)
+## Architecture
 
 ### Schéma d'architecture
 
 ```{mermaid}
 flowchart TD
-    H(["Machine hôte<br/>Navigateur / curl<br/>IP : 192.168.56.1"])
+    H(["Machine hôte<br/>Navigateur / curl<br/>IP : 192.168.56.1<br/>hosts : projetinfra.duckdns.org vers 192.168.56.10"])
 
-    subgraph VM["Machine virtuelle VirtualBox : vm-proxy"]
+    subgraph VM["Machine virtuelle VirtualBox : vm-proxy (Debian 13)"]
         direction TB
 
-        P["Traefik - Reverse Proxy<br/>Debian 13<br/>IP Host-only : 192.168.56.10<br/>Ports : 80 (HTTP) et 443 (HTTPS)"]
+        HO["Carte réseau 2 : Host-only<br/>enp0s8<br/>IP fixe : 192.168.56.10"]
+        NAT["Carte réseau 1 : NAT<br/>enp0s3<br/>IP attribuée par DHCP"]
 
-        subgraph DOCKER["Réseau Docker interne"]
-            direction LR
-            W1["Conteneur Nginx 1<br/>Site HTML<br/>Port : 80"]
-            W2["Conteneur Nginx 2<br/>Site HTML<br/>Port : 80"]
-            W3["Conteneur Nginx 3<br/>Site HTML<br/>Port : 80"]
+        subgraph DOCKER["Réseau Docker interne : proxy"]
+            direction TB
+            P["Traefik - Reverse Proxy<br/>Terminaison TLS et équilibrage de charge<br/>Ports publiés sur la VM : 8080 (HTTP) et 8443 (HTTPS)<br/>Ports dans le conteneur : 80 et 443"]
+            W1["Conteneur Nginx 1<br/>Site HTML<br/>Port : 80 (interne)"]
+            W2["Conteneur Nginx 2<br/>Site HTML<br/>Port : 80 (interne)"]
+            W3["Conteneur Nginx 3<br/>Site HTML<br/>Port : 80 (interne)"]
         end
 
-        P -->|"HTTP : 80"| W1
-        P -->|"HTTP : 80"| W2
-        P -->|"HTTP : 80"| W3
+        HO --> P
+        P -->|"HTTP : 80<br/>round-robin"| W1
+        P -->|"HTTP : 80<br/>round-robin"| W2
+        P -->|"HTTP : 80<br/>round-robin"| W3
+        P -.-> NAT
     end
 
-    H -->|"HTTP : 80 / HTTPS : 443"| P
+    subgraph NET["Internet"]
+        LE["Let's Encrypt<br/>(serveur ACME)"]
+        DD["DuckDNS<br/>(API DNS : enregistrement TXT)"]
+    end
 
-    NAT["Carte réseau 1 : NAT<br/>IP attribuée par DHCP<br/>Accès Internet"]
+    H -->|"HTTPS : 8443<br/>HTTP : 8080"| HO
 
-    NAT -.->|"HTTPS : 443<br/>Téléchargement Docker<br/>Communication avec Let's Encrypt"| P
+    NAT -.->|"HTTPS : 443 (sortant)<br/>Défi DNS-01 et certificat"| LE
+    NAT -.->|"HTTPS : 443 (sortant)<br/>Création du TXT _acme-challenge"| DD
 
     style P fill:#69b,stroke:#333,color:#fff
     style W1 fill:#6a9,stroke:#333,color:#fff
     style W2 fill:#6a9,stroke:#333,color:#fff
     style W3 fill:#6a9,stroke:#333,color:#fff
+    style HO fill:#ddd,stroke:#333,color:#222
     style NAT fill:#ddd,stroke:#333,color:#222
+    style LE fill:#fc9,stroke:#333,color:#222
+    style DD fill:#fc9,stroke:#333,color:#222
 ```
 
 ### Tableau des composants
 
 | Composant | VM | IP | Port(s) | Rôle |
 |---|---|---|---|---|
-| Traefik | vm-proxy | 192.168.56.10 | 80, 443 | Reverse proxy, terminaison TLS et équilibrage de charge |
+| Traefik | vm-proxy | 192.168.56.10 | 8080, 8443 | Reverse proxy, terminaison TLS et équilibrage de charge |
 | Nginx 1 | Conteneur Docker | IP interne Docker | 80 (interne) | Hébergement du site HTML |
 | Nginx 2 | Conteneur Docker | IP interne Docker | 80 (interne) | Hébergement du site HTML |
 | Nginx 3 | Conteneur Docker | IP interne Docker | 80 (interne) | Hébergement du site HTML |
 | Docker | vm-proxy | 192.168.56.10 | — | Exécution et gestion des conteneurs |
 
 ::: {.callout-note}
-Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n'est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 80 (HTTP) et 443 (HTTPS).
+Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n'est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 8080 (HTTP) et 8443 (HTTPS).
 
 La VM vm-proxy dispose également d'une interface NAT pour accéder à Internet, notamment pour télécharger les images Docker et communiquer avec Let's Encrypt.
+:::
 
 
 ## Diagramme au choix
@@ -241,24 +257,41 @@ Choisissez un type de diagramme **pertinent et différent** du schéma d'archite
 sequenceDiagram
     participant C as Client (hôte 192.168.56.1)
     participant T as vm-proxy (Traefik)
+    participant LE as Let's Encrypt (ACME)
     participant N as Conteneur Nginx (Docker)
 
-    C->>T: HTTPS GET / (connexion TLS)
+    Note over T,LE: Étape 1 : Génération automatique du certificat (Initialisation / Renouvellement)
+    T->>LE: Demande de certificat (Requête ACME / Défi)
+    LE-->>T: Validation et délivrance du certificat SSL/TLS
+
+    Note over C,T: Étape 2 : Requête client et terminaison TLS
+    C->>T: HTTPS GET / (Établissement TLS avec le certificat Let's Encrypt)
     Note over T: Terminaison TLS<br/>Déchiffrement de la requête
-    Note over T: Sélection du service<br/>et du conteneur disponible
+    Note over T: Sélection du service<br/>et routage vers le conteneur
     T->>N: HTTP GET /<br/>+ X-Forwarded-For<br/>+ X-Forwarded-Proto: https
-    Note over N: Recherche et envoi<br/>du fichier HTML
+    Note over N: Traitement et envoi<br/>du fichier HTML
     N-->>T: HTTP 200 OK (page HTML)
-    T-->>C: HTTPS 200 OK (page HTML)
+    T-->>C: HTTPS 200 OK (page HTML chiffrée)
 ```
 
 Expliquez le diagramme en quelques lignes : que représente-t-il, comment le lire, qu'apprend-on de plus par rapport au schéma d'architecture ?
 
 
+Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante : lire de haut en bas en suivant le chemin que montrent les flèches.
+Il permet de comprendre les différentes étapes dans un ordre précis, ce que ne fait pas le schéma d'architecture et met en évidence trois éléments importants :
+
+La terminaison TLS est assurée par Traefik : la connexion entre le navigateur et Traefik est chiffrée en HTTPS. Traefik déchiffre la requête avant de la transmettre au conteneur Nginx en HTTP sur le réseau Docker interne.
+
+L'équilibrage de charge est assuré par Traefik : lorsqu'une requête arrive, Traefik la dirige vers l'un des trois conteneurs Nginx disponibles. Cela permet de répartir les requêtes entre plusieurs serveurs web.
+
+Les informations du client sont transmises aux serveurs NGINX : Traefik ajoute notamment les en-têtes X-Forwarded-For et X-Forwarded-Proto, qui permettent aux serveurs web de connaître l'adresse IP du client et le protocole utilisé à l'origine.
+
+Ainsi, ce diagramme illustre le fonctionnement du reverse proxy, la terminaison TLS et la répartition de charge entre les trois conteneurs web
+
 ## Installation et déploiement
 
 ::: {.callout-important title="Consigne"}
-Décrivez la procédure **complète et reproductible**, étape par étape, sur Debian 12. Pour chaque étape :
+Décrivez la procédure **complète et reproductible**, étape par étape, sur Debian 13. Pour chaque étape :
 
 - indiquez sur **quelle VM** les commandes s'exécutent ;
 - expliquez en une phrase **pourquoi cette étape est nécessaire** (ligne "Pourquoi") — c'est ce qui distingue une documentation comprise d'un copier-coller ;
@@ -269,35 +302,421 @@ Les commandes doivent avoir été testées et fonctionner telles quelles.
 
 ### Prérequis
 
-- [ ] VMs créées et configurées selon la section "Configuration réseau VirtualBox"
-- [ ] Connectivité vérifiée (ping VM↔VM et hôte→VM)
-- [ ] Snapshot VirtualBox "état initial" pris sur chaque VM
-- [ ] Accès root ou sudo sur toutes les VMs
-- [ ] Mises à jour système effectuées (`apt update && apt upgrade -y`)
+Avant de commencer, vérifier que les éléments suivants sont opérationnels :
 
-### [Titre de l'étape] (sur vm-xxx)
+- [ ] VM `vm-proxy` créée et configurée selon la section « Configuration réseau VirtualBox ».
+- [ ] Carte 1 : NAT pour l'accès à Internet.
+- [ ] Carte 2 : Host-only (`vboxnet0`) avec l'adresse IP `192.168.56.10`.
+- [ ] Ping fonctionnel entre la VM et la machine hôte.
+- [ ] Accès Internet fonctionnel depuis la VM.
+- [ ] Snapshot VirtualBox « réseau OK » effectué.
+- [ ] Accès administrateur sur la VM.
+- [ ] Debian 13 mis à jour.
+- [ ] Docker installé et fonctionnel.
+- [ ] Docker Compose disponible.
 
-**Pourquoi :** expliquez en une phrase le rôle de cette étape dans la solution globale.
-
-```bash
-# Commandes à exécuter sur vm-xxx
-apt update && apt upgrade -y
-apt install -y paquet1 paquet2
-```
-
-### [Titre de l'étape] (sur vm-yyy)
-
-**Pourquoi :** ...
+Vérifier que Docker et Docker Compose fonctionnent :
 
 ```bash
-# Commandes à exécuter sur vm-yyy
-...
+docker --version
+docker compose version
 ```
 
-### [Titre de l'étape]
+Les deux commandes doivent afficher leurs versions respectives.
 
-...
+### Préparation de l'environnement Docker (sur vm-proxy)
 
+**Pourquoi :** nous allons utiliser Docker Compose pour déployer et gérer les différents services du projet depuis un seul fichier de configuration. Cela permet de centraliser la configuration de Traefik et des trois serveurs Nginx et de faciliter leur démarrage et leur arrêt.
+
+Créer le répertoire du projet :
+
+```bash
+mkdir -p ~/projet-proxy
+cd ~/projet-proxy
+```
+
+Créer les répertoires nécessaires :
+
+```bash
+mkdir -p site/nginx1
+mkdir -p site/nginx2
+mkdir -p site/nginx3
+
+mkdir -p letsencrypt
+```
+
+L'organisation du projet sera la suivante :
+
+```text
+projet-proxy/
+├── docker-compose.yml
+├── .env
+├── site/
+│   ├── nginx1/
+│   │   └── index.html
+│   ├── nginx2/
+│   │   └── index.html
+│   └── nginx3/
+│       └── index.html
+└── letsencrypt/
+    └── acme.json
+```
+
+### Installation et préparation des serveurs web Nginx (sur vm-proxy)
+
+**Pourquoi :** les serveurs web Nginx permettent d'héberger notre site HTML. Nous allons créer trois conteneurs indépendants afin de démontrer l'équilibrage de charge réalisé par Traefik. Chaque conteneur hébergera une version du site permettant de l'identifier pendant les tests.
+
+Pour commencer, créer une page HTML dans chaque répertoire.
+
+**Sur vm-proxy :**
+
+```bash
+cat > site/nginx1/index.html << 'EOF'
+<h1>Bienvenue sur le serveur Nginx 1</h1>
+EOF
+
+cat > site/nginx2/index.html << 'EOF'
+<h1>Bienvenue sur le serveur Nginx 2</h1>
+EOF
+
+cat > site/nginx3/index.html << 'EOF'
+<h1>Bienvenue sur le serveur Nginx 3</h1>
+EOF
+```
+
+Ces pages sont volontairement différentes afin de pouvoir identifier le serveur ayant répondu à chaque requête.
+
+Télécharger l'image officielle Nginx :
+
+```bash
+docker pull nginx:alpine
+```
+
+**Vérification :**
+
+```bash
+docker images
+```
+
+L'image `nginx:alpine` doit apparaître dans la liste.
+
+### Configuration de Traefik et de Let's Encrypt (sur vm-proxy)
+
+**Pourquoi :** Traefik constitue le cœur de notre projet. Il reçoit les connexions HTTP et HTTPS, sélectionne le serveur web correspondant au nom de domaine demandé et assure la terminaison TLS. Il communique également avec Let's Encrypt pour obtenir et renouveler automatiquement les certificats.
+
+Dans notre projet, nous utilisons le challenge DNS-01 de Let's Encrypt. Celui-ci permet de valider notre nom de domaine grâce à un enregistrement DNS TXT, sans devoir exposer directement notre VM sur Internet.
+
+#### Créer le sous-domaine DuckDNS et préparer les identifiants
+
+**Pourquoi :** le challenge DNS-01 oblige Traefik à créer un enregistrement TXT dans la zone DNS du domaine, ce qui prouve à Let's Encrypt que nous en sommes bien propriétaires. Il nous faut donc un nom de domaine dont nous contrôlons le DNS par une API. Nous avons choisi un sous-domaine gratuit DuckDNS, pour lequel Traefik dispose d'un fournisseur intégré (`duckdns`). Un sous-domaine de `github.io` ne convient pas : sa zone DNS appartient à GitHub, nous ne pouvons pas y créer d'enregistrement TXT.
+
+1. Se connecter sur [duckdns.org](https://www.duckdns.org) avec un compte GitHub ou Google.
+2. Dans le champ « sub domain », saisir `projetinfra` puis cliquer sur « add domain ». Le domaine obtenu est `projetinfra.duckdns.org`.
+3. Copier le **token** affiché en haut de la page.
+
+Sur **vm-proxy**, créer le fichier `.env` à la racine du projet, dans le même dossier que `docker-compose.yml` :
+
+```bash
+cd ~/projet-proxy
+nano .env
+```
+
+Y ajouter la ligne suivante en remplaçant la valeur d'exemple par le token copié (sans guillemets ni espaces autour du `=`) :
+
+```env
+DUCKDNS_TOKEN=VOTRE_TOKEN_DUCKDNS
+```
+
+Ce fichier contient un secret : il ne doit être ni partagé ni ajouté à un dépôt Git. Le protéger :
+
+```bash
+chmod 600 .env
+```
+
+**Vérification :**
+
+```bash
+ls -la .env
+```
+
+Résultat attendu : les droits `-rw-------` (lecture et écriture réservées au propriétaire).
+
+Le fichier est transmis à Traefik par la directive `env_file: - .env` du service `traefik` dans `docker-compose.yml`. Une fois les conteneurs démarrés, on peut confirmer que la variable est bien reçue :
+
+```bash
+docker exec traefik env | grep DUCKDNS
+```
+
+#### Préparer le stockage des certificats
+
+Créer le fichier qui permettra à Traefik de conserver les certificats obtenus auprès de Let's Encrypt :
+
+```bash
+touch letsencrypt/acme.json
+chmod 600 letsencrypt/acme.json
+```
+
+Ce fichier permet à Traefik de conserver les certificats et les informations ACME nécessaires à leur renouvellement automatique.
+
+
+#### Configurer Traefik dans Docker Compose
+
+Créer le fichier principal de déploiement :
+
+```bash
+nano docker-compose.yml
+```
+
+Ajouter la configuration suivante en remplaçant `votre.mail@outlook.com` par un mail que vous possédez et  `projetinfra.duckdns.org` par votre véritable nom de domaine :
+
+```yaml
+services:
+  traefik:
+    image: traefik
+    env_file:
+      - .env
+    container_name: traefik
+    restart: unless-stopped
+    environment:
+      - DOCKER_API_VERSION=1.40
+    ports:
+      - "8080:80"
+      - "8443:443"
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.email=votre.mail@outlook.com
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.dnschallenge=true
+      - --certificatesresolvers.le.acme.dnschallenge.provider=duckdns
+      - --certificatesresolvers.le.acme.dnschallenge.resolvers=1.1.1.1:53
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt/acme.json:/letsencrypt/acme.json
+    networks:
+      - proxy
+
+
+  nginx1:
+    image: nginx:alpine
+    container_name: nginx1
+    restart: unless-stopped
+    volumes:
+      - ./site/nginx1:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.site.rule=Host(`projetinfra.duckdns.org`)"
+      - "traefik.http.routers.site.entrypoints=websecure"
+      - "traefik.http.routers.site.tls.certresolver=le"
+      - "traefik.http.services.site.loadbalancer.server.port=80"
+  nginx2:
+    image: nginx:alpine
+    container_name: nginx2
+    restart: unless-stopped
+    volumes:
+      - ./site/nginx2:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.site.rule=Host(`projetinfra.duckdns.org`)"
+      - "traefik.http.routers.site.entrypoints=websecure"
+      - "traefik.http.routers.site.tls.certresolver=le"
+      - "traefik.http.services.site.loadbalancer.server.port=80"
+
+  nginx3:
+    image: nginx:alpine
+    container_name: nginx3
+    restart: unless-stopped
+    volumes:
+      - ./site/nginx3:/usr/share/nginx/html:ro
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.site.rule=Host(`projetinfra.duckdns.org`)"
+      - "traefik.http.routers.site.entrypoints=websecure"
+      - "traefik.http.routers.site.tls.certresolver=le"
+      - "traefik.http.services.site.loadbalancer.server.port=80"
+
+networks:
+  proxy:
+    external: true
+
+  ```
+
+Dans cette configuration :
+
+- Traefik écoute sur les ports 80 et 443.
+- Les trois conteneurs Nginx ne publient aucun port directement sur la VM.
+- Les conteneurs communiquent grâce au réseau Docker `proxy`.
+- Traefik utilise le fournisseur Docker (labels) pour découvrir les trois serveurs web.
+- Le résolveur ACME utilise le challenge DNS-01 de DuckDNS pour obtenir les certificats Let's Encrypt.
+
+**Vérification de la configuration :**
+
+```bash
+docker compose config -q
+```
+
+Si aucune erreur n'est affichée, le fichier Docker Compose est syntaxiquement valide.
+
+### Déploiement des conteneurs (sur vm-proxy)
+
+**Pourquoi :** cette étape permet de démarrer simultanément Traefik et les trois serveurs Nginx. Docker network create proxy crée automatiquement le réseau Docker et docker compose up -d connecte les différents conteneurs.
+
+Depuis le répertoire `projet-proxy`, exécuter :
+
+```bash
+docker network create proxy
+docker compose up -d
+```
+
+**Vérification :**
+
+```bash
+docker ps
+```
+
+Résultat attendu : quatre conteneurs doivent apparaître avec le statut `Up` :
+
+- traefik
+- nginx1
+- nginx2
+- nginx3
+
+Vérifier également le réseau Docker :
+
+```bash
+docker network inspect proxy
+```
+
+Les quatre conteneurs doivent être connectés au réseau `proxy`.
+
+### Vérification du fonctionnement des serveurs Nginx (sur vm-proxy)
+
+**Pourquoi :** avant de tester Traefik, il est important de vérifier que les trois serveurs web fonctionnent indépendamment. Cela permet de distinguer un problème provenant de Nginx d'un problème provenant du reverse proxy.
+
+Exécuter les commandes suivantes :
+
+```bash
+docker exec nginx1 wget -qO- http://localhost/
+docker exec nginx2 wget -qO- http://localhost/
+docker exec nginx3 wget -qO- http://localhost/
+```
+
+**Résultats attendus :**
+
+```text
+<h1>Bienvenue sur le serveur Nginx 1</h1>
+<h1>Bienvenue sur le serveur Nginx 2</h1>
+<h1>Bienvenue sur le serveur Nginx 3</h1>
+```
+
+Les trois commandes doivent retourner le contenu HTML correspondant.
+
+### Configuration de la résolution DNS locale (sur la machine hôte)
+
+**Pourquoi :** notre VM utilise une adresse privée Host-only. Pour accéder au site depuis le navigateur de la machine hôte, nous devons faire correspondre notre nom de domaine à l'adresse IP privée de la VM.
+
+Sur la machine hôte, ajouter la ligne suivante au fichier hosts :
+
+```text
+192.168.56.10 projetinfra.duckdns.org
+```
+
+Emplacement du fichier selon le système :
+
+- Linux/macOS : ```bash
+nano /etc/hosts
+```
+- Windows : ```bash
+notepad C:\Windows\System32\drivers\etc\hosts
+```
+N'oubliez pas de sauvegarder les modifications du fichier (CTRL + S ou autre)
+
+Remplacer le nom de domaine par celui configuré dans les labels de `docker-compose.yml`.
+
+Cette résolution locale permet au navigateur de joindre Traefik sur `192.168.56.10`, tout en utilisant le véritable nom de domaine pour la négociation HTTPS.
+
+Il n'est pas nécessaire de publier l'adresse privée de la VM dans un enregistrement DNS public A pour utiliser le challenge DNS-01.
+
+### Vérification de l'obtention du certificat Let's Encrypt (sur vm-proxy)
+
+**Pourquoi :** cette étape permet de vérifier que Traefik communique correctement avec Let's Encrypt, que le challenge DNS-01 fonctionne et qu'un certificat valide est obtenu automatiquement.
+
+Consulter les journaux de Traefik :
+
+```bash
+docker logs traefik 
+```
+
+Traefik doit réussir la validation DNS et obtenir un certificat pour le domaine configuré.
+
+Vérifier ensuite le contenu du fichier ACME :
+
+```bash
+grep -o '"main": "[^"]*"' letsencrypt/acme.json
+```
+
+La commande doit montrer "main": "projetinfra.duckdns.org"
+
+Pour vérifier le certificat depuis la machine hôte dans un terminal bash :
+
+```bash
+openssl s_client \
+  -connect 192.168.56.10:8443 \
+  -servername projetinfra.duckdns.org \
+  </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates
+```
+
+Le résultat doit afficher :
+
+- Le nom de domaine correspondant au certificat.
+- Let's Encrypt comme autorité de certification.
+- Les dates de début et de fin de validité du certificat.
+
+Le certificat doit être reconnu comme valide par un navigateur utilisant son magasin de certificats habituel.
+
+**Attention :** Let's Encrypt peut limiter le nombre de certificats émis lors des tests répétés. Il est conseillé d'utiliser son environnement de test (staging) pendant les essais de configuration, puis de revenir à l'environnement de production pour obtenir le certificat final.
+
+### Vérification du démarrage automatique (sur vm-proxy)
+
+**Pourquoi :** nous voulons que les services redémarrent automatiquement après un redémarrage de la VM, sans devoir relancer manuellement les conteneurs.
+
+Vérifier que les services disposent de la politique `restart: unless-stopped` dans le fichier Docker Compose.
+
+Tester le redémarrage :
+
+```bash
+sudo reboot
+```
+
+Après le redémarrage, vérifier :
+
+```bash
+docker ps
+```
+
+Les quatre conteneurs doivent être de nouveau actifs.
+
+### Bilan de l'installation
+
+À la fin de cette procédure, notre infrastructure doit disposer des éléments suivants :
+
+- Un reverse proxy Traefik fonctionnel.
+- Trois serveurs web Nginx indépendants.
+- Un réseau Docker interne permettant la communication entre les conteneurs.
+- Un certificat TLS valide délivré par Let's Encrypt.
+- Un renouvellement automatique des certificats assuré par Traefik.
+- Un équilibrage de charge entre les trois serveurs Nginx.
+
+Les tests détaillés de l'accès HTTPS, de l'équilibrage de charge seront présentés dans la section « Vérification et tests ».
 
 ## Vérification et tests
 
@@ -311,30 +730,124 @@ Un test sans preuve n'est pas un test.
 
 ### Tableau récapitulatif des tests
 
+Les tests ont été réalisés avec le domaine `projetinfra.duckdns.org`. Traefik est publié sur les ports 8080 (HTTP) et 8443 (HTTPS) de la VM.
+
 | # | Test | Commande / Action | Résultat attendu | Résultat obtenu | ✅/❌ |
 |---|---|---|---|---|---|
-| 1 | [Description] | `commande` | [Sortie attendue] | [Sortie réelle] | ✅ |
-| 2 | [Description] | [Action UI] | [Comportement attendu] | [Comportement réel] | ✅ |
-| 3 | Panne simulée | `systemctl stop service` | Erreur X renvoyée | [Résultat réel] | ✅ |
-| 4 | Sécurité négative | `commande interdite` | Accès refusé | [Résultat réel] | ✅ |
+| 1 | Conteneurs actifs | `docker ps` | 4 conteneurs `Up`, ports `8080->80` et `8443->443` sur Traefik | [à compléter] | ⬜ |
+| 2 | Certificat Let's Encrypt | `openssl s_client ... \| openssl x509 -noout -issuer -dates` | Émetteur Let's Encrypt (pas `TRAEFIK DEFAULT CERT`, pas `STAGING`) | Émetteur Let's Encrypt | ✅ |
+| 3 | HTTPS de confiance | `curl https://projetinfra.duckdns.org:8443` | Page Nginx, sans erreur de certificat (sans `-k`) | [à compléter] | ⬜ |
+| 4 | Équilibrage de charge | boucle de 9 `curl` | Les pages Nginx 1, 2 et 3 alternent | Les trois serveurs répondent tour à tour | ✅ |
+| 5 | Panne simulée | `docker stop nginx2` puis boucle de 6 `curl` | Seuls Nginx 1 et 3 répondent | [à compléter] | ⬜ |
+| 6 | Navigateur | ouvrir `https://projetinfra.duckdns.org:8443` | Cadenas, certificat valide | [à compléter] | ⬜ |
+| 7 | Redémarrage automatique | `sudo reboot` puis `docker ps` | 4 conteneurs `Up` | [à compléter] | ⬜ |
+| 8 | Sécurité négative | `curl -k https://192.168.56.10:8443` et `curl http://192.168.56.10:80` | 404 de Traefik sans nom de domaine ; connexion refusée sur le port 80 | [à compléter] | ⬜ |
 
-### Test 1 — [Titre]
+### Test 1 — Conteneurs actifs
 
-Description du test et de ce qu'il valide.
+Ce test vérifie que Traefik et les trois serveurs Nginx sont démarrés et que Traefik publie bien les ports 8080 et 8443.
 
 ```bash
-# Commande de test
-commande
-# → Sortie obtenue (copier-coller la vraie sortie ici)
+docker ps
 ```
 
+Résultat attendu : `traefik`, `nginx1`, `nginx2` et `nginx3` avec le statut `Up`.
+
 ::: {.callout-tip}
-**📷 Capture :** [description de la capture jointe].
+**📷 Capture :** sortie de `docker ps` montrant les quatre conteneurs et les ports de Traefik.
 :::
 
-### Test 2 — [Titre]
+### Test 2 — Certificat Let's Encrypt
 
-...
+Ce test prouve que le certificat servi par Traefik a bien été émis par Let's Encrypt grâce au défi DNS-01, et non par le certificat de secours de Traefik.
+
+```bash
+openssl s_client -connect 192.168.56.10:8443 \
+  -servername projetinfra.duckdns.org </dev/null 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates
+```
+
+Résultat attendu : un sujet correspondant à `projetinfra.duckdns.org`, un émetteur Let's Encrypt (et non `TRAEFIK DEFAULT CERT`), ainsi que les dates de début et de fin de validité.
+
+::: {.callout-tip}
+**📷 Capture :** sortie de la commande `openssl` avec l'émetteur Let's Encrypt.
+:::
+
+### Test 3 — HTTPS de confiance
+
+Ce test vérifie que le certificat est reconnu comme valide : `curl` n'utilise pas l'option `-k`, donc il refuserait un certificat non fiable (par exemple celui de l'environnement de test staging).
+
+```bash
+curl https://projetinfra.duckdns.org:8443
+```
+
+Résultat attendu : `<h1>Bienvenue sur le serveur Nginx X</h1>`, sans message d'erreur de certificat.
+
+### Test 4 — Équilibrage de charge
+
+Ce test montre que Traefik répartit les requêtes entre les trois conteneurs Nginx.
+
+```bash
+for i in $(seq 1 9); do curl -s https://projetinfra.duckdns.org:8443; done
+```
+
+Résultat attendu : les pages Nginx 1, 2 et 3 reviennent tour à tour (répartition de type round-robin). L'ordre de départ peut varier.
+
+::: {.callout-tip}
+**📷 Capture :** sortie de la boucle montrant les trois serveurs.
+:::
+
+### Test 5 — Panne simulée
+
+Ce test vérifie le comportement lorsqu'un serveur tombe en panne.
+
+```bash
+docker stop nginx2
+for i in $(seq 1 6); do curl -s https://projetinfra.duckdns.org:8443; done
+docker start nginx2
+```
+
+Résultat attendu : seuls Nginx 1 et Nginx 3 répondent. Une erreur brève juste après l'arrêt du conteneur est possible, car aucune vérification d'état (health check) n'est configurée ; si elle se produit, la noter ici.
+
+### Test 6 — Accès depuis le navigateur
+
+Ouvrir `https://projetinfra.duckdns.org:8443` dans le navigateur de la machine hôte (le fichier hosts doit contenir `192.168.56.10 projetinfra.duckdns.org`).
+
+Résultat attendu : la page Nginx s'affiche et le navigateur montre un cadenas, sans avertissement de sécurité.
+
+::: {.callout-tip}
+**📷 Capture :** navigateur avec le cadenas et le détail du certificat Let's Encrypt.
+:::
+
+### Test 7 — Redémarrage automatique
+
+Ce test vérifie que les services redémarrent seuls grâce à la politique `restart: unless-stopped`.
+
+```bash
+sudo reboot
+# après le redémarrage et la reconnexion :
+docker ps
+```
+
+Résultat attendu : les quatre conteneurs sont de nouveau `Up`, sans intervention manuelle.
+
+### Test 8 — Sécurité négative
+
+Ce test vérifie que l'on ne peut atteindre les services que par Traefik et avec le bon nom de domaine.
+
+```bash
+# Accès par l'adresse IP au lieu du nom de domaine :
+curl -k https://192.168.56.10:8443
+# Accès direct au port 80 de la VM (les conteneurs Nginx ne publient aucun port) :
+curl -m 5 http://192.168.56.10:80
+# → coller ici les vraies sorties
+```
+
+Résultat attendu : `404 page not found` renvoyé par Traefik pour le premier test (aucune règle ne correspond à l'adresse IP), et un refus de connexion ou un délai dépassé pour le second.
+
+::: {.callout-tip}
+**📷 Capture :** sorties des deux commandes.
+:::
 
 ## Problèmes rencontrés
 
@@ -342,39 +855,55 @@ commande
 Décrivez les 2 à 4 problèmes qui vous ont le plus bloqués, avec la structure **Symptôme / Cause / Solution**. Cette section montre votre compréhension réelle du projet — elle doit refléter ce qui s'est *réellement* passé dans vos VMs.
 :::
 
-**1. [Titre du problème]**
+**1. Perte de la connexion PuTTY après le redémarrage du réseau**
 
-*Symptôme :* ce que vous observiez (message d'erreur, comportement inattendu).
+*Symptôme :* après `systemctl restart networking`, PuTTY n'affichait plus qu'un écran noir. Dans la console VirtualBox, `ip a` ne montrait plus `enp0s8` avec son adresse, et `ifup enp0s8` répondait « unknown interface ».
 
-*Cause :* ce qui provoquait le problème.
+*Cause :* le fichier `/etc/network/interfaces` ne contenait plus que les interfaces `lo` et `enp0s3` : le bloc `enp0s8` (adresse statique `192.168.56.10`) avait disparu. L'interface host-only n'avait donc plus de configuration et la VM n'était plus joignable depuis la machine hôte.
 
-*Solution :* comment vous l'avez résolu.
-
----
-
-**2. [Titre du problème]**
-
-*Symptôme :* ...
-
-*Cause :* ...
-
-*Solution :* ...
+*Solution :* à partir de la console VirtualBox (qui ne dépend pas du réseau), nous avons rajouté le bloc `auto enp0s8` / `iface enp0s8 inet static` avec l'adresse `192.168.56.10` et le masque `255.255.255.0`, sans ligne `gateway`, puis relancé le service `networking`.
 
 ---
 
-**3. [Titre du problème]**
+**2. Réseau Docker `proxy` introuvable**
 
-...
+*Symptôme :* `docker compose up -d` échouait avec `network proxy declared as external, but could not be found`.
+
+*Cause :* le réseau `proxy` est déclaré avec `external: true`. Docker Compose ne crée pas ce type de réseau.
+
+*Solution :* création du réseau avant le premier démarrage avec `docker network create proxy`.
+
+---
+
+**3. Certificat par défaut de Traefik au lieu de Let's Encrypt**
+
+*Symptôme :* `curl` ne fonctionnait qu'avec l'option `-k`, et `openssl` indiquait comme émetteur `TRAEFIK DEFAULT CERT`.
+
+*Cause :* la configuration initiale utilisait le défi HTTP-01, qui impose à Let's Encrypt de joindre le serveur depuis Internet. Notre VM n'a qu'une adresse privée (`192.168.56.10`), la validation ne pouvait donc pas aboutir et Traefik utilisait son certificat autosigné de secours.
+
+*Solution :* passage au défi DNS-01 avec le fournisseur DuckDNS (`dnschallenge.provider=duckdns`) et un token stocké dans `.env`. Nous avons d'abord testé avec l'environnement de test (staging) de Let's Encrypt pour éviter les limites de requêtes : ses certificats ne sont pas reconnus par les clients (`curl: (60) SSL certificate problem`). Après validation, nous avons retiré la ligne `caserver`, vidé `acme.json` (pour ne pas réutiliser le compte staging) et redémarré pour obtenir un certificat de production.
+
+---
+
+**4. Résolution DNS impossible depuis les conteneurs**
+
+*Symptôme :* les journaux de Traefik affichaient `Unable to obtain ACME certificate ... lookup acme-v02.api.letsencrypt.org ... i/o timeout`, et `ping 8.8.8.8` échouait depuis la VM alors que `enp0s3` avait bien une adresse et une route par défaut.
+
+*Cause :* le réseau utilisé fournissait par DHCP un serveur DNS interne à l'école (`172.19.232.1`). Cette adresse tombait dans le sous-réseau `172.19.0.0/16` d'un pont Docker de la VM, si bien que le trafic vers ce serveur restait sur le pont local et n'atteignait jamais le vrai serveur DNS. Le réseau de l'école bloquait par ailleurs le trafic sortant de la VM.
+
+*Solution :* changement de connexion Internet, après quoi `ping acme-v02.api.letsencrypt.org` fonctionnait et Traefik a pu obtenir le certificat. Pour éviter le problème, on peut aussi configurer un serveur DNS public (`nameserver 1.1.1.1`) ou supprimer le réseau Docker qui chevauche l'adresse du DNS.
 
 
 ## Distribution des tâches
 
-| Membre | Tâches réalisées |
-|---|---|
-| Prénom Nom 1 | ... |
-| Prénom Nom 2 | ... |
-| Prénom Nom 3 | ... |
-| Prénom Nom 4 | ... |
+Nous avons fait des appels et, par conséquent, nous avons tous travaillé à parts égales.
+
+Notre organisation a été la suivante : 
+  - Deux personnes chargées de la recherche d'information, de commande, etc.
+  - Une autre qui rédige 
+  - Et la dernière qui testait ce qui a été fait
+
+Nous avons tous tourné parmi tous les rôles.
 
 
 ## Améliorations possibles
@@ -383,9 +912,9 @@ Décrivez les 2 à 4 problèmes qui vous ont le plus bloqués, avec la structure
 Proposez des améliorations concrètes et réalistes. Évitez les généralités ("on pourrait améliorer la sécurité") — soyez précis ("on pourrait remplacer le certificat auto-signé par Let's Encrypt via certbot, ce qui nécessiterait un nom de domaine public").
 :::
 
-- **Amélioration 1 :** description précise et justification.
-- **Amélioration 2 :** description précise et justification.
-- **Amélioration 3 :** description précise et justification.
+- **Redirection automatique de HTTP vers HTTPS :** ajouter à la commande de Traefik `--entrypoints.web.http.redirections.entrypoint.to=websecure` et `--entrypoints.web.http.redirections.entrypoint.scheme=https`. Aujourd'hui, une requête HTTP sur le port 8080 ne reçoit pas de redirection ; cela garantirait que tout le trafic passe par le HTTPS.
+- **Protection du token DuckDNS :** remplacer le fichier `.env` par des secrets Docker (`secrets:` dans le fichier Compose), afin que le token ne soit pas visible dans les variables d'environnement du conteneur (`docker exec traefik env`).
+- **Ports standard 80 et 443 :** publier `80:80` et `443:443` au lieu de 8080 et 8443, afin que l'URL n'ait plus besoin d'un numéro de port. Cela nécessite de libérer ces ports sur la VM.
 
 
 ## Conclusion
@@ -394,7 +923,16 @@ Proposez des améliorations concrètes et réalistes. Évitez les généralités
 Résumez ce qui a été mis en place et ce que le projet vous a appris. Donnez votre ressenti de groupe : qu'est-ce qui a été difficile, qu'est-ce qui vous a surpris, qu'est-ce que vous referiez différemment ?
 :::
 
-...
+Nous avons mis en place un reverse-proxy avec certificat Let's Encrypt automatique en utilisant Traefik, DuckDNS, Docker avec trois conteneurs docker afin de répartir la charge sur les trois via un load balancer. Nous avons appris à utiliser DuckDNS pour créer un domaine.
+Nous avons également appris à faire en sorte que tout fonctionne ensemble, l'utilisation de Traefik, à activer la deuxième carte réseau, ainsi l'utilisation de fichiers ".qmd".
+
+Ce qui a été difficile : 
+- Régler les problèmes réseau
+- L'utilisation de Let's Encrypt si on n'a pas de domaine.
+- Régler les erreurs venant de Traefik.
+
+Ce qu'on ferait différemment :
+- Regarder plus en détail les technologies avant de commencer le guide, pour éviter des complications qu'on peut facilement éviter.
 
 
 ## Checklist avant remise

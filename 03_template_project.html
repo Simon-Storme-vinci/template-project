@@ -11,7 +11,7 @@
 <meta name="author" content="Aurélien DELFOSSE">
 <meta name="author" content="Simon STORME">
 
-<title>Revers Proxy avec certificat automatique</title>
+<title>Reverse Proxy avec certificat automatique</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#configuration-des-ips-fixes" id="toc-configuration-des-ips-fixes" class="nav-link" data-scroll-target="#configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</a></li>
   <li><a href="#vérification-de-la-connectivité" id="toc-vérification-de-la-connectivité" class="nav-link" data-scroll-target="#vérification-de-la-connectivité"><span class="header-section-number">2.4</span> Vérification de la connectivité</a></li>
   </ul></li>
-  <li><a href="#architecture-demander-au-prof" id="toc-architecture-demander-au-prof" class="nav-link" data-scroll-target="#architecture-demander-au-prof"><span class="header-section-number">3</span> Architecture (DEMANDER AU PROF !!!!!!)</a>
+  <li><a href="#architecture" id="toc-architecture" class="nav-link" data-scroll-target="#architecture"><span class="header-section-number">3</span> Architecture</a>
   <ul class="collapse">
   <li><a href="#schéma-darchitecture" id="toc-schéma-darchitecture" class="nav-link" data-scroll-target="#schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</a></li>
   <li><a href="#tableau-des-composants" id="toc-tableau-des-composants" class="nav-link" data-scroll-target="#tableau-des-composants"><span class="header-section-number">3.2</span> Tableau des composants</a></li>
@@ -117,9 +117,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installation-et-déploiement" id="toc-installation-et-déploiement" class="nav-link" data-scroll-target="#installation-et-déploiement"><span class="header-section-number">5</span> Installation et déploiement</a>
   <ul class="collapse">
   <li><a href="#prérequis" id="toc-prérequis" class="nav-link" data-scroll-target="#prérequis"><span class="header-section-number">5.1</span> Prérequis</a></li>
-  <li><a href="#installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy" id="toc-installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.2</span> Installation et configuration des serveurs web Nginx (sur vm-proxy)</a></li>
-  <li><a href="#titre-de-létape-sur-vm-yyy" id="toc-titre-de-létape-sur-vm-yyy" class="nav-link" data-scroll-target="#titre-de-létape-sur-vm-yyy"><span class="header-section-number">5.3</span> [Titre de l’étape] (sur vm-yyy)</a></li>
-  <li><a href="#titre-de-létape" id="toc-titre-de-létape" class="nav-link" data-scroll-target="#titre-de-létape"><span class="header-section-number">5.4</span> [Titre de l’étape]</a></li>
+  <li><a href="#préparation-de-lenvironnement-docker-sur-vm-proxy" id="toc-préparation-de-lenvironnement-docker-sur-vm-proxy" class="nav-link" data-scroll-target="#préparation-de-lenvironnement-docker-sur-vm-proxy"><span class="header-section-number">5.2</span> Préparation de l’environnement Docker (sur vm-proxy)</a></li>
+  <li><a href="#installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" id="toc-installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.3</span> Installation et préparation des serveurs web Nginx (sur vm-proxy)</a></li>
+  <li><a href="#configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" id="toc-configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" class="nav-link" data-scroll-target="#configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.4</span> Configuration de Traefik et de Let’s Encrypt (sur vm-proxy)</a></li>
+  <li><a href="#déploiement-des-conteneurs-sur-vm-proxy" id="toc-déploiement-des-conteneurs-sur-vm-proxy" class="nav-link" data-scroll-target="#déploiement-des-conteneurs-sur-vm-proxy"><span class="header-section-number">5.5</span> Déploiement des conteneurs (sur vm-proxy)</a></li>
+  <li><a href="#vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" id="toc-vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy"><span class="header-section-number">5.6</span> Vérification du fonctionnement des serveurs Nginx (sur vm-proxy)</a></li>
+  <li><a href="#configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" id="toc-configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" class="nav-link" data-scroll-target="#configuration-de-la-résolution-dns-locale-sur-la-machine-hôte"><span class="header-section-number">5.7</span> Configuration de la résolution DNS locale (sur la machine hôte)</a></li>
+  <li><a href="#vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" id="toc-vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.8</span> Vérification de l’obtention du certificat Let’s Encrypt (sur vm-proxy)</a></li>
+  <li><a href="#vérification-du-démarrage-automatique-sur-vm-proxy" id="toc-vérification-du-démarrage-automatique-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-du-démarrage-automatique-sur-vm-proxy"><span class="header-section-number">5.9</span> Vérification du démarrage automatique (sur vm-proxy)</a></li>
+  <li><a href="#bilan-de-linstallation" id="toc-bilan-de-linstallation" class="nav-link" data-scroll-target="#bilan-de-linstallation"><span class="header-section-number">5.10</span> Bilan de l’installation</a></li>
   </ul></li>
   <li><a href="#vérification-et-tests" id="toc-vérification-et-tests" class="nav-link" data-scroll-target="#vérification-et-tests"><span class="header-section-number">6</span> Vérification et tests</a>
   <ul class="collapse">
@@ -139,7 +145,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Revers Proxy avec certificat automatique</h1>
+<h1 class="title">Reverse Proxy avec certificat automatique</h1>
 </div>
 
 
@@ -159,7 +165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Date de publication</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">31 octobre 2026</p>
+      <p class="date">22 novembre 2026</p>
     </div>
   </div>
   
@@ -218,19 +224,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="éléments-inédits" class="level3" data-number="1.3">
 <h3 data-number="1.3" class="anchored" data-anchor-id="éléments-inédits"><span class="header-section-number">1.3</span> Éléments inédits</h3>
-<p>(Demander au prof)!!!! N’a pas été vu au cours : Treafik Let’s encrypt</p>
+<p>N’a pas été vu au cours : Treafik Let’s encrypt</p>
 </section>
 </section>
 <section id="configuration-réseau-virtualbox" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="configuration-réseau-virtualbox"><span class="header-section-number">2</span> Configuration réseau VirtualBox</h2>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Nom de la VM</th>
@@ -245,8 +244,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>vm-proxy</td>
 <td>Reverse proxy Traefik</td>
 <td>Debian 13</td>
-<td>(question prof)</td>
-<td>(question prof)</td>
+<td>2G</td>
+<td>120G auto</td>
 </tr>
 </tbody>
 </table>
@@ -348,6 +347,7 @@ Note
 </section>
 <section id="configuration-des-ips-fixes" class="level3" data-number="2.3">
 <h3 data-number="2.3" class="anchored" data-anchor-id="configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</h3>
+<p>Avant de lancer la débiane: 1. Click droit sur la debian 2. Sélectionner “Configuration” 3. Aller dans “Réseau” 4. Aller dans “Adaptater 2”, puis cochez la case “Activer l’interface réseau” tout en haut. 5. Dans le menu déroulant “Attached to” (Rattaché à), sélectionnez “Host-only Adapter” (Réseau privé hôte). 6. Dans le champ “Name” qui va alors s’éclairer et devenir cliquable, sélectionnez vboxnet0. 7. Cliquez sur OK en bas pour valider.</p>
 <p><strong>Sur vm-proxy</strong>, éditer <code>/etc/network/interfaces</code> :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /etc/network/interfaces</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface NAT — DHCP (laisser tel quel)</span></span>
@@ -366,18 +366,20 @@ Note
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier les addresses IP :</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier spécifiquement l'interface host-only : </span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a show enp0s8</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Le résultat attendu est =&gt; inet 192.168.56.10/24 ...</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">======</span><span class="op">&gt;</span> on est ici</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérifier spécifiquement l'interface host-only : </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a show enp0s8</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Le résultat attendu est =&gt; inet 192.168.56.10/24 ...</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="vérification-de-la-connectivité" class="level3" data-number="2.4">
 <h3 data-number="2.4" class="anchored" data-anchor-id="vérification-de-la-connectivité"><span class="header-section-number">2.4</span> Vérification de la connectivité</h3>
 <p>Avant toute installation, vérifier que tout le monde se voit :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis vm-proxy, tester la communication avec la machine hôte :</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.1</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.1 =<span class="op">&gt;</span> ne fonctionne pas DEMANDER PROF !!!!!</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Résultat attendu : 3 paquets reçus, 0 % de perte.</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis la machine hôte, pinger vm-proxy.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis la machine hôte(terminal du pc), pinger vm-proxy.</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.10</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Le résultat attendu est =&gt; 3 paquets reçus, 0 % de perte.</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -425,8 +427,8 @@ Astuce
 </div>
 </section>
 </section>
-<section id="architecture-demander-au-prof" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="architecture-demander-au-prof"><span class="header-section-number">3</span> Architecture (DEMANDER AU PROF !!!!!!)</h2>
+<section id="architecture" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="architecture"><span class="header-section-number">3</span> Architecture</h2>
 <section id="schéma-darchitecture" class="level3" data-number="3.1">
 <h3 data-number="3.1" class="anchored" data-anchor-id="schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</h3>
 <div class="cell" data-layout-align="default">
@@ -445,8 +447,8 @@ Astuce
         subgraph DOCKER["Réseau Docker interne"]
             direction LR
             W1["Conteneur Nginx 1&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
-            W2["Conteneur Nginx 2&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
-            W3["Conteneur Nginx 3&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
+            W2["Conteneur Nginx 2&lt;br/&gt;Site HTML&lt;br/&gt;Port : 81"]
+            W3["Conteneur Nginx 3&lt;br/&gt;Site HTML&lt;br/&gt;Port : 82"]
         end
 
         P --&gt;|"HTTP : 80"| W1
@@ -568,15 +570,21 @@ Note
 <pre class="mermaid mermaid-js">sequenceDiagram
     participant C as Client (hôte 192.168.56.1)
     participant T as vm-proxy (Traefik)
+    participant LE as Let's Encrypt (ACME)
     participant N as Conteneur Nginx (Docker)
 
-    C-&gt;&gt;T: HTTPS GET / (connexion TLS)
+    Note over T,LE: Étape 1 : Génération automatique du certificat (Initialisation / Renouvellement)
+    T-&gt;&gt;LE: Demande de certificat (Requête ACME / Défi)
+    LE--&gt;&gt;T: Validation et délivrance du certificat SSL/TLS
+
+    Note over C,T: Étape 2 : Requête client et terminaison TLS
+    C-&gt;&gt;T: HTTPS GET / (Établissement TLS avec le certificat Let's Encrypt)
     Note over T: Terminaison TLS&lt;br/&gt;Déchiffrement de la requête
-    Note over T: Sélection du service&lt;br/&gt;et du conteneur disponible
+    Note over T: Sélection du service&lt;br/&gt;et routage vers le conteneur
     T-&gt;&gt;N: HTTP GET /&lt;br/&gt;+ X-Forwarded-For&lt;br/&gt;+ X-Forwarded-Proto: https
-    Note over N: Recherche et envoi&lt;br/&gt;du fichier HTML
+    Note over N: Traitement et envoi&lt;br/&gt;du fichier HTML
     N--&gt;&gt;T: HTTP 200 OK (page HTML)
-    T--&gt;&gt;C: HTTPS 200 OK (page HTML)
+    T--&gt;&gt;C: HTTPS 200 OK (page HTML chiffrée)
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -613,95 +621,317 @@ Note
 </div>
 <section id="prérequis" class="level3" data-number="5.1">
 <h3 data-number="5.1" class="anchored" data-anchor-id="prérequis"><span class="header-section-number">5.1</span> Prérequis</h3>
+<p>Avant de commencer, vérifier que les éléments suivants sont opérationnels :</p>
 <ul class="task-list">
-<li><label><input type="checkbox">VM vm-proxy créée et configurée selon la section « Configuration réseau VirtualBox ».</label></li>
-<li><label><input type="checkbox">Deux interfaces réseau configurées :</label></li>
+<li><label><input type="checkbox">VM <code>vm-proxy</code> créée et configurée selon la section « Configuration réseau VirtualBox ».</label></li>
 <li><label><input type="checkbox">Carte 1 : NAT pour l’accès à Internet.</label></li>
-<li><label><input type="checkbox">Carte 2 : Host-only (vboxnet0) avec l’adresse IP 192.168.56.10.</label></li>
-<li><label><input type="checkbox">Ping fonctionnel entre la VM vm-proxy et la machine hôte (192.168.56.1).</label></li>
-<li><label><input type="checkbox">Accès à Internet fonctionnel depuis la VM.</label></li>
-<li><label><input type="checkbox">Snapshot VirtualBox « réseau OK » pris sur la VM vm-proxy.</label></li>
-<li><label><input type="checkbox">Accès administrateur (root ou utilisateur avec sudo) sur la VM.</label></li>
-<li><label><input type="checkbox">Système Debian 13 mis à jour (<code>sudo apt update &amp;&amp; sudo apt upgrade -y</code>)</label></li>
+<li><label><input type="checkbox">Carte 2 : Host-only (<code>vboxnet0</code>) avec l’adresse IP <code>192.168.56.10</code>.</label></li>
+<li><label><input type="checkbox">Ping fonctionnel entre la VM et la machine hôte.</label></li>
+<li><label><input type="checkbox">Accès Internet fonctionnel depuis la VM.</label></li>
+<li><label><input type="checkbox">Snapshot VirtualBox « réseau OK » effectué.</label></li>
+<li><label><input type="checkbox">Accès administrateur sur la VM.</label></li>
+<li><label><input type="checkbox">Debian 13 mis à jour.</label></li>
 <li><label><input type="checkbox">Docker installé et fonctionnel.</label></li>
 <li><label><input type="checkbox">Docker Compose disponible.</label></li>
-<li><label><input type="checkbox">Les ports 80 et 443 disponibles pour Traefik (on acces à internet depuis la VM).</label></li>
 </ul>
+<p>Vérifier que Docker et Docker Compose fonctionnent :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> <span class="at">--version</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose version</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les deux commandes doivent afficher leurs versions respectives.</p>
 </section>
-<section id="installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy" class="level3" data-number="5.2">
-<h3 data-number="5.2" class="anchored" data-anchor-id="installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.2</span> Installation et configuration des serveurs web Nginx (sur vm-proxy)</h3>
-<p><strong>Pourquoi :</strong> Les serveurs web Nginx permettent d’héberger notre site HTML et de rendre son contenu accessible aux utilisateurs. Dans notre projet, nous allons déployer trois conteneurs Docker indépendants utilisant l’image officielle Nginx. Chaque conteneur hébergera une copie du même site web.</p>
-<p>Traefik jouera le rôle de reverse proxy et répartira les requêtes entre ces trois serveurs web afin de mettre en évidence le fonctionnement de l’équilibrage de charge.</p>
-<section id="préparer-les-fichiers-du-site-web" class="level4" data-number="5.2.1">
-<h4 data-number="5.2.1" class="anchored" data-anchor-id="préparer-les-fichiers-du-site-web"><span class="header-section-number">5.2.1</span> Préparer les fichiers du site web</h4>
-<p>Nous allons récupérer le code source d’un site HTML existant et placer ses fichiers dans un répertoire sur la VM.</p>
-<p>Exemple d’organisation :</p>
+<section id="préparation-de-lenvironnement-docker-sur-vm-proxy" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="préparation-de-lenvironnement-docker-sur-vm-proxy"><span class="header-section-number">5.2</span> Préparation de l’environnement Docker (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> nous allons utiliser Docker Compose pour déployer et gérer les différents services du projet depuis un seul fichier de configuration. Cela permet de centraliser la configuration de Traefik et des trois serveurs Nginx et de faciliter leur démarrage et leur arrêt.</p>
+<p>Créer le répertoire du projet :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/projet-proxy</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/projet-proxy</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Créer les répertoires nécessaires :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> site/nginx1</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> site/nginx2</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> site/nginx3</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> traefik/dynamic</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> letsencrypt</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’organisation du projet sera la suivante :</p>
 <pre class="text"><code>projet-proxy/
-└── site/
-    ├── index.html
-    ├── css/
-    ├── js/
-    └── images/</code></pre>
-<p>Créer le réseau Docker interne, ce réseau permettra à Traefik de communiquer avec les trois conteneurs Nginx.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network create proxy</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Télécharger l’image officielle Nginx</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull nginx:alpine</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+├── docker-compose.yml
+├── .env
+├── site/
+│   ├── nginx1/
+│   │   └── index.html
+│   ├── nginx2/
+│   │   └── index.html
+│   └── nginx3/
+│       └── index.html
+├── traefik/
+│   └── dynamic/
+│       └── dynamic.yml
+└── letsencrypt/
+    └── acme.json</code></pre>
 </section>
-<section id="démarrer-les-trois-conteneurs-nginx" class="level4" data-number="5.2.2">
-<h4 data-number="5.2.2" class="anchored" data-anchor-id="démarrer-les-trois-conteneurs-nginx"><span class="header-section-number">5.2.2</span> Démarrer les trois conteneurs Nginx</h4>
-<p>Chaque conteneur utilise le même dossier contenant les fichiers du site HTML.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> nginx1 <span class="dt">\</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--network</span> proxy <span class="dt">\</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/projet-proxy/site:/usr/share/nginx/html:ro <span class="dt">\</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  nginx:alpine</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> nginx2 <span class="dt">\</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--network</span> proxy <span class="dt">\</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/projet-proxy/site:/usr/share/nginx/html:ro <span class="dt">\</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  nginx:alpine</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> nginx3 <span class="dt">\</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">--network</span> proxy <span class="dt">\</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/projet-proxy/site:/usr/share/nginx/html:ro <span class="dt">\</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  nginx:alpine</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.3</span> Installation et préparation des serveurs web Nginx (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> les serveurs web Nginx permettent d’héberger notre site HTML. Nous allons créer trois conteneurs indépendants afin de démontrer l’équilibrage de charge réalisé par Traefik. Chaque conteneur hébergera une version du site permettant de l’identifier pendant les tests.</p>
+<p>Pour commencer, créer une page HTML dans chaque répertoire.</p>
+<p><strong>Sur vm-proxy :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> site/nginx1/index.html <span class="op">&lt;&lt; 'EOF'</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;h1&gt;Bienvenue sur le serveur Nginx 1&lt;/h1&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> site/nginx2/index.html <span class="op">&lt;&lt; 'EOF'</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;h1&gt;Bienvenue sur le serveur Nginx 2&lt;/h1&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> site/nginx3/index.html <span class="op">&lt;&lt; 'EOF'</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;h1&gt;Bienvenue sur le serveur Nginx 3&lt;/h1&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ces pages sont volontairement différentes afin de pouvoir identifier le serveur ayant répondu à chaque requête.</p>
+<p>Télécharger l’image officielle Nginx :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull nginx:alpine</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Vérification :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> images</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’image <code>nginx:alpine</code> doit apparaître dans la liste.</p>
 </section>
-<section id="vérifier-le-fonctionnement-des-conteneurs" class="level4" data-number="5.2.3">
-<h4 data-number="5.2.3" class="anchored" data-anchor-id="vérifier-le-fonctionnement-des-conteneurs"><span class="header-section-number">5.2.3</span> Vérifier le fonctionnement des conteneurs</h4>
-<p><strong>Pourquoi :</strong> Permet de vérifier que les conteneurs on bien été créés et fonctionnent.</p>
-<p>Vérifier que les trois conteneurs sont bien démarrés :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Tester ensuite l’accès au site depuis chaque conteneur :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx1 wget <span class="at">-qO-</span> http://localhost/</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx2 wget <span class="at">-qO-</span> http://localhost/</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx3 wget <span class="at">-qO-</span> http://localhost/</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Chaque commande doit retourner le contenu HTML du site.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Les trois conteneurs Nginx écoutent sur le port 80 de leur réseau Docker interne. Aucun port web n’est directement publié sur la VM : les requêtes provenant de la machine hôte passent obligatoirement par Traefik.</p>
-</div>
-</div>
+<section id="configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.4</span> Configuration de Traefik et de Let’s Encrypt (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> Traefik constitue le cœur de notre projet. Il reçoit les connexions HTTP et HTTPS, sélectionne le serveur web correspondant au nom de domaine demandé et assure la terminaison TLS. Il communique également avec Let’s Encrypt pour obtenir et renouveler automatiquement les certificats.</p>
+<p>Dans notre projet, nous utilisons le challenge DNS-01 de Let’s Encrypt. Celui-ci permet de valider notre nom de domaine grâce à un enregistrement DNS TXT, sans devoir exposer directement notre VM sur Internet.</p>
+<!-- A supprimer!!!!!!! 
+#### Préparer les identifiants Cloudflare
+
+Créer un jeton API Cloudflare disposant des autorisations suivantes :
+
+- Zone : DNS : Edit.
+- Zone : Zone : Read.
+
+Créer ensuite le fichier `.env` à la racine du projet :
+
+```bash
+nano .env
+```
+
+Y ajouter les informations suivantes en remplaçant les valeurs d'exemple :
+
+```env
+ACME_EMAIL=adresse@example.com
+CF_DNS_API_TOKEN=VOTRE_TOKEN_CLOUDFLARE
+```
+
+Ce fichier contient des informations sensibles. Il ne doit pas être partagé publiquement ni ajouté à un dépôt Git.
+
+Protéger le fichier :
+
+```bash
+chmod 600 .env
+``` -->
+<section id="préparer-le-stockage-des-certificats" class="level4" data-number="5.4.1">
+<h4 data-number="5.4.1" class="anchored" data-anchor-id="préparer-le-stockage-des-certificats"><span class="header-section-number">5.4.1</span> Préparer le stockage des certificats</h4>
+<p>Créer le fichier qui permettra à Traefik de conserver les certificats obtenus auprès de Let’s Encrypt :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> letsencrypt/acme.json</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 letsencrypt/acme.json</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ce fichier permet à Traefik de conserver les certificats et les informations ACME nécessaires à leur renouvellement automatique.</p>
+</section>
+<section id="configurer-les-serveurs-web-dans-traefik" class="level4" data-number="5.4.2">
+<h4 data-number="5.4.2" class="anchored" data-anchor-id="configurer-les-serveurs-web-dans-traefik"><span class="header-section-number">5.4.2</span> Configurer les serveurs web dans Traefik</h4>
+<p>Créer le fichier de configuration dynamique :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> traefik/dynamic/dynamic.yml</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ajouter le contenu suivant en remplaçant <code>site.votre-domaine.be</code> par votre véritable nom de domaine :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">http</span><span class="kw">:</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">routers</span><span class="kw">:</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">site</span><span class="kw">:</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">rule</span><span class="kw">:</span><span class="at"> </span><span class="st">"Host(`site.votre-domaine.be`)"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">entryPoints</span><span class="kw">:</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> websecure</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">service</span><span class="kw">:</span><span class="at"> nginx-servers</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">tls</span><span class="kw">:</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">certResolver</span><span class="kw">:</span><span class="at"> letsencrypt</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">nginx-servers</span><span class="kw">:</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">loadBalancer</span><span class="kw">:</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">servers</span><span class="kw">:</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">url</span><span class="kw">:</span><span class="at"> </span><span class="st">"http://nginx1:80"</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">url</span><span class="kw">:</span><span class="at"> </span><span class="st">"http://nginx2:80"</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="kw">-</span><span class="at"> </span><span class="fu">url</span><span class="kw">:</span><span class="at"> </span><span class="st">"http://nginx3:80"</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cette configuration indique à Traefik que les requêtes HTTPS destinées au domaine choisi doivent être transmises aux trois serveurs Nginx.</p>
+<p>Traefik utilise automatiquement un équilibrage de charge de type round-robin : les requêtes sont réparties entre les serveurs disponibles.</p>
+</section>
+<section id="configurer-traefik-dans-docker-compose" class="level4" data-number="5.4.3">
+<h4 data-number="5.4.3" class="anchored" data-anchor-id="configurer-traefik-dans-docker-compose"><span class="header-section-number">5.4.3</span> Configurer Traefik dans Docker Compose</h4>
+<p>Créer le fichier principal de déploiement :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> docker-compose.yml</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ajouter la configuration suivante en remplaçant <code>votre.mail@outlook.com</code> par un mail que vous possédez et <code>site.votre-domaine.be</code> par votre véritable nom de domaine :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">traefik</span><span class="kw">:</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> traefik</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> traefik</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> DOCKER_API_VERSION=1.40</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"8080:80"</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"8443:443"</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">command</span><span class="kw">:</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --providers.docker=true</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --providers.docker.exposedbydefault=false</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --entrypoints.web.address=:80</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --entrypoints.websecure.address=:443</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.email=test.mail@outlook.com</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.httpchallenge=true</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.httpchallenge.entrypoint=web</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /var/run/docker.sock:/var/run/docker.sock:ro</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./letsencrypt/acme.json:/letsencrypt/acme.json</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx1</span><span class="kw">:</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:alpine</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> nginx1</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./site/nginx1:/usr/share/nginx/html:ro</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.enable=true"</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.rule=Host(`site.votre-domaine.be`)"</span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.entrypoints=websecure"</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.tls.certresolver=le"</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx2</span><span class="kw">:</span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:alpine</span></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> nginx2</span></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./site/nginx2:/usr/share/nginx/html:ro</span></span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx3</span><span class="kw">:</span></span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:alpine</span></span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> nginx3</span></span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./site/nginx3:/usr/share/nginx/html:ro</span></span>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">proxy</span><span class="kw">:</span></span>
+<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">external</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dans cette configuration :</p>
+<ul>
+<li>Traefik écoute sur les ports 80 et 443.</li>
+<li>Le port 80 redirige automatiquement les visiteurs vers HTTPS.</li>
+<li>Les trois conteneurs Nginx ne publient aucun port directement sur la VM.</li>
+<li>Les conteneurs communiquent grâce au réseau Docker <code>proxy</code>.</li>
+<li>Traefik utilise le fournisseur de fichiers pour découvrir les trois serveurs web.</li>
+<li>Le résolveur ACME utilise le challenge DNS-01 de Cloudflare pour obtenir les certificats Let’s Encrypt.</li>
+</ul>
+<p><strong>Vérification de la configuration :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose config <span class="at">-q</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si aucune erreur n’est affichée, le fichier Docker Compose est syntaxiquement valide.</p>
 </section>
 </section>
-<section id="titre-de-létape-sur-vm-yyy" class="level3" data-number="5.3">
-<h3 data-number="5.3" class="anchored" data-anchor-id="titre-de-létape-sur-vm-yyy"><span class="header-section-number">5.3</span> [Titre de l’étape] (sur vm-yyy)</h3>
-<p><strong>Pourquoi :</strong> …</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commandes à exécuter sur vm-yyy</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="déploiement-des-conteneurs-sur-vm-proxy" class="level3" data-number="5.5">
+<h3 data-number="5.5" class="anchored" data-anchor-id="déploiement-des-conteneurs-sur-vm-proxy"><span class="header-section-number">5.5</span> Déploiement des conteneurs (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> cette étape permet de démarrer simultanément Traefik et les trois serveurs Nginx. Docker Compose crée automatiquement le réseau Docker et connecte les différents conteneurs.</p>
+<p>Depuis le répertoire <code>projet-proxy</code>, exécuter :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si ne fonctionne pas peut aussi venir de la command suivante non fait juste avant :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cette commande télécharge les images nécessaires si elles ne sont pas présentes et démarre les quatre conteneurs.</p>
+<p><strong>Vérification :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : quatre conteneurs doivent apparaître avec le statut <code>Up</code> :</p>
+<ul>
+<li>traefik</li>
+<li>nginx1</li>
+<li>nginx2</li>
+<li>nginx3</li>
+</ul>
+<p>Vérifier également le réseau Docker :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network inspect proxy</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les quatre conteneurs doivent être connectés au réseau <code>proxy</code>.</p>
 </section>
-<section id="titre-de-létape" class="level3" data-number="5.4">
-<h3 data-number="5.4" class="anchored" data-anchor-id="titre-de-létape"><span class="header-section-number">5.4</span> [Titre de l’étape]</h3>
-<p>…</p>
+<section id="vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" class="level3" data-number="5.6">
+<h3 data-number="5.6" class="anchored" data-anchor-id="vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy"><span class="header-section-number">5.6</span> Vérification du fonctionnement des serveurs Nginx (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> avant de tester Traefik, il est important de vérifier que les trois serveurs web fonctionnent indépendamment. Cela permet de distinguer un problème provenant de Nginx d’un problème provenant du reverse proxy.</p>
+<p>Exécuter les commandes suivantes :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx1 wget <span class="at">-qO-</span> http://localhost/</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx2 wget <span class="at">-qO-</span> http://localhost/</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx3 wget <span class="at">-qO-</span> http://localhost/</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Résultats attendus :</strong></p>
+<pre class="text"><code>&lt;h1&gt;Bienvenue sur le serveur Nginx 1&lt;/h1&gt;
+&lt;h1&gt;Bienvenue sur le serveur Nginx 2&lt;/h1&gt;
+&lt;h1&gt;Bienvenue sur le serveur Nginx 3&lt;/h1&gt;</code></pre>
+<p>Les trois commandes doivent retourner le contenu HTML correspondant.</p>
+</section>
+<section id="configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" class="level3" data-number="5.7">
+<h3 data-number="5.7" class="anchored" data-anchor-id="configuration-de-la-résolution-dns-locale-sur-la-machine-hôte"><span class="header-section-number">5.7</span> Configuration de la résolution DNS locale (sur la machine hôte)</h3>
+<p><strong>Pourquoi :</strong> notre VM utilise une adresse privée Host-only. Pour accéder au site depuis le navigateur de la machine hôte, nous devons faire correspondre notre nom de domaine à l’adresse IP privée de la VM.</p>
+<p>Sur la machine hôte, ajouter la ligne suivante au fichier hosts :</p>
+<pre class="text"><code>192.168.56.10 site.votre-domaine.be</code></pre>
+<p>Emplacement du fichier selon le système :</p>
+<ul>
+<li>Linux/macOS : <code>/etc/hosts</code></li>
+<li>Windows : <code>C:\Windows\System32\drivers\etc\hosts</code></li>
+</ul>
+<p>Remplacer le nom de domaine par celui configuré dans <code>dynamic.yml</code>.</p>
+<p>Cette résolution locale permet au navigateur de joindre Traefik sur <code>192.168.56.10</code>, tout en utilisant le véritable nom de domaine pour la négociation HTTPS.</p>
+<p>Il n’est pas nécessaire de publier l’adresse privée de la VM dans un enregistrement DNS public A pour utiliser le challenge DNS-01.</p>
+</section>
+<section id="vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" class="level3" data-number="5.8">
+<h3 data-number="5.8" class="anchored" data-anchor-id="vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.8</span> Vérification de l’obtention du certificat Let’s Encrypt (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> cette étape permet de vérifier que Traefik communique correctement avec Let’s Encrypt, que le challenge DNS-01 fonctionne et qu’un certificat valide est obtenu automatiquement.</p>
+<p>Consulter les journaux de Traefik :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> logs traefik </span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>=&gt; EXPLIQUER MODIF DANS FICHIER DOCKER_COMPOSE ET DYNAMIC</p>
+<p>TCO</p>
+<p>Traefik doit réussir la validation DNS et obtenir un certificat pour le domaine configuré.</p>
+<p>Vérifier ensuite le contenu du fichier ACME :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> letsencrypt/acme.json</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le fichier doit contenir les informations du certificat obtenu.</p>
+<p>Pour vérifier le certificat depuis la machine hôte dans un terminal bash :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> s_client <span class="dt">\</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-connect</span> 192.168.56.10:443 <span class="dt">\</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-servername</span> site.votre-domaine.be <span class="dt">\</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="ex">openssl</span> x509 <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span> <span class="at">-dates</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le résultat doit afficher :</p>
+<ul>
+<li>Le nom de domaine correspondant au certificat.</li>
+<li>Let’s Encrypt comme autorité de certification.</li>
+<li>Les dates de début et de fin de validité du certificat.</li>
+</ul>
+<p>Le certificat doit être reconnu comme valide par un navigateur utilisant son magasin de certificats habituel.</p>
+<p><strong>Attention :</strong> Let’s Encrypt peut limiter le nombre de certificats émis lors des tests répétés. Il est conseillé d’utiliser son environnement de test (staging) pendant les essais de configuration, puis de revenir à l’environnement de production pour obtenir le certificat final.</p>
+</section>
+<section id="vérification-du-démarrage-automatique-sur-vm-proxy" class="level3" data-number="5.9">
+<h3 data-number="5.9" class="anchored" data-anchor-id="vérification-du-démarrage-automatique-sur-vm-proxy"><span class="header-section-number">5.9</span> Vérification du démarrage automatique (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> nous voulons que les services redémarrent automatiquement après un redémarrage de la VM, sans devoir relancer manuellement les conteneurs.</p>
+<p>Vérifier que les services disposent de la politique <code>restart: unless-stopped</code> dans le fichier Docker Compose.</p>
+<p>Tester le redémarrage :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Après le redémarrage, vérifier :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les quatre conteneurs doivent être de nouveau actifs.</p>
+</section>
+<section id="bilan-de-linstallation" class="level3" data-number="5.10">
+<h3 data-number="5.10" class="anchored" data-anchor-id="bilan-de-linstallation"><span class="header-section-number">5.10</span> Bilan de l’installation</h3>
+<p>À la fin de cette procédure, notre infrastructure doit disposer des éléments suivants :</p>
+<ul>
+<li>Un reverse proxy Traefik fonctionnel.</li>
+<li>Trois serveurs web Nginx indépendants.</li>
+<li>Un réseau Docker interne permettant la communication entre les conteneurs.</li>
+<li>Une redirection automatique du HTTP vers HTTPS.</li>
+<li>Un certificat TLS valide délivré par Let’s Encrypt.</li>
+<li>Un renouvellement automatique des certificats assuré par Traefik.</li>
+<li>Un équilibrage de charge entre les trois serveurs Nginx.</li>
+</ul>
+<p>Les tests détaillés de l’accès HTTPS, de la redirection HTTP vers HTTPS, de l’équilibrage de charge et du renouvellement des certificats seront présentés dans la section « Vérification et tests ».</p>
 </section>
 </section>
 <section id="vérification-et-tests" class="level2" data-number="6">
@@ -780,9 +1010,9 @@ Note
 <section id="test-1-titre" class="level3" data-number="6.2">
 <h3 data-number="6.2" class="anchored" data-anchor-id="test-1-titre"><span class="header-section-number">6.2</span> Test 1 — [Titre]</h3>
 <p>Description du test et de ce qu’il valide.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commande de test</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">commande</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → Sortie obtenue (copier-coller la vraie sortie ici)</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commande de test</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">commande</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → Sortie obtenue (copier-coller la vraie sortie ici)</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

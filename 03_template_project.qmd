@@ -39,24 +39,7 @@ lang: fr
 
 **{{< meta group >}}**
 
----
-
-::: {.callout-warning title="À lire avant de commencer — puis à supprimer"}
-Les blocs de consigne (comme celui-ci) vous guident section par section.
-**Supprimez tous les blocs de consigne avant la remise**.
-
-Rappels importants :
-
-- **Configuration réseau** : n'oubliez pas surtout si vous avez plusieurs VMs 
-- **Snapshots VirtualBox** : prenez un snapshot avant chaque étape majeure. En cas d'erreur, vous revenez en arrière en quelques secondes.
-- La **checklist avant remise** se trouve en fin de document.
-:::
-
 ## Introduction
-
-::: {.callout-important title="Consigne"}
-Décrivez en quelques paragraphes l'objectif du projet, le contexte et la problématique à laquelle vous répondez. Expliquez **ce que vous avez mis en place**, **pourquoi** vous avez choisi ces technologies.
-:::
 
 ### Objectif
 
@@ -249,10 +232,6 @@ La VM vm-proxy dispose également d'une interface NAT pour accéder à Internet,
 
 ## Diagramme au choix
 
-::: {.callout-important title="Consigne"}
-Choisissez un type de diagramme **pertinent et différent** du schéma d'architecture. Exemples : diagramme de séquence (flux d'une requête), diagramme d'états (cycle de vie d'un composant), diagramme de flux de données. Expliquez pourquoi vous avez choisi ce type de diagramme et ce qu'il apprend de plus que le schéma d'architecture.
-:::
-
 ```{mermaid}
 sequenceDiagram
     participant C as Client (hôte 192.168.56.1)
@@ -289,16 +268,6 @@ Les informations du client sont transmises aux serveurs NGINX : Traefik ajoute n
 Ainsi, ce diagramme illustre le fonctionnement du reverse proxy, la terminaison TLS et la répartition de charge entre les trois conteneurs web
 
 ## Installation et déploiement
-
-::: {.callout-important title="Consigne"}
-Décrivez la procédure **complète et reproductible**, étape par étape, sur Debian 13. Pour chaque étape :
-
-- indiquez sur **quelle VM** les commandes s'exécutent ;
-- expliquez en une phrase **pourquoi cette étape est nécessaire** (ligne "Pourquoi") — c'est ce qui distingue une documentation comprise d'un copier-coller ;
-- terminez par une **vérification immédiate** avec la sortie attendue.
-
-Les commandes doivent avoir été testées et fonctionner telles quelles.
-:::
 
 ### Prérequis
 
@@ -720,14 +689,6 @@ Les tests détaillés de l'accès HTTPS, de l'équilibrage de charge seront pré
 
 ## Vérification et tests
 
-::: {.callout-important title="Consigne"}
-Cette section doit **prouver** que votre solution fonctionne. Chaque test doit indiquer la commande utilisée, la sortie obtenue (copiée-collée ou en capture) et le résultat.
-
-Deux tests sont **obligatoires** quel que soit le sujet.
-Un test sans preuve n'est pas un test.
-
-:::
-
 ### Tableau récapitulatif des tests
 
 Les tests ont été réalisés avec le domaine `projetinfra.duckdns.org`. Traefik est publié sur les ports 8080 (HTTP) et 8443 (HTTPS) de la VM.
@@ -851,10 +812,6 @@ Résultat attendu : `404 page not found` renvoyé par Traefik pour le premier te
 
 ## Problèmes rencontrés
 
-::: {.callout-important title="Consigne"}
-Décrivez les 2 à 4 problèmes qui vous ont le plus bloqués, avec la structure **Symptôme / Cause / Solution**. Cette section montre votre compréhension réelle du projet — elle doit refléter ce qui s'est *réellement* passé dans vos VMs.
-:::
-
 **1. Perte de la connexion PuTTY après le redémarrage du réseau**
 
 *Symptôme :* après `systemctl restart networking`, PuTTY n'affichait plus qu'un écran noir. Dans la console VirtualBox, `ip a` ne montrait plus `enp0s8` avec son adresse, et `ifup enp0s8` répondait « unknown interface ».
@@ -908,20 +865,12 @@ Nous avons tous tourné parmi tous les rôles.
 
 ## Améliorations possibles
 
-::: {.callout-important title="Consigne"}
-Proposez des améliorations concrètes et réalistes. Évitez les généralités ("on pourrait améliorer la sécurité") — soyez précis ("on pourrait remplacer le certificat auto-signé par Let's Encrypt via certbot, ce qui nécessiterait un nom de domaine public").
-:::
-
 - **Redirection automatique de HTTP vers HTTPS :** ajouter à la commande de Traefik `--entrypoints.web.http.redirections.entrypoint.to=websecure` et `--entrypoints.web.http.redirections.entrypoint.scheme=https`. Aujourd'hui, une requête HTTP sur le port 8080 ne reçoit pas de redirection ; cela garantirait que tout le trafic passe par le HTTPS.
 - **Protection du token DuckDNS :** remplacer le fichier `.env` par des secrets Docker (`secrets:` dans le fichier Compose), afin que le token ne soit pas visible dans les variables d'environnement du conteneur (`docker exec traefik env`).
 - **Ports standard 80 et 443 :** publier `80:80` et `443:443` au lieu de 8080 et 8443, afin que l'URL n'ait plus besoin d'un numéro de port. Cela nécessite de libérer ces ports sur la VM.
 
 
 ## Conclusion
-
-::: {.callout-important title="Consigne"}
-Résumez ce qui a été mis en place et ce que le projet vous a appris. Donnez votre ressenti de groupe : qu'est-ce qui a été difficile, qu'est-ce qui vous a surpris, qu'est-ce que vous referiez différemment ?
-:::
 
 Nous avons mis en place un reverse-proxy avec certificat Let's Encrypt automatique en utilisant Traefik, DuckDNS, Docker avec trois conteneurs docker afin de répartir la charge sur les trois via un load balancer. Nous avons appris à utiliser DuckDNS pour créer un domaine.
 Nous avons également appris à faire en sorte que tout fonctionne ensemble, l'utilisation de Traefik, à activer la deuxième carte réseau, ainsi l'utilisation de fichiers ".qmd".
@@ -938,14 +887,6 @@ Ce qu'on ferait différemment :
 ## Checklist avant remise
 
 ::: {.callout-important title="À vérifier — puis supprimer cette section"}
-- [ ] `quarto render` fonctionne sans erreur ni warning
-- [ ] Noms des membres et numéro de groupe remplis (en-tête YAML)
-- [ ] Tous les blocs de consigne supprimés (y compris celui-ci et cette checklist)
-- [ ] Configuration réseau présente
-- [ ] Schéma d'architecture avec IPs et ports
 - [ ] Tableau de tests entièrement complété avec les résultats réels
-- [ ] Toutes les captures d'écran présentes dans `images/` et affichées dans le rendu
-- [ ] Section "Problèmes rencontrés" avec structure Symptôme/Cause/Solution
-- [ ] Orthographe relue (activez le correcteur dans VS Code)
 - [ ] Archive remise : `.qmd` + dossier `images/`
 :::

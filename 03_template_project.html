@@ -11,7 +11,7 @@
 <meta name="author" content="Aurélien DELFOSSE">
 <meta name="author" content="Simon STORME">
 
-<title>Revers Proxy avec certificat automatique</title>
+<title>Reverse Proxy avec certificat automatique</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -108,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#configuration-des-ips-fixes" id="toc-configuration-des-ips-fixes" class="nav-link" data-scroll-target="#configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</a></li>
   <li><a href="#vérification-de-la-connectivité" id="toc-vérification-de-la-connectivité" class="nav-link" data-scroll-target="#vérification-de-la-connectivité"><span class="header-section-number">2.4</span> Vérification de la connectivité</a></li>
   </ul></li>
-  <li><a href="#architecture-demander-au-prof" id="toc-architecture-demander-au-prof" class="nav-link" data-scroll-target="#architecture-demander-au-prof"><span class="header-section-number">3</span> Architecture (DEMANDER AU PROF !!!!!!)</a>
+  <li><a href="#architecture" id="toc-architecture" class="nav-link" data-scroll-target="#architecture"><span class="header-section-number">3</span> Architecture</a>
   <ul class="collapse">
   <li><a href="#schéma-darchitecture" id="toc-schéma-darchitecture" class="nav-link" data-scroll-target="#schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</a></li>
   <li><a href="#tableau-des-composants" id="toc-tableau-des-composants" class="nav-link" data-scroll-target="#tableau-des-composants"><span class="header-section-number">3.2</span> Tableau des composants</a></li>
@@ -117,15 +117,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#installation-et-déploiement" id="toc-installation-et-déploiement" class="nav-link" data-scroll-target="#installation-et-déploiement"><span class="header-section-number">5</span> Installation et déploiement</a>
   <ul class="collapse">
   <li><a href="#prérequis" id="toc-prérequis" class="nav-link" data-scroll-target="#prérequis"><span class="header-section-number">5.1</span> Prérequis</a></li>
-  <li><a href="#installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy" id="toc-installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.2</span> Installation et configuration des serveurs web Nginx (sur vm-proxy)</a></li>
-  <li><a href="#titre-de-létape-sur-vm-yyy" id="toc-titre-de-létape-sur-vm-yyy" class="nav-link" data-scroll-target="#titre-de-létape-sur-vm-yyy"><span class="header-section-number">5.3</span> [Titre de l’étape] (sur vm-yyy)</a></li>
-  <li><a href="#titre-de-létape" id="toc-titre-de-létape" class="nav-link" data-scroll-target="#titre-de-létape"><span class="header-section-number">5.4</span> [Titre de l’étape]</a></li>
+  <li><a href="#préparation-de-lenvironnement-docker-sur-vm-proxy" id="toc-préparation-de-lenvironnement-docker-sur-vm-proxy" class="nav-link" data-scroll-target="#préparation-de-lenvironnement-docker-sur-vm-proxy"><span class="header-section-number">5.2</span> Préparation de l’environnement Docker (sur vm-proxy)</a></li>
+  <li><a href="#installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" id="toc-installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.3</span> Installation et préparation des serveurs web Nginx (sur vm-proxy)</a></li>
+  <li><a href="#configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" id="toc-configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" class="nav-link" data-scroll-target="#configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.4</span> Configuration de Traefik et de Let’s Encrypt (sur vm-proxy)</a></li>
+  <li><a href="#déploiement-des-conteneurs-sur-vm-proxy" id="toc-déploiement-des-conteneurs-sur-vm-proxy" class="nav-link" data-scroll-target="#déploiement-des-conteneurs-sur-vm-proxy"><span class="header-section-number">5.5</span> Déploiement des conteneurs (sur vm-proxy)</a></li>
+  <li><a href="#vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" id="toc-vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy"><span class="header-section-number">5.6</span> Vérification du fonctionnement des serveurs Nginx (sur vm-proxy)</a></li>
+  <li><a href="#configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" id="toc-configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" class="nav-link" data-scroll-target="#configuration-de-la-résolution-dns-locale-sur-la-machine-hôte"><span class="header-section-number">5.7</span> Configuration de la résolution DNS locale (sur la machine hôte)</a></li>
+  <li><a href="#vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" id="toc-vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.8</span> Vérification de l’obtention du certificat Let’s Encrypt (sur vm-proxy)</a></li>
+  <li><a href="#vérification-du-démarrage-automatique-sur-vm-proxy" id="toc-vérification-du-démarrage-automatique-sur-vm-proxy" class="nav-link" data-scroll-target="#vérification-du-démarrage-automatique-sur-vm-proxy"><span class="header-section-number">5.9</span> Vérification du démarrage automatique (sur vm-proxy)</a></li>
+  <li><a href="#bilan-de-linstallation" id="toc-bilan-de-linstallation" class="nav-link" data-scroll-target="#bilan-de-linstallation"><span class="header-section-number">5.10</span> Bilan de l’installation</a></li>
   </ul></li>
   <li><a href="#vérification-et-tests" id="toc-vérification-et-tests" class="nav-link" data-scroll-target="#vérification-et-tests"><span class="header-section-number">6</span> Vérification et tests</a>
   <ul class="collapse">
   <li><a href="#tableau-récapitulatif-des-tests" id="toc-tableau-récapitulatif-des-tests" class="nav-link" data-scroll-target="#tableau-récapitulatif-des-tests"><span class="header-section-number">6.1</span> Tableau récapitulatif des tests</a></li>
-  <li><a href="#test-1-titre" id="toc-test-1-titre" class="nav-link" data-scroll-target="#test-1-titre"><span class="header-section-number">6.2</span> Test 1 — [Titre]</a></li>
-  <li><a href="#test-2-titre" id="toc-test-2-titre" class="nav-link" data-scroll-target="#test-2-titre"><span class="header-section-number">6.3</span> Test 2 — [Titre]</a></li>
+  <li><a href="#test-1-conteneurs-actifs" id="toc-test-1-conteneurs-actifs" class="nav-link" data-scroll-target="#test-1-conteneurs-actifs"><span class="header-section-number">6.2</span> Test 1 — Conteneurs actifs</a></li>
+  <li><a href="#test-2-certificat-lets-encrypt" id="toc-test-2-certificat-lets-encrypt" class="nav-link" data-scroll-target="#test-2-certificat-lets-encrypt"><span class="header-section-number">6.3</span> Test 2 — Certificat Let’s Encrypt</a></li>
+  <li><a href="#test-3-https-de-confiance" id="toc-test-3-https-de-confiance" class="nav-link" data-scroll-target="#test-3-https-de-confiance"><span class="header-section-number">6.4</span> Test 3 — HTTPS de confiance</a></li>
+  <li><a href="#test-4-équilibrage-de-charge" id="toc-test-4-équilibrage-de-charge" class="nav-link" data-scroll-target="#test-4-équilibrage-de-charge"><span class="header-section-number">6.5</span> Test 4 — Équilibrage de charge</a></li>
+  <li><a href="#test-5-panne-simulée" id="toc-test-5-panne-simulée" class="nav-link" data-scroll-target="#test-5-panne-simulée"><span class="header-section-number">6.6</span> Test 5 — Panne simulée</a></li>
+  <li><a href="#test-6-accès-depuis-le-navigateur" id="toc-test-6-accès-depuis-le-navigateur" class="nav-link" data-scroll-target="#test-6-accès-depuis-le-navigateur"><span class="header-section-number">6.7</span> Test 6 — Accès depuis le navigateur</a></li>
+  <li><a href="#test-7-redémarrage-automatique" id="toc-test-7-redémarrage-automatique" class="nav-link" data-scroll-target="#test-7-redémarrage-automatique"><span class="header-section-number">6.8</span> Test 7 — Redémarrage automatique</a></li>
+  <li><a href="#test-8-sécurité-négative" id="toc-test-8-sécurité-négative" class="nav-link" data-scroll-target="#test-8-sécurité-négative"><span class="header-section-number">6.9</span> Test 8 — Sécurité négative</a></li>
   </ul></li>
   <li><a href="#problèmes-rencontrés" id="toc-problèmes-rencontrés" class="nav-link" data-scroll-target="#problèmes-rencontrés"><span class="header-section-number">7</span> Problèmes rencontrés</a></li>
   <li><a href="#distribution-des-tâches" id="toc-distribution-des-tâches" class="nav-link" data-scroll-target="#distribution-des-tâches"><span class="header-section-number">8</span> Distribution des tâches</a></li>
@@ -139,7 +151,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Revers Proxy avec certificat automatique</h1>
+<h1 class="title">Reverse Proxy avec certificat automatique</h1>
 </div>
 
 
@@ -159,7 +171,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Date de publication</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">31 octobre 2026</p>
+      <p class="date">26 novembre 2026</p>
     </div>
   </div>
   
@@ -209,8 +221,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="objectif" class="level3" data-number="1.1">
 <h3 data-number="1.1" class="anchored" data-anchor-id="objectif"><span class="header-section-number">1.1</span> Objectif</h3>
-<p>Ce projet met en place un reverse proxy avec autentification automatique. Nous utiliserons “Let’s Encrypt”, “Traefik” et Docker.</p>
-<p>Traefik est le point d’entrée unique du serveur et du client : il reçoit les connexions sur les ports 80 et 443, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let’s Encrypt qu’il obtient et renouvelle lui-même, sans intervention humaine.</p>
+<p>Ce projet met en place un reverse proxy avec gestion automatique des certificats. Nous utiliserons “Let’s Encrypt”, “Traefik” et Docker.</p>
+<p>Traefik est le point d’entrée unique du serveur et du client : il reçoit les connexions sur les ports 8080 et 8443 redirigés vers 80 et 443 dans le conteneur, route chaque requête vers le bon conteneur Docker selon le nom de domaine, et sert tout en HTTPS avec des certificats Let’s Encrypt qu’il obtient et renouvelle lui-même, sans intervention humaine.</p>
 </section>
 <section id="contexte-et-problématique" class="level3" data-number="1.2">
 <h3 data-number="1.2" class="anchored" data-anchor-id="contexte-et-problématique"><span class="header-section-number">1.2</span> Contexte et problématique</h3>
@@ -218,19 +230,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="éléments-inédits" class="level3" data-number="1.3">
 <h3 data-number="1.3" class="anchored" data-anchor-id="éléments-inédits"><span class="header-section-number">1.3</span> Éléments inédits</h3>
-<p>(Demander au prof)!!!! N’a pas été vu au cours : Treafik Let’s encrypt</p>
+<p>N’a pas été vu au cours : Treafik Let’s encrypt</p>
 </section>
 </section>
 <section id="configuration-réseau-virtualbox" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="configuration-réseau-virtualbox"><span class="header-section-number">2</span> Configuration réseau VirtualBox</h2>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Nom de la VM</th>
@@ -245,8 +250,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>vm-proxy</td>
 <td>Reverse proxy Traefik</td>
 <td>Debian 13</td>
-<td>(question prof)</td>
-<td>(question prof)</td>
+<td>2G</td>
+<td>120G auto</td>
 </tr>
 </tbody>
 </table>
@@ -290,7 +295,7 @@ Note
 </div>
 <div class="callout-body-container callout-body">
 <p>Pourquoi host-only et pas “réseau interne” ?</p>
-<p>Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l’hôte (192.168.56.1) : on peut ainsi ouvrir https://whoami.example.com dans le navigateur de l’hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.</p>
+<p>Le réseau interne (intnet) isole les VMs entre elles mais la machine hôte ne peut pas les joindre. Le host-only crée le réseau 192.168.56.0/24 partagé entre les VMs et l’hôte (192.168.56.1) : on peut ainsi ouvrir https://projetinfra.duckdns.org:8443 dans le navigateur de l’hôte, et le correcteur peut faire de même depuis sa propre machine en reproduisant le TP.</p>
 <p>Réglage VirtualBox : Paramètres de chaque VM → Réseau → Carte 2 → Réseau privé hôte (host-only) → vboxnet0. Si vboxnet0 n’existe pas : Fichier → Outils → Gestionnaire de réseau → Créer.</p>
 </div>
 </div>
@@ -305,7 +310,7 @@ Note
 </div>
 <div class="callout-body-container callout-body">
 <p>Pourquoi garder la carte NAT ?</p>
-<p>Traefik doit contacter, en sortie, les serveurs de Let’s Encrypt et l’API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n’est nécessaire : les enregistrements DNS pointent vers l’IP privée 192.168.56.10, accessible uniquement depuis votre machine.</p>
+<p>Traefik doit contacter, en sortie, les serveurs de Let’s Encrypt et l’API de votre hébergeur DNS pour obtenir les certificats (défi DNS-01). Le NAT fournit cet accès Internet sortant. Aucune connexion entrante depuis Internet n’est nécessaire : le fichier hosts de la machine hôte associe le nom à 192.168.56.10, et DuckDNS sert uniquement à créer l’enregistrement TXT du défi DNS-01.</p>
 </div>
 </div>
 </section>
@@ -348,6 +353,7 @@ Note
 </section>
 <section id="configuration-des-ips-fixes" class="level3" data-number="2.3">
 <h3 data-number="2.3" class="anchored" data-anchor-id="configuration-des-ips-fixes"><span class="header-section-number">2.3</span> Configuration des IPs fixes</h3>
+<p>Avant de lancer la débiane: 1. Click droit sur la debian 2. Sélectionner “Configuration” 3. Aller dans “Réseau” 4. Aller dans “Adaptater 2”, puis cochez la case “Activer l’interface réseau” tout en haut. 5. Dans le menu déroulant “Attached to” (Rattaché à), sélectionnez “Host-only Adapter” (Réseau privé hôte). 6. Dans le champ “Name” qui va alors s’éclairer et devenir cliquable, sélectionnez vboxnet0. 7. Cliquez sur OK en bas pour valider.</p>
 <p><strong>Sur vm-proxy</strong>, éditer <code>/etc/network/interfaces</code> :</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /etc/network/interfaces</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interface NAT — DHCP (laisser tel quel)</span></span>
@@ -377,7 +383,7 @@ Note
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.1</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Résultat attendu : 3 paquets reçus, 0 % de perte.</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis la machine hôte, pinger vm-proxy.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Depuis la machine hôte(terminal du pc), pinger vm-proxy.</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.56.10</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Le résultat attendu est =&gt; 3 paquets reçus, 0 % de perte.</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -425,8 +431,8 @@ Astuce
 </div>
 </section>
 </section>
-<section id="architecture-demander-au-prof" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="architecture-demander-au-prof"><span class="header-section-number">3</span> Architecture (DEMANDER AU PROF !!!!!!)</h2>
+<section id="architecture" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="architecture"><span class="header-section-number">3</span> Architecture</h2>
 <section id="schéma-darchitecture" class="level3" data-number="3.1">
 <h3 data-number="3.1" class="anchored" data-anchor-id="schéma-darchitecture"><span class="header-section-number">3.1</span> Schéma d’architecture</h3>
 <div class="cell" data-layout-align="default">
@@ -435,36 +441,47 @@ Astuce
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">flowchart TD
-    H(["Machine hôte&lt;br/&gt;Navigateur / curl&lt;br/&gt;IP : 192.168.56.1"])
+    H(["Machine hôte&lt;br/&gt;Navigateur / curl&lt;br/&gt;IP : 192.168.56.1&lt;br/&gt;hosts : projetinfra.duckdns.org vers 192.168.56.10"])
 
-    subgraph VM["Machine virtuelle VirtualBox : vm-proxy"]
+    subgraph VM["Machine virtuelle VirtualBox : vm-proxy (Debian 13)"]
         direction TB
 
-        P["Traefik - Reverse Proxy&lt;br/&gt;Debian 13&lt;br/&gt;IP Host-only : 192.168.56.10&lt;br/&gt;Ports : 80 (HTTP) et 443 (HTTPS)"]
+        HO["Carte réseau 2 : Host-only&lt;br/&gt;enp0s8&lt;br/&gt;IP fixe : 192.168.56.10"]
+        NAT["Carte réseau 1 : NAT&lt;br/&gt;enp0s3&lt;br/&gt;IP attribuée par DHCP"]
 
-        subgraph DOCKER["Réseau Docker interne"]
-            direction LR
-            W1["Conteneur Nginx 1&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
-            W2["Conteneur Nginx 2&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
-            W3["Conteneur Nginx 3&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80"]
+        subgraph DOCKER["Réseau Docker interne : proxy"]
+            direction TB
+            P["Traefik - Reverse Proxy&lt;br/&gt;Terminaison TLS et équilibrage de charge&lt;br/&gt;Ports publiés sur la VM : 8080 (HTTP) et 8443 (HTTPS)&lt;br/&gt;Ports dans le conteneur : 80 et 443"]
+            W1["Conteneur Nginx 1&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80 (interne)"]
+            W2["Conteneur Nginx 2&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80 (interne)"]
+            W3["Conteneur Nginx 3&lt;br/&gt;Site HTML&lt;br/&gt;Port : 80 (interne)"]
         end
 
-        P --&gt;|"HTTP : 80"| W1
-        P --&gt;|"HTTP : 80"| W2
-        P --&gt;|"HTTP : 80"| W3
+        HO --&gt; P
+        P --&gt;|"HTTP : 80&lt;br/&gt;round-robin"| W1
+        P --&gt;|"HTTP : 80&lt;br/&gt;round-robin"| W2
+        P --&gt;|"HTTP : 80&lt;br/&gt;round-robin"| W3
+        P -.-&gt; NAT
     end
 
-    H --&gt;|"HTTP : 80 / HTTPS : 443"| P
+    subgraph NET["Internet"]
+        LE["Let's Encrypt&lt;br/&gt;(serveur ACME)"]
+        DD["DuckDNS&lt;br/&gt;(API DNS : enregistrement TXT)"]
+    end
 
-    NAT["Carte réseau 1 : NAT&lt;br/&gt;IP attribuée par DHCP&lt;br/&gt;Accès Internet"]
+    H --&gt;|"HTTPS : 8443&lt;br/&gt;HTTP : 8080"| HO
 
-    NAT -.-&gt;|"HTTPS : 443&lt;br/&gt;Téléchargement Docker&lt;br/&gt;Communication avec Let's Encrypt"| P
+    NAT -.-&gt;|"HTTPS : 443 (sortant)&lt;br/&gt;Défi DNS-01 et certificat"| LE
+    NAT -.-&gt;|"HTTPS : 443 (sortant)&lt;br/&gt;Création du TXT _acme-challenge"| DD
 
     style P fill:#69b,stroke:#333,color:#fff
     style W1 fill:#6a9,stroke:#333,color:#fff
     style W2 fill:#6a9,stroke:#333,color:#fff
     style W3 fill:#6a9,stroke:#333,color:#fff
+    style HO fill:#ddd,stroke:#333,color:#222
     style NAT fill:#ddd,stroke:#333,color:#222
+    style LE fill:#fc9,stroke:#333,color:#222
+    style DD fill:#fc9,stroke:#333,color:#222
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -496,7 +513,7 @@ Astuce
 <td>Traefik</td>
 <td>vm-proxy</td>
 <td>192.168.56.10</td>
-<td>80, 443</td>
+<td>8080, 8443</td>
 <td>Reverse proxy, terminaison TLS et équilibrage de charge</td>
 </tr>
 <tr class="even">
@@ -539,7 +556,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n’est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 80 (HTTP) et 443 (HTTPS).</p>
+<p>Les trois conteneurs Nginx communiquent avec Traefik via un réseau Docker interne. Le port 80 de chaque conteneur n’est pas directement exposé sur le réseau Host-only : les utilisateurs accèdent uniquement au service à travers Traefik, sur les ports 8080 (HTTP) et 8443 (HTTPS).</p>
 <p>La VM vm-proxy dispose également d’une interface NAT pour accéder à Internet, notamment pour télécharger les images Docker et communiquer avec Let’s Encrypt.</p>
 </div>
 </div>
@@ -568,15 +585,21 @@ Note
 <pre class="mermaid mermaid-js">sequenceDiagram
     participant C as Client (hôte 192.168.56.1)
     participant T as vm-proxy (Traefik)
+    participant LE as Let's Encrypt (ACME)
     participant N as Conteneur Nginx (Docker)
 
-    C-&gt;&gt;T: HTTPS GET / (connexion TLS)
+    Note over T,LE: Étape 1 : Génération automatique du certificat (Initialisation / Renouvellement)
+    T-&gt;&gt;LE: Demande de certificat (Requête ACME / Défi)
+    LE--&gt;&gt;T: Validation et délivrance du certificat SSL/TLS
+
+    Note over C,T: Étape 2 : Requête client et terminaison TLS
+    C-&gt;&gt;T: HTTPS GET / (Établissement TLS avec le certificat Let's Encrypt)
     Note over T: Terminaison TLS&lt;br/&gt;Déchiffrement de la requête
-    Note over T: Sélection du service&lt;br/&gt;et du conteneur disponible
+    Note over T: Sélection du service&lt;br/&gt;et routage vers le conteneur
     T-&gt;&gt;N: HTTP GET /&lt;br/&gt;+ X-Forwarded-For&lt;br/&gt;+ X-Forwarded-Proto: https
-    Note over N: Recherche et envoi&lt;br/&gt;du fichier HTML
+    Note over N: Traitement et envoi&lt;br/&gt;du fichier HTML
     N--&gt;&gt;T: HTTP 200 OK (page HTML)
-    T--&gt;&gt;C: HTTPS 200 OK (page HTML)
+    T--&gt;&gt;C: HTTPS 200 OK (page HTML chiffrée)
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -584,7 +607,7 @@ Note
 </div>
 </div>
 <p>Expliquez le diagramme en quelques lignes : que représente-t-il, comment le lire, qu’apprend-on de plus par rapport au schéma d’architecture ?</p>
-<p>Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante: lire de haut en bas en suivant le chemin que montre les flèches. Il permet de comprendre les différente étapes dans un ordre précis, ce que ne fait pas le schéma d’architecture et met en évidence trois éléments importants :</p>
+<p>Ce diagramme est un diagramme de séquence. La lecture de celui-ci se fait de la manière suivante: lire de haut en bas en suivant le chemin que montre les flèches. Il permet de comprendre les différentes étapes dans un ordre précis, ce que ne fait pas le schéma d’architecture et met en évidence trois éléments importants :</p>
 <p>La terminaison TLS est assurée par Traefik : la connexion entre le navigateur et Traefik est chiffrée en HTTPS. Traefik déchiffre la requête avant de la transmettre au conteneur Nginx en HTTP sur le réseau Docker interne.</p>
 <p>L’équilibrage de charge est assuré par Traefik : lorsqu’une requête arrive, Traefik la dirige vers l’un des trois conteneurs Nginx disponibles. Cela permet de répartir les requêtes entre plusieurs serveurs web.</p>
 <p>Les informations du client sont transmises aux servers NGINX : Traefik ajoute notamment les en-têtes X-Forwarded-For et X-Forwarded-Proto, qui permettent aux serveurs web de connaître l’adresse IP du client et le protocole utilisé à l’origine.</p>
@@ -613,95 +636,291 @@ Note
 </div>
 <section id="prérequis" class="level3" data-number="5.1">
 <h3 data-number="5.1" class="anchored" data-anchor-id="prérequis"><span class="header-section-number">5.1</span> Prérequis</h3>
+<p>Avant de commencer, vérifier que les éléments suivants sont opérationnels :</p>
 <ul class="task-list">
-<li><label><input type="checkbox">VM vm-proxy créée et configurée selon la section « Configuration réseau VirtualBox ».</label></li>
-<li><label><input type="checkbox">Deux interfaces réseau configurées :</label></li>
+<li><label><input type="checkbox">VM <code>vm-proxy</code> créée et configurée selon la section « Configuration réseau VirtualBox ».</label></li>
 <li><label><input type="checkbox">Carte 1 : NAT pour l’accès à Internet.</label></li>
-<li><label><input type="checkbox">Carte 2 : Host-only (vboxnet0) avec l’adresse IP 192.168.56.10.</label></li>
-<li><label><input type="checkbox">Ping fonctionnel entre la VM vm-proxy et la machine hôte (192.168.56.1).</label></li>
-<li><label><input type="checkbox">Accès à Internet fonctionnel depuis la VM.</label></li>
-<li><label><input type="checkbox">Snapshot VirtualBox « réseau OK » pris sur la VM vm-proxy.</label></li>
-<li><label><input type="checkbox">Accès administrateur (root ou utilisateur avec sudo) sur la VM.</label></li>
-<li><label><input type="checkbox">Système Debian 13 mis à jour (<code>sudo apt update &amp;&amp; sudo apt upgrade -y</code>)</label></li>
+<li><label><input type="checkbox">Carte 2 : Host-only (<code>vboxnet0</code>) avec l’adresse IP <code>192.168.56.10</code>.</label></li>
+<li><label><input type="checkbox">Ping fonctionnel entre la VM et la machine hôte.</label></li>
+<li><label><input type="checkbox">Accès Internet fonctionnel depuis la VM.</label></li>
+<li><label><input type="checkbox">Snapshot VirtualBox « réseau OK » effectué.</label></li>
+<li><label><input type="checkbox">Accès administrateur sur la VM.</label></li>
+<li><label><input type="checkbox">Debian 13 mis à jour.</label></li>
 <li><label><input type="checkbox">Docker installé et fonctionnel.</label></li>
 <li><label><input type="checkbox">Docker Compose disponible.</label></li>
-<li><label><input type="checkbox">Les ports 80 et 443 disponibles pour Traefik (on acces à internet depuis la VM).</label></li>
 </ul>
+<p>Vérifier que Docker et Docker Compose fonctionnent :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> <span class="at">--version</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose version</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les deux commandes doivent afficher leurs versions respectives.</p>
 </section>
-<section id="installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy" class="level3" data-number="5.2">
-<h3 data-number="5.2" class="anchored" data-anchor-id="installation-et-configuration-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.2</span> Installation et configuration des serveurs web Nginx (sur vm-proxy)</h3>
-<p><strong>Pourquoi :</strong> Les serveurs web Nginx permettent d’héberger notre site HTML et de rendre son contenu accessible aux utilisateurs. Dans notre projet, nous allons déployer trois conteneurs Docker indépendants utilisant l’image officielle Nginx. Chaque conteneur hébergera une copie du même site web.</p>
-<p>Traefik jouera le rôle de reverse proxy et répartira les requêtes entre ces trois serveurs web afin de mettre en évidence le fonctionnement de l’équilibrage de charge.</p>
-<section id="préparer-les-fichiers-du-site-web" class="level4" data-number="5.2.1">
-<h4 data-number="5.2.1" class="anchored" data-anchor-id="préparer-les-fichiers-du-site-web"><span class="header-section-number">5.2.1</span> Préparer les fichiers du site web</h4>
-<p>Nous allons récupérer le code source d’un site HTML existant et placer ses fichiers dans un répertoire sur la VM.</p>
-<p>Exemple d’organisation :</p>
+<section id="préparation-de-lenvironnement-docker-sur-vm-proxy" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="préparation-de-lenvironnement-docker-sur-vm-proxy"><span class="header-section-number">5.2</span> Préparation de l’environnement Docker (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> nous allons utiliser Docker Compose pour déployer et gérer les différents services du projet depuis un seul fichier de configuration. Cela permet de centraliser la configuration de Traefik et des trois serveurs Nginx et de faciliter leur démarrage et leur arrêt.</p>
+<p>Créer le répertoire du projet :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/projet-proxy</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/projet-proxy</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Créer les répertoires nécessaires :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> site/nginx1</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> site/nginx2</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> site/nginx3</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> letsencrypt</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’organisation du projet sera la suivante :</p>
 <pre class="text"><code>projet-proxy/
-└── site/
-    ├── index.html
-    ├── css/
-    ├── js/
-    └── images/</code></pre>
-<p>Créer le réseau Docker interne, ce réseau permettra à Traefik de communiquer avec les trois conteneurs Nginx.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network create proxy</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Télécharger l’image officielle Nginx</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull nginx:alpine</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+├── docker-compose.yml
+├── .env
+├── site/
+│   ├── nginx1/
+│   │   └── index.html
+│   ├── nginx2/
+│   │   └── index.html
+│   └── nginx3/
+│       └── index.html
+└── letsencrypt/
+    └── acme.json</code></pre>
 </section>
-<section id="démarrer-les-trois-conteneurs-nginx" class="level4" data-number="5.2.2">
-<h4 data-number="5.2.2" class="anchored" data-anchor-id="démarrer-les-trois-conteneurs-nginx"><span class="header-section-number">5.2.2</span> Démarrer les trois conteneurs Nginx</h4>
-<p>Chaque conteneur utilise le même dossier contenant les fichiers du site HTML.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> nginx1 <span class="dt">\</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--network</span> proxy <span class="dt">\</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/projet-proxy/site:/usr/share/nginx/html:ro <span class="dt">\</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  nginx:alpine</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> nginx2 <span class="dt">\</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--network</span> proxy <span class="dt">\</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/projet-proxy/site:/usr/share/nginx/html:ro <span class="dt">\</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  nginx:alpine</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> nginx3 <span class="dt">\</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">--network</span> proxy <span class="dt">\</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/projet-proxy/site:/usr/share/nginx/html:ro <span class="dt">\</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  nginx:alpine</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="installation-et-préparation-des-serveurs-web-nginx-sur-vm-proxy"><span class="header-section-number">5.3</span> Installation et préparation des serveurs web Nginx (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> les serveurs web Nginx permettent d’héberger notre site HTML. Nous allons créer trois conteneurs indépendants afin de démontrer l’équilibrage de charge réalisé par Traefik. Chaque conteneur hébergera une version du site permettant de l’identifier pendant les tests.</p>
+<p>Pour commencer, créer une page HTML dans chaque répertoire.</p>
+<p><strong>Sur vm-proxy :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> site/nginx1/index.html <span class="op">&lt;&lt; 'EOF'</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;h1&gt;Bienvenue sur le serveur Nginx 1&lt;/h1&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> site/nginx2/index.html <span class="op">&lt;&lt; 'EOF'</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;h1&gt;Bienvenue sur le serveur Nginx 2&lt;/h1&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> site/nginx3/index.html <span class="op">&lt;&lt; 'EOF'</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="st">&lt;h1&gt;Bienvenue sur le serveur Nginx 3&lt;/h1&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ces pages sont volontairement différentes afin de pouvoir identifier le serveur ayant répondu à chaque requête.</p>
+<p>Télécharger l’image officielle Nginx :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull nginx:alpine</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Vérification :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> images</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’image <code>nginx:alpine</code> doit apparaître dans la liste.</p>
 </section>
-<section id="vérifier-le-fonctionnement-des-conteneurs" class="level4" data-number="5.2.3">
-<h4 data-number="5.2.3" class="anchored" data-anchor-id="vérifier-le-fonctionnement-des-conteneurs"><span class="header-section-number">5.2.3</span> Vérifier le fonctionnement des conteneurs</h4>
-<p><strong>Pourquoi :</strong> Permet de vérifier que les conteneurs on bien été créés et fonctionnent.</p>
-<p>Vérifier que les trois conteneurs sont bien démarrés :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Tester ensuite l’accès au site depuis chaque conteneur :</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx1 wget <span class="at">-qO-</span> http://localhost/</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx2 wget <span class="at">-qO-</span> http://localhost/</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx3 wget <span class="at">-qO-</span> http://localhost/</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Chaque commande doit retourner le contenu HTML du site.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Les trois conteneurs Nginx écoutent sur le port 80 de leur réseau Docker interne. Aucun port web n’est directement publié sur la VM : les requêtes provenant de la machine hôte passent obligatoirement par Traefik.</p>
-</div>
-</div>
+<section id="configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="configuration-de-traefik-et-de-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.4</span> Configuration de Traefik et de Let’s Encrypt (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> Traefik constitue le cœur de notre projet. Il reçoit les connexions HTTP et HTTPS, sélectionne le serveur web correspondant au nom de domaine demandé et assure la terminaison TLS. Il communique également avec Let’s Encrypt pour obtenir et renouveler automatiquement les certificats.</p>
+<p>Dans notre projet, nous utilisons le challenge DNS-01 de Let’s Encrypt. Celui-ci permet de valider notre nom de domaine grâce à un enregistrement DNS TXT, sans devoir exposer directement notre VM sur Internet.</p>
+<section id="créer-le-sous-domaine-duckdns-et-préparer-les-identifiants" class="level4" data-number="5.4.1">
+<h4 data-number="5.4.1" class="anchored" data-anchor-id="créer-le-sous-domaine-duckdns-et-préparer-les-identifiants"><span class="header-section-number">5.4.1</span> Créer le sous-domaine DuckDNS et préparer les identifiants</h4>
+<p><strong>Pourquoi :</strong> le challenge DNS-01 oblige Traefik à créer un enregistrement TXT dans la zone DNS du domaine, ce qui prouve à Let’s Encrypt que nous en sommes bien propriétaires. Il nous faut donc un nom de domaine dont nous contrôlons le DNS par une API. Nous avons choisi un sous-domaine gratuit DuckDNS, pour lequel Traefik dispose d’un fournisseur intégré (<code>duckdns</code>). Un sous-domaine de <code>github.io</code> ne convient pas : sa zone DNS appartient à GitHub, nous ne pouvons pas y créer d’enregistrement TXT.</p>
+<ol type="1">
+<li>Se connecter sur <a href="https://www.duckdns.org">duckdns.org</a> avec un compte GitHub ou Google.</li>
+<li>Dans le champ « sub domain », saisir <code>projetinfra</code> puis cliquer sur « add domain ». Le domaine obtenu est <code>projetinfra.duckdns.org</code>.</li>
+<li>Copier le <strong>token</strong> affiché en haut de la page.</li>
+</ol>
+<p>Sur <strong>vm-proxy</strong>, créer le fichier <code>.env</code> à la racine du projet, dans le même dossier que <code>docker-compose.yml</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/projet-proxy</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> .env</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Y ajouter la ligne suivante en remplaçant la valeur d’exemple par le token copié (sans guillemets ni espaces autour du <code>=</code>) :</p>
+<pre class="env"><code>DUCKDNS_TOKEN=VOTRE_TOKEN_DUCKDNS</code></pre>
+<p>Ce fichier contient un secret : il ne doit être ni partagé ni ajouté à un dépôt Git. Le protéger :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 .env</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Vérification :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span> .env</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : les droits <code>-rw-------</code> (lecture et écriture réservées au propriétaire).</p>
+<p>Le fichier est transmis à Traefik par la directive <code>env_file: - .env</code> du service <code>traefik</code> dans <code>docker-compose.yml</code>. Une fois les conteneurs démarrés, on peut confirmer que la variable est bien reçue :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec traefik env <span class="kw">|</span> <span class="fu">grep</span> DUCKDNS</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="préparer-le-stockage-des-certificats" class="level4" data-number="5.4.2">
+<h4 data-number="5.4.2" class="anchored" data-anchor-id="préparer-le-stockage-des-certificats"><span class="header-section-number">5.4.2</span> Préparer le stockage des certificats</h4>
+<p>Créer le fichier qui permettra à Traefik de conserver les certificats obtenus auprès de Let’s Encrypt :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> letsencrypt/acme.json</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 letsencrypt/acme.json</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ce fichier permet à Traefik de conserver les certificats et les informations ACME nécessaires à leur renouvellement automatique.</p>
+</section>
+<section id="configurer-traefik-dans-docker-compose" class="level4" data-number="5.4.3">
+<h4 data-number="5.4.3" class="anchored" data-anchor-id="configurer-traefik-dans-docker-compose"><span class="header-section-number">5.4.3</span> Configurer Traefik dans Docker Compose</h4>
+<p>Créer le fichier principal de déploiement :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> docker-compose.yml</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ajouter la configuration suivante en remplaçant <code>votre.mail@outlook.com</code> par un mail que vous possédez et <code>projetinfra.duckdns.org</code> par votre véritable nom de domaine :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">traefik</span><span class="kw">:</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> traefik</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> .env</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> traefik</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> DOCKER_API_VERSION=1.40</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"8080:80"</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"8443:443"</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">command</span><span class="kw">:</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --providers.docker=true</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --providers.docker.exposedbydefault=false</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --entrypoints.web.address=:80</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --entrypoints.websecure.address=:443</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.email=votre.mail@outlook.com</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.dnschallenge=true</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.dnschallenge.provider=duckdns</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> --certificatesresolvers.le.acme.dnschallenge.resolvers=1.1.1.1:53</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /var/run/docker.sock:/var/run/docker.sock:ro</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./letsencrypt/acme.json:/letsencrypt/acme.json</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx1</span><span class="kw">:</span></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:alpine</span></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> nginx1</span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./site/nginx1:/usr/share/nginx/html:ro</span></span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.enable=true"</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.rule=Host(`projetinfra.duckdns.org`)"</span></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.entrypoints=websecure"</span></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.tls.certresolver=le"</span></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.services.site.loadbalancer.server.port=80"</span></span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx2</span><span class="kw">:</span></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:alpine</span></span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> nginx2</span></span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./site/nginx2:/usr/share/nginx/html:ro</span></span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.enable=true"</span></span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.rule=Host(`projetinfra.duckdns.org`)"</span></span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.entrypoints=websecure"</span></span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.tls.certresolver=le"</span></span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.services.site.loadbalancer.server.port=80"</span></span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">nginx3</span><span class="kw">:</span></span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx:alpine</span></span>
+<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> nginx3</span></span>
+<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./site/nginx3:/usr/share/nginx/html:ro</span></span>
+<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> proxy</span></span>
+<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.enable=true"</span></span>
+<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.rule=Host(`projetinfra.duckdns.org`)"</span></span>
+<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.entrypoints=websecure"</span></span>
+<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.routers.site.tls.certresolver=le"</span></span>
+<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"traefik.http.services.site.loadbalancer.server.port=80"</span></span>
+<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">proxy</span><span class="kw">:</span></span>
+<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">external</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dans cette configuration :</p>
+<ul>
+<li>Traefik écoute sur les ports 80 et 443.</li>
+<li>Les trois conteneurs Nginx ne publient aucun port directement sur la VM.</li>
+<li>Les conteneurs communiquent grâce au réseau Docker <code>proxy</code>.</li>
+<li>Traefik utilise le fournisseur Docker(labels) pour découvrir les trois serveurs web.</li>
+<li>Le résolveur ACME utilise le challenge DNS-01 de DuckDNS pour obtenir les certificats Let’s Encrypt.</li>
+</ul>
+<p><strong>Vérification de la configuration :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose config <span class="at">-q</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si aucune erreur n’est affichée, le fichier Docker Compose est syntaxiquement valide.</p>
 </section>
 </section>
-<section id="titre-de-létape-sur-vm-yyy" class="level3" data-number="5.3">
-<h3 data-number="5.3" class="anchored" data-anchor-id="titre-de-létape-sur-vm-yyy"><span class="header-section-number">5.3</span> [Titre de l’étape] (sur vm-yyy)</h3>
-<p><strong>Pourquoi :</strong> …</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commandes à exécuter sur vm-yyy</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="déploiement-des-conteneurs-sur-vm-proxy" class="level3" data-number="5.5">
+<h3 data-number="5.5" class="anchored" data-anchor-id="déploiement-des-conteneurs-sur-vm-proxy"><span class="header-section-number">5.5</span> Déploiement des conteneurs (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> cette étape permet de démarrer simultanément Traefik et les trois serveurs Nginx. Docker network create proxy crée automatiquement le réseau Docker et docker compose up -d connecte les différents conteneurs.</p>
+<p>Depuis le répertoire <code>projet-proxy</code>, exécuter :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network create proxy</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Vérification :</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : quatre conteneurs doivent apparaître avec le statut <code>Up</code> :</p>
+<ul>
+<li>traefik</li>
+<li>nginx1</li>
+<li>nginx2</li>
+<li>nginx3</li>
+</ul>
+<p>Vérifier également le réseau Docker :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network inspect proxy</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les quatre conteneurs doivent être connectés au réseau <code>proxy</code>.</p>
 </section>
-<section id="titre-de-létape" class="level3" data-number="5.4">
-<h3 data-number="5.4" class="anchored" data-anchor-id="titre-de-létape"><span class="header-section-number">5.4</span> [Titre de l’étape]</h3>
-<p>…</p>
+<section id="vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy" class="level3" data-number="5.6">
+<h3 data-number="5.6" class="anchored" data-anchor-id="vérification-du-fonctionnement-des-serveurs-nginx-sur-vm-proxy"><span class="header-section-number">5.6</span> Vérification du fonctionnement des serveurs Nginx (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> avant de tester Traefik, il est important de vérifier que les trois serveurs web fonctionnent indépendamment. Cela permet de distinguer un problème provenant de Nginx d’un problème provenant du reverse proxy.</p>
+<p>Exécuter les commandes suivantes :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx1 wget <span class="at">-qO-</span> http://localhost/</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx2 wget <span class="at">-qO-</span> http://localhost/</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec nginx3 wget <span class="at">-qO-</span> http://localhost/</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Résultats attendus :</strong></p>
+<pre class="text"><code>&lt;h1&gt;Bienvenue sur le serveur Nginx 1&lt;/h1&gt;
+&lt;h1&gt;Bienvenue sur le serveur Nginx 2&lt;/h1&gt;
+&lt;h1&gt;Bienvenue sur le serveur Nginx 3&lt;/h1&gt;</code></pre>
+<p>Les trois commandes doivent retourner le contenu HTML correspondant.</p>
+</section>
+<section id="configuration-de-la-résolution-dns-locale-sur-la-machine-hôte" class="level3" data-number="5.7">
+<h3 data-number="5.7" class="anchored" data-anchor-id="configuration-de-la-résolution-dns-locale-sur-la-machine-hôte"><span class="header-section-number">5.7</span> Configuration de la résolution DNS locale (sur la machine hôte)</h3>
+<p><strong>Pourquoi :</strong> notre VM utilise une adresse privée Host-only. Pour accéder au site depuis le navigateur de la machine hôte, nous devons faire correspondre notre nom de domaine à l’adresse IP privée de la VM.</p>
+<p>Sur la machine hôte, ajouter la ligne suivante au fichier hosts :</p>
+<pre class="text"><code>192.168.56.10 projetinfra.duckdns.org</code></pre>
+<p>Emplacement du fichier selon le système :</p>
+<ul>
+<li>Linux/macOS : <code>/etc/hosts</code></li>
+<li>Windows : <code>C:\Windows\System32\drivers\etc\hosts</code></li>
+</ul>
+<p>Remplacer le nom de domaine par celui configuré dans les labels de <code>docker-compose.yml</code>.</p>
+<p>Cette résolution locale permet au navigateur de joindre Traefik sur <code>192.168.56.10</code>, tout en utilisant le véritable nom de domaine pour la négociation HTTPS.</p>
+<p>Il n’est pas nécessaire de publier l’adresse privée de la VM dans un enregistrement DNS public A pour utiliser le challenge DNS-01.</p>
+</section>
+<section id="vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy" class="level3" data-number="5.8">
+<h3 data-number="5.8" class="anchored" data-anchor-id="vérification-de-lobtention-du-certificat-lets-encrypt-sur-vm-proxy"><span class="header-section-number">5.8</span> Vérification de l’obtention du certificat Let’s Encrypt (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> cette étape permet de vérifier que Traefik communique correctement avec Let’s Encrypt, que le challenge DNS-01 fonctionne et qu’un certificat valide est obtenu automatiquement.</p>
+<p>Consulter les journaux de Traefik :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> logs traefik </span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Traefik doit réussir la validation DNS et obtenir un certificat pour le domaine configuré.</p>
+<p>Vérifier ensuite le contenu du fichier ACME :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-o</span> <span class="st">'"main": "[^"]*"'</span> letsencrypt/acme.json</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le commande doit montrer “main”: “projetinfra.duckdns.org”</p>
+<p>Pour vérifier le certificat depuis la machine hôte dans un terminal bash :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> s_client <span class="dt">\</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-connect</span> 192.168.56.10:8443 <span class="dt">\</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-servername</span> projetinfra.duckdns.org <span class="dt">\</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="ex">openssl</span> x509 <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span> <span class="at">-dates</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Le résultat doit afficher :</p>
+<ul>
+<li>Le nom de domaine correspondant au certificat.</li>
+<li>Let’s Encrypt comme autorité de certification.</li>
+<li>Les dates de début et de fin de validité du certificat.</li>
+</ul>
+<p>Le certificat doit être reconnu comme valide par un navigateur utilisant son magasin de certificats habituel.</p>
+<p><strong>Attention :</strong> Let’s Encrypt peut limiter le nombre de certificats émis lors des tests répétés. Il est conseillé d’utiliser son environnement de test (staging) pendant les essais de configuration, puis de revenir à l’environnement de production pour obtenir le certificat final.</p>
+</section>
+<section id="vérification-du-démarrage-automatique-sur-vm-proxy" class="level3" data-number="5.9">
+<h3 data-number="5.9" class="anchored" data-anchor-id="vérification-du-démarrage-automatique-sur-vm-proxy"><span class="header-section-number">5.9</span> Vérification du démarrage automatique (sur vm-proxy)</h3>
+<p><strong>Pourquoi :</strong> nous voulons que les services redémarrent automatiquement après un redémarrage de la VM, sans devoir relancer manuellement les conteneurs.</p>
+<p>Vérifier que les services disposent de la politique <code>restart: unless-stopped</code> dans le fichier Docker Compose.</p>
+<p>Tester le redémarrage :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Après le redémarrage, vérifier :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les quatre conteneurs doivent être de nouveau actifs.</p>
+</section>
+<section id="bilan-de-linstallation" class="level3" data-number="5.10">
+<h3 data-number="5.10" class="anchored" data-anchor-id="bilan-de-linstallation"><span class="header-section-number">5.10</span> Bilan de l’installation</h3>
+<p>À la fin de cette procédure, notre infrastructure doit disposer des éléments suivants :</p>
+<ul>
+<li>Un reverse proxy Traefik fonctionnel.</li>
+<li>Trois serveurs web Nginx indépendants.</li>
+<li>Un réseau Docker interne permettant la communication entre les conteneurs.</li>
+<li>Un certificat TLS valide délivré par Let’s Encrypt.</li>
+<li>Un renouvellement automatique des certificats assuré par Traefik.</li>
+<li>Un équilibrage de charge entre les trois serveurs Nginx.</li>
+</ul>
+<p>Les tests détaillés de l’accès HTTPS, de l’équilibrage de charge seront présentés dans la section « Vérification et tests ».</p>
 </section>
 </section>
 <section id="vérification-et-tests" class="level2" data-number="6">
@@ -722,6 +941,7 @@ Note
 </div>
 <section id="tableau-récapitulatif-des-tests" class="level3" data-number="6.1">
 <h3 data-number="6.1" class="anchored" data-anchor-id="tableau-récapitulatif-des-tests"><span class="header-section-number">6.1</span> Tableau récapitulatif des tests</h3>
+<p>Les tests ont été réalisés avec le domaine <code>projetinfra.duckdns.org</code>. Traefik est publié sur les ports 8080 (HTTP) et 8443 (HTTPS) de la VM.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 16%">
@@ -744,45 +964,76 @@ Note
 <tbody>
 <tr class="odd">
 <td>1</td>
-<td>[Description]</td>
-<td><code>commande</code></td>
-<td>[Sortie attendue]</td>
-<td>[Sortie réelle]</td>
-<td>✅</td>
+<td>Conteneurs actifs</td>
+<td><code>docker ps</code></td>
+<td>4 conteneurs <code>Up</code>, ports <code>8080-&gt;80</code> et <code>8443-&gt;443</code> sur Traefik</td>
+<td>[à compléter]</td>
+<td>⬜</td>
 </tr>
 <tr class="even">
 <td>2</td>
-<td>[Description]</td>
-<td>[Action UI]</td>
-<td>[Comportement attendu]</td>
-<td>[Comportement réel]</td>
+<td>Certificat Let’s Encrypt</td>
+<td><code>openssl s_client ... \| openssl x509 -noout -issuer -dates</code></td>
+<td>Émetteur Let’s Encrypt (pas <code>TRAEFIK DEFAULT CERT</code>, pas <code>STAGING</code>)</td>
+<td>Émetteur Let’s Encrypt</td>
 <td>✅</td>
 </tr>
 <tr class="odd">
 <td>3</td>
-<td>Panne simulée</td>
-<td><code>systemctl stop service</code></td>
-<td>Erreur X renvoyée</td>
-<td>[Résultat réel]</td>
-<td>✅</td>
+<td>HTTPS de confiance</td>
+<td><code>curl https://projetinfra.duckdns.org:8443</code></td>
+<td>Page Nginx, sans erreur de certificat (sans <code>-k</code>)</td>
+<td>[à compléter]</td>
+<td>⬜</td>
 </tr>
 <tr class="even">
 <td>4</td>
-<td>Sécurité négative</td>
-<td><code>commande interdite</code></td>
-<td>Accès refusé</td>
-<td>[Résultat réel]</td>
+<td>Équilibrage de charge</td>
+<td>boucle de 9 <code>curl</code></td>
+<td>Les pages Nginx 1, 2 et 3 alternent</td>
+<td>Les trois serveurs répondent tour à tour</td>
 <td>✅</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Panne simulée</td>
+<td><code>docker stop nginx2</code> puis boucle de 6 <code>curl</code></td>
+<td>Seuls Nginx 1 et 3 répondent</td>
+<td>[à compléter]</td>
+<td>⬜</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Navigateur</td>
+<td>ouvrir <code>https://projetinfra.duckdns.org:8443</code></td>
+<td>Cadenas, certificat valide</td>
+<td>[à compléter]</td>
+<td>⬜</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Redémarrage automatique</td>
+<td><code>sudo reboot</code> puis <code>docker ps</code></td>
+<td>4 conteneurs <code>Up</code></td>
+<td>[à compléter]</td>
+<td>⬜</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Sécurité négative</td>
+<td><code>curl -k https://192.168.56.10:8443</code> et <code>curl http://192.168.56.10:80</code></td>
+<td>404 de Traefik sans nom de domaine ; connexion refusée sur le port 80</td>
+<td>[à compléter]</td>
+<td>⬜</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="test-1-titre" class="level3" data-number="6.2">
-<h3 data-number="6.2" class="anchored" data-anchor-id="test-1-titre"><span class="header-section-number">6.2</span> Test 1 — [Titre]</h3>
-<p>Description du test et de ce qu’il valide.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Commande de test</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">commande</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → Sortie obtenue (copier-coller la vraie sortie ici)</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="test-1-conteneurs-actifs" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="test-1-conteneurs-actifs"><span class="header-section-number">6.2</span> Test 1 — Conteneurs actifs</h3>
+<p>Ce test vérifie que Traefik et les trois serveurs Nginx sont démarrés et que Traefik publie bien les ports 8080 et 8443.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : <code>traefik</code>, <code>nginx1</code>, <code>nginx2</code> et <code>nginx3</code> avec le statut <code>Up</code>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -793,13 +1044,112 @@ Astuce
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>📷 Capture :</strong> [description de la capture jointe].</p>
+<p><strong>📷 Capture :</strong> sortie de <code>docker ps</code> montrant les quatre conteneurs et les ports de Traefik.</p>
 </div>
 </div>
 </section>
-<section id="test-2-titre" class="level3" data-number="6.3">
-<h3 data-number="6.3" class="anchored" data-anchor-id="test-2-titre"><span class="header-section-number">6.3</span> Test 2 — [Titre]</h3>
-<p>…</p>
+<section id="test-2-certificat-lets-encrypt" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="test-2-certificat-lets-encrypt"><span class="header-section-number">6.3</span> Test 2 — Certificat Let’s Encrypt</h3>
+<p>Ce test prouve que le certificat servi par Traefik a bien été émis par Let’s Encrypt grâce au défi DNS-01, et non par le certificat de secours de Traefik.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">openssl</span> s_client <span class="at">-connect</span> 192.168.56.10:8443 <span class="dt">\</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-servername</span> projetinfra.duckdns.org <span class="op">&lt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="dt">\</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="ex">openssl</span> x509 <span class="at">-noout</span> <span class="at">-subject</span> <span class="at">-issuer</span> <span class="at">-dates</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : un sujet correspondant à <code>projetinfra.duckdns.org</code>, un émetteur Let’s Encrypt (et non <code>TRAEFIK DEFAULT CERT</code>), ainsi que les dates de début et de fin de validité.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Astuce
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>📷 Capture :</strong> sortie de la commande <code>openssl</code> avec l’émetteur Let’s Encrypt.</p>
+</div>
+</div>
+</section>
+<section id="test-3-https-de-confiance" class="level3" data-number="6.4">
+<h3 data-number="6.4" class="anchored" data-anchor-id="test-3-https-de-confiance"><span class="header-section-number">6.4</span> Test 3 — HTTPS de confiance</h3>
+<p>Ce test vérifie que le certificat est reconnu comme valide : <code>curl</code> n’utilise pas l’option <code>-k</code>, donc il refuserait un certificat non fiable (par exemple celui de l’environnement de test staging).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> https://projetinfra.duckdns.org:8443</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : <code>&lt;h1&gt;Bienvenue sur le serveur Nginx X&lt;/h1&gt;</code>, sans message d’erreur de certificat.</p>
+</section>
+<section id="test-4-équilibrage-de-charge" class="level3" data-number="6.5">
+<h3 data-number="6.5" class="anchored" data-anchor-id="test-4-équilibrage-de-charge"><span class="header-section-number">6.5</span> Test 4 — Équilibrage de charge</h3>
+<p>Ce test montre que Traefik répartit les requêtes entre les trois conteneurs Nginx.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="va">$(</span><span class="fu">seq</span> 1 9<span class="va">)</span><span class="kw">;</span> <span class="cf">do</span> <span class="ex">curl</span> <span class="at">-s</span> https://projetinfra.duckdns.org:8443<span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : les pages Nginx 1, 2 et 3 reviennent tour à tour (répartition de type round-robin). L’ordre de départ peut varier.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Astuce
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>📷 Capture :</strong> sortie de la boucle montrant les trois serveurs.</p>
+</div>
+</div>
+</section>
+<section id="test-5-panne-simulée" class="level3" data-number="6.6">
+<h3 data-number="6.6" class="anchored" data-anchor-id="test-5-panne-simulée"><span class="header-section-number">6.6</span> Test 5 — Panne simulée</h3>
+<p>Ce test vérifie le comportement lorsqu’un serveur tombe en panne.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stop nginx2</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="va">$(</span><span class="fu">seq</span> 1 6<span class="va">)</span><span class="kw">;</span> <span class="cf">do</span> <span class="ex">curl</span> <span class="at">-s</span> https://projetinfra.duckdns.org:8443<span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> start nginx2</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : seuls Nginx 1 et Nginx 3 répondent. Une erreur brève juste après l’arrêt du conteneur est possible, car aucune vérification d’état (health check) n’est configurée ; si elle se produit, la noter ici.</p>
+</section>
+<section id="test-6-accès-depuis-le-navigateur" class="level3" data-number="6.7">
+<h3 data-number="6.7" class="anchored" data-anchor-id="test-6-accès-depuis-le-navigateur"><span class="header-section-number">6.7</span> Test 6 — Accès depuis le navigateur</h3>
+<p>Ouvrir <code>https://projetinfra.duckdns.org:8443</code> dans le navigateur de la machine hôte (le fichier hosts doit contenir <code>192.168.56.10 projetinfra.duckdns.org</code>).</p>
+<p>Résultat attendu : la page Nginx s’affiche et le navigateur montre un cadenas, sans avertissement de sécurité.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Astuce
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>📷 Capture :</strong> navigateur avec le cadenas et le détail du certificat Let’s Encrypt.</p>
+</div>
+</div>
+</section>
+<section id="test-7-redémarrage-automatique" class="level3" data-number="6.8">
+<h3 data-number="6.8" class="anchored" data-anchor-id="test-7-redémarrage-automatique"><span class="header-section-number">6.8</span> Test 7 — Redémarrage automatique</h3>
+<p>Ce test vérifie que les services redémarrent seuls grâce à la politique <code>restart: unless-stopped</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># après le redémarrage et la reconnexion :</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps</span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : les quatre conteneurs sont de nouveau <code>Up</code>, sans intervention manuelle.</p>
+</section>
+<section id="test-8-sécurité-négative" class="level3" data-number="6.9">
+<h3 data-number="6.9" class="anchored" data-anchor-id="test-8-sécurité-négative"><span class="header-section-number">6.9</span> Test 8 — Sécurité négative</h3>
+<p>Ce test vérifie que l’on ne peut atteindre les services que par Traefik et avec le bon nom de domaine.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Accès par l'adresse IP au lieu du nom de domaine :</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-k</span> https://192.168.56.10:8443</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Accès direct au port 80 de la VM (les conteneurs Nginx ne publient aucun port) :</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-m</span> 5 http://192.168.56.10:80</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># → coller ici les vraies sorties</span></span></code></pre></div><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Résultat attendu : <code>404 page not found</code> renvoyé par Traefik pour le premier test (aucune règle ne correspond à l’adresse IP), et un refus de connexion ou un délai dépassé pour le second.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Astuce
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>📷 Capture :</strong> sorties des deux commandes.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="problèmes-rencontrés" class="level2" data-number="7">
@@ -817,18 +1167,25 @@ Astuce
 <p>Décrivez les 2 à 4 problèmes qui vous ont le plus bloqués, avec la structure <strong>Symptôme / Cause / Solution</strong>. Cette section montre votre compréhension réelle du projet — elle doit refléter ce qui s’est <em>réellement</em> passé dans vos VMs.</p>
 </div>
 </div>
-<p><strong>1. [Titre du problème]</strong></p>
-<p><em>Symptôme :</em> ce que vous observiez (message d’erreur, comportement inattendu).</p>
-<p><em>Cause :</em> ce qui provoquait le problème.</p>
-<p><em>Solution :</em> comment vous l’avez résolu.</p>
+<p><strong>1. Perte de la connexion PuTTY après le redémarrage du réseau</strong></p>
+<p><em>Symptôme :</em> après <code>systemctl restart networking</code>, PuTTY n’affichait plus qu’un écran noir. Dans la console VirtualBox, <code>ip a</code> ne montrait plus <code>enp0s8</code> avec son adresse, et <code>ifup enp0s8</code> répondait « unknown interface ».</p>
+<p><em>Cause :</em> le fichier <code>/etc/network/interfaces</code> ne contenait plus que les interfaces <code>lo</code> et <code>enp0s3</code> : le bloc <code>enp0s8</code> (adresse statique <code>192.168.56.10</code>) avait disparu. L’interface host-only n’avait donc plus de configuration et la VM n’était plus joignable depuis la machine hôte.</p>
+<p><em>Solution :</em> à partir de la console VirtualBox (qui ne dépend pas du réseau), nous avons rajouté le bloc <code>auto enp0s8</code> / <code>iface enp0s8 inet static</code> avec l’adresse <code>192.168.56.10</code> et le masque <code>255.255.255.0</code>, sans ligne <code>gateway</code>, puis relancé le service <code>networking</code>.</p>
 <hr>
-<p><strong>2. [Titre du problème]</strong></p>
-<p><em>Symptôme :</em> …</p>
-<p><em>Cause :</em> …</p>
-<p><em>Solution :</em> …</p>
+<p><strong>2. Réseau Docker <code>proxy</code> introuvable</strong></p>
+<p><em>Symptôme :</em> <code>docker compose up -d</code> échouait avec <code>network proxy declared as external, but could not be found</code>.</p>
+<p><em>Cause :</em> le réseau <code>proxy</code> est déclaré avec <code>external: true</code>. Docker Compose ne crée pas ce type de réseau.</p>
+<p><em>Solution :</em> création du réseau avant le premier démarrage avec <code>docker network create proxy</code>.</p>
 <hr>
-<p><strong>3. [Titre du problème]</strong></p>
-<p>…</p>
+<p><strong>3. Certificat par défaut de Traefik au lieu de Let’s Encrypt</strong></p>
+<p><em>Symptôme :</em> <code>curl</code> ne fonctionnait qu’avec l’option <code>-k</code>, et <code>openssl</code> indiquait comme émetteur <code>TRAEFIK DEFAULT CERT</code>.</p>
+<p><em>Cause :</em> la configuration initiale utilisait le défi HTTP-01, qui impose à Let’s Encrypt de joindre le serveur depuis Internet. Notre VM n’a qu’une adresse privée (<code>192.168.56.10</code>), la validation ne pouvait donc pas aboutir et Traefik utilisait son certificat autosigné de secours.</p>
+<p><em>Solution :</em> passage au défi DNS-01 avec le fournisseur DuckDNS (<code>dnschallenge.provider=duckdns</code>) et un token stocké dans <code>.env</code>. Nous avons d’abord testé avec l’environnement de test (staging) de Let’s Encrypt pour éviter les limites de requêtes : ses certificats ne sont pas reconnus par les clients (<code>curl: (60) SSL certificate problem</code>). Après validation, nous avons retiré la ligne <code>caserver</code>, vidé <code>acme.json</code> (pour ne pas réutiliser le compte staging) et redémarré pour obtenir un certificat de production.</p>
+<hr>
+<p><strong>4. Résolution DNS impossible depuis les conteneurs</strong></p>
+<p><em>Symptôme :</em> les journaux de Traefik affichaient <code>Unable to obtain ACME certificate ... lookup acme-v02.api.letsencrypt.org ... i/o timeout</code>, et <code>ping 8.8.8.8</code> échouait depuis la VM alors que <code>enp0s3</code> avait bien une adresse et une route par défaut.</p>
+<p><em>Cause :</em> le réseau utilisé fournissait par DHCP un serveur DNS interne à l’école (<code>172.19.232.1</code>). Cette adresse tombait dans le sous-réseau <code>172.19.0.0/16</code> d’un pont Docker de la VM, si bien que le trafic vers ce serveur restait sur le pont local et n’atteignait jamais le vrai serveur DNS. Le réseau de l’école bloquait par ailleurs le trafic sortant de la VM.</p>
+<p><em>Solution :</em> changement de connexion Internet, après quoi <code>ping acme-v02.api.letsencrypt.org</code> fonctionnait et Traefik a pu obtenir le certificat. Pour éviter le problème, on peut aussi configurer un serveur DNS public (<code>nameserver 1.1.1.1</code>) ou supprimer le réseau Docker qui chevauche l’adresse du DNS.</p>
 </section>
 <section id="distribution-des-tâches" class="level2" data-number="8">
 <h2 data-number="8" class="anchored" data-anchor-id="distribution-des-tâches"><span class="header-section-number">8</span> Distribution des tâches</h2>
@@ -875,9 +1232,9 @@ Astuce
 </div>
 </div>
 <ul>
-<li><strong>Amélioration 1 :</strong> description précise et justification.</li>
-<li><strong>Amélioration 2 :</strong> description précise et justification.</li>
-<li><strong>Amélioration 3 :</strong> description précise et justification.</li>
+<li><strong>Redirection automatique de HTTP vers HTTPS :</strong> ajouter à la commande de Traefik <code>--entrypoints.web.http.redirections.entrypoint.to=websecure</code> et <code>--entrypoints.web.http.redirections.entrypoint.scheme=https</code>. Aujourd’hui, une requête HTTP sur le port 8080 ne reçoit pas de redirection ; cela garantirait que tout le trafic passe par le HTTPS.</li>
+<li><strong>Protection du token DuckDNS :</strong> remplacer le fichier <code>.env</code> par des secrets Docker (<code>secrets:</code> dans le fichier Compose), afin que le token ne soit pas visible dans les variables d’environnement du conteneur (<code>docker exec traefik env</code>).</li>
+<li><strong>Ports standard 80 et 443 :</strong> publier <code>80:80</code> et <code>443:443</code> au lieu de 8080 et 8443, afin que l’URL n’ait plus besoin d’un numéro de port. Cela nécessite de libérer ces ports sur la VM.</li>
 </ul>
 </section>
 <section id="conclusion" class="level2" data-number="10">
